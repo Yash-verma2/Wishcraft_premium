@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+    <title>{{ title }}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@300;400;600&family=Sacramento&display=swap"
+        rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* --- Theme: Youngster First Love --- */
+        :root {
+            --primary-glow: #ff9a9e;
+            --secondary-glow: #fad0c4;
+            --deep-love: #ff0844;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Modern, clean sans-serif */
+            overflow-x: hidden;
+            background: #1a0b2e;
+            background: linear-gradient(135deg, #2b0c2c 0%, #11051e 100%);
+            color: white;
+            min-height: 100vh;
+            /* Prevent bounce on mobile */
+            overscroll-behavior: none;
+        }
+
+        .romantic-font {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .handwritten-font {
+            font-family: 'Sacramento', cursive;
+        }
+
+        /* Premium Glassmorphism */
+        .glass-card {
+            background: rgba(20, 10, 30, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        /* Floating Hearts Animation */
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 105, 180, 0.4);
+            animation: floatUp linear infinite;
+            z-index: -1;
+            filter: drop-shadow(0 0 5px rgba(255, 192, 203, 0.5));
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.6;
+            }
+
+            100% {
+                transform: translateY(-110vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Heartbeat Animation for Photo */
+        .heartbeat-border {
+            animation: heartbeat 2s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+                transform: scale(1);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(255, 107, 107, 0);
+                transform: scale(1.02);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+                transform: scale(1);
+            }
+        }
+
+        /* Typing Cursor */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            background-color: #ff9a9e;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Animations */
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Gift Reveal Effect */
+        .gift-cover {
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen relative selection:bg-pink-500 selection:text-white">
+
+    <!-- Dynamic Background (Hearts) -->
+    <div id="background-container" class="absolute inset-0 overflow-hidden pointer-events-none"></div>
+
+    <!-- Audio -->
+    <div id="musicContainer" class="fixed bottom-6 right-6 z-[9999] hidden">
+        {% if music and 'spotify.com' in music %}
+        <iframe id="spotify-player" src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true"
+            allow="encrypted-media" class="rounded-xl shadow-2xl"></iframe>
+        {% else %}
+        <audio id="bg-music" loop>
+            <source src="{{ music }}" type="audio/mp3">
+        </audio>
+        {% endif %}
+    </div>
+
+    <!-- ENTRANCE OVERLAY (Mobile First Design) -->
+    <div id="entrance-overlay"
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#0f0518] text-white px-4 text-center transition-opacity duration-700">
+
+        <!-- Animated Heart Icon -->
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-pink-500 blur-xl opacity-50 animate-pulse rounded-full"></div>
+            <i data-lucide="heart" class="relative w-20 h-20 text-pink-500 fill-pink-500 animate-bounce"></i>
+        </div>
+
+        <h1
+            class="text-5xl md:text-7xl romantic-font mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300">
+            For You
+        </h1>
+        <p class="text-gray-400 text-sm uppercase tracking-[0.2em] mb-10">A little surprise...</p>
+
+        <button onclick="startCelebration()"
+            class="group relative px-8 py-4 bg-transparent overflow-hidden rounded-full border border-pink-500/50 transition-all hover:scale-105 active:scale-95">
+            <div
+                class="absolute inset-0 w-full h-full bg-gradient-to-r from-pink-500 to-purple-600 opacity-20 group-hover:opacity-40 transition-opacity">
+            </div>
+            <span class="relative text-pink-100 font-semibold tracking-wider flex items-center gap-2">
+                TAP TO OPEN <i data-lucide="sparkles" class="w-4 h-4"></i>
+            </span>
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content"
+        class="relative z-10 w-full max-w-md md:max-w-2xl mx-auto p-4 transition-all duration-1000 opacity-0 scale-95 hidden">
+
+        <div class="glass-card rounded-3xl p-6 md:p-10 relative overflow-hidden">
+
+            <!-- Top Decorative Glow -->
+            <div
+                class="absolute -top-20 -left-20 w-40 h-40 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+            </div>
+            <div
+                class="absolute -bottom-20 -right-20 w-40 h-40 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+            </div>
+
+            <!-- Header Tag -->
+            <div class="flex justify-center mb-6">
+                <span
+                    class="px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] md:text-xs font-medium tracking-[0.3em] text-pink-200 uppercase backdrop-blur-sm">
+                    {{ title }}
+                </span>
+            </div>
+
+            <!-- Main Photo with Heartbeat -->
+            <div class="relative w-48 h-48 md:w-64 md:h-64 mx-auto mb-8 group">
+                <div class="absolute inset-0 rounded-full heartbeat-border border-2 border-pink-500/30"></div>
+                <div
+                    class="w-full h-full rounded-full overflow-hidden border-4 border-white/10 relative z-10 shadow-2xl">
+                    <img src="{{ main_image }}"
+                        class="w-full h-full object-cover transform transition duration-700 group-hover:scale-110"
+                        alt="Celebrant"
+                        onerror="this.src='https://images.unsplash.com/photo-1516585427167-9f4af9627e6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'">
+                </div>
+                <!-- Floating Emoji near photo -->
+                <div class="absolute -bottom-2 right-4 text-4xl animate-bounce delay-700">❤️</div>
+            </div>
+
+            <!-- Romantic Greeting -->
+            <div class="text-center mb-8">
+                <h2 class="text-xl text-pink-200 font-light mb-2">Happy Birthday to my</h2>
+                <h1
+                    class="text-5xl md:text-6xl romantic-font text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 drop-shadow-lg leading-tight py-2">
+                    {{ name }}
+                </h1>
+            </div>
+
+            <!-- Handwritten Message Area -->
+            <div class="bg-black/20 rounded-xl p-6 mb-8 min-h-[120px] border border-white/5 relative">
+                <i data-lucide="quote" class="absolute top-4 left-4 w-4 h-4 text-pink-500/50"></i>
+                <p id="typing-text"
+                    class="handwritten-font text-2xl md:text-3xl text-gray-100 leading-relaxed text-center mt-2"></p>
+                <span class="cursor mx-auto block mt-2 h-4 w-[2px] bg-pink-400"></span>
+            </div>
+
+            <!-- Interactive Grid -->
+            <div class="grid grid-cols-2 gap-3 md:gap-4">
+
+                <!-- Gift Reveal -->
+                <div class="relative group h-40 rounded-2xl overflow-hidden cursor-pointer" onclick="revealGift(this)">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-br from-pink-900/50 to-purple-900/50 backdrop-blur-sm z-0">
+                    </div>
+
+                    <!-- The Hidden Image -->
+                    <img src="{{ gift_image }}"
+                        class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-500 revealed-img"
+                        onerror="this.src='https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&w=400&q=80'">
+
+                    <!-- The Cover -->
+                    <div
+                        class="absolute inset-0 bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col items-center justify-center z-10 gift-cover border border-white/10">
+                        <i data-lucide="gift" class="w-8 h-8 text-pink-400 mb-2 animate-bounce"></i>
+                        <span class="text-[10px] uppercase tracking-widest text-gray-400">Tap for Surprise</span>
+                    </div>
+                </div>
+
+                <!-- Gallery Link -->
+                <a href="{{ gallery_link }}" class="relative group h-40 rounded-2xl overflow-hidden block">
+                    <div
+                        class="absolute inset-0 bg-white/5 group-hover:bg-white/10 transition-colors border border-white/10">
+                    </div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center mb-2 shadow-lg group-hover:scale-110 transition-transform">
+                            <i data-lucide="image" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <span class="text-xs font-medium text-gray-300">Our Memories</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <footer style="
+  text-align:center;
+  font-size:0.7rem;
+  opacity:0.55;
+  margin-top:2rem;
+  padding-bottom:1rem;
+  font-family:'Baloo 2', sans-serif;
+">
+            Made for you with
+            <a href="https://wishcraft-pages.vercel.app" style="color:inherit; text-decoration:none; font-weight:600;">
+                WishCraft ✨
+            </a>
+        </footer>
+
+    </main>
+
+    <!-- Floating Music Control -->
+    <button onclick="toggleMusic()" id="music-btn"
+        class="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-xl active:scale-90 transition-all hidden">
+        <div class="absolute inset-0 bg-pink-500/20 rounded-full animate-ping opacity-75" id="music-ping"
+            style="display:none;"></div>
+        <i id="music-icon" data-lucide="music" class="w-5 h-5 text-pink-300"></i>
+    </button>
+
+    <script>
+        lucide.createIcons();
+
+        /* --- FLASK / PREVIEW DATA HANDLING --- */
+        let config = {
+            name: "{{ name }}",
+            messages: '{{ messages|tojson }}',
+            music: "{{ music }}"
+        };
+
+        // FIXED: Broken string concatenation to avoid Flask/Jinja parser errors
+        if (config.name.includes("{" + "{")) {
+            config.name = "My Love";
+            config.messages = JSON.stringify([
+                "Every moment with you is magic ✨",
+                "You are my favorite thought.",
+                "Happy Birthday, beautiful ❤️",
+                "Here's to forever together..."
+            ]);
+            document.querySelector('audio source').src = "https://assets.mixkit.co/music/preview/mixkit-dreaming-big-31.mp3"; // More romantic track
+            document.querySelector('audio').load();
+        }
+
+        let messagesArray = [];
+        try { messagesArray = JSON.parse(config.messages); } catch (e) { messagesArray = ["I love you!"]; }
+
+        /* --- LOGIC --- */
+        const audio = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+
+        function createFloatingHearts() {
+            const container = document.getElementById('background-container');
+            const heartSVG = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="0" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+
+            for (let i = 0; i < 20; i++) {
+                const el = document.createElement('div');
+                el.classList.add('floating-heart');
+                el.innerHTML = heartSVG;
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                el.style.animationDelay = (Math.random() * 10) + 's';
+                el.style.opacity = Math.random() * 0.5;
+                el.style.transform = `scale(${Math.random()})`;
+                el.style.color = Math.random() > 0.5 ? '#ff9a9e' : '#845ec2';
+                container.appendChild(el);
+            }
+        }
+
+        function startCelebration() {
+            const overlay = document.getElementById('entrance-overlay');
+            const main = document.getElementById('main-content');
+
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                main.classList.remove('hidden');
+                // Small delay to trigger transition
+                setTimeout(() => {
+                    main.classList.remove('opacity-0', 'scale-95');
+                    main.classList.add('opacity-100', 'scale-100');
+                }, 50);
+            }, 700);
+
+            const musicContainer = document.getElementById('musicContainer');
+            musicContainer.classList.remove('hidden');
+            const musicBtn = document.getElementById('music-btn');
+            musicBtn.classList.remove('hidden');
+
+            if (audio) {
+                audio.volume = 0.6;
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    document.getElementById('music-ping').style.display = 'block';
+                }).catch(e => console.log("Interaction needed for audio"));
+            } else {
+                // Spotify
+                isMusicPlaying = true;
+                document.getElementById('music-ping').style.display = 'block';
+            }
+
+            fireHeartConfetti();
+            startTyping();
+        }
+
+        function fireHeartConfetti() {
+            const duration = 3000;
+            const end = Date.now() + duration;
+
+            const colors = ['#ff0844', '#ffb199', '#ffffff'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 4,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors,
+                    shapes: ['heart']
+                });
+                confetti({
+                    particleCount: 4,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors,
+                    shapes: ['heart']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function revealGift(element) {
+            const cover = element.querySelector('.gift-cover');
+            const img = element.querySelector('.revealed-img');
+
+            // Slide up
+            cover.style.transform = 'translateY(-100%)';
+            img.style.opacity = '1';
+
+            // Burst
+            confetti({
+                particleCount: 80,
+                spread: 100,
+                origin: { y: 0.7 },
+                colors: ['#ff9a9e', '#fad0c4'],
+                shapes: ['heart']
+            });
+        }
+
+        // Typing Logic
+        let msgIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typeElement = document.getElementById('typing-text');
+
+        function startTyping() {
+            if (!messagesArray.length) return;
+            const currentMsg = messagesArray[msgIndex];
+
+            if (isDeleting) {
+                typeElement.textContent = currentMsg.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typeElement.textContent = currentMsg.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            let timer = 80; // slower, more romantic typing speed
+
+            if (!isDeleting && charIndex === currentMsg.length) {
+                isDeleting = true;
+                timer = 3000; // linger longer on the message
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                msgIndex = (msgIndex + 1) % messagesArray.length;
+                timer = 500;
+            }
+
+            setTimeout(startTyping, timer);
+        }
+
+        function toggleMusic() {
+            const icon = document.getElementById('music-icon');
+            const ping = document.getElementById('music-ping');
+            const container = document.getElementById('musicContainer');
+
+            if (isMusicPlaying) {
+                if (audio) audio.pause();
+                else container.classList.add('hidden'); // Hide Spotify on "pause"
+                icon.setAttribute('data-lucide', 'volume-x');
+                ping.style.display = 'none';
+                isMusicPlaying = false;
+            } else {
+                if (audio) audio.play();
+                else container.classList.remove('hidden'); // Show Spotify on "play"
+                icon.setAttribute('data-lucide', 'music');
+                ping.style.display = 'block';
+                isMusicPlaying = true;
+            }
+            lucide.createIcons();
+        }
+
+        createFloatingHearts();
+    </script>
+</body>
+
+</html>

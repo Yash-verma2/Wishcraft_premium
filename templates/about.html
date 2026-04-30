@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+  <title>About WishCraft</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          keyframes: {
+            float: { '0%,100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-10px)' } },
+            gradient: { '0%,100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } }
+          },
+          animation: {
+            float: 'float 6s ease-in-out infinite',
+            gradient: 'gradient 6s ease infinite'
+          },
+          backgroundSize: { '200%': '200% 200%' }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-white dark:from-gray-900 dark:to-[#070c13] min-h-screen flex flex-col font-sans">
+
+ <!-- Back Button -->
+<div class="absolute top-6 left-6 sm:top-8 sm:left-8 z-50">
+  <button 
+    onclick="history.back()" 
+    class="px-3 py-2 border-2 border-sky-500 bg-transparent text-sky-500 rounded-full shadow-md hover:bg-sky-500 hover:text-white transition-all duration-300"
+  >
+    ←
+  </button>
+</div>
+
+
+
+
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-32 text-center px-4 sm:px-6 lg:px-8">
+    <div class="absolute -top-32 -left-32 w-64 sm:w-96 h-64 sm:h-96 bg-pink-300/30 rounded-full blur-3xl animate-float"></div>
+    <div class="absolute -bottom-32 -right-32 w-64 sm:w-96 h-64 sm:h-96 bg-sky-400/30 rounded-full blur-3xl animate-float"></div>
+
+    <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-600 bg-clip-text text-transparent animate-gradient tracking-tight drop-shadow-lg">
+      About WishCraft
+    </h1>
+    <p class="mt-6 max-w-3xl mx-auto text-gray-600 dark:text-gray-300 text-base sm:text-lg md:text-xl">
+      Transforming celebrations into unforgettable moments! With WishCraft, creating magical birthday and anniversary pages is easy, fast, and fun.
+    </p>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="mt-20 px-4 sm:px-6 lg:px-8">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-800 dark:text-gray-200 mb-12">Why Choose WishCraft?</h2>
+    <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Feature Cards -->
+      <div class="bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 p-6 rounded-3xl shadow-lg transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 text-center">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gradient-to-br from-sky-500 via-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-float">
+          <span class="text-white text-2xl">🎨</span>
+        </div>
+        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Creative Templates</h3>
+        <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Choose from stunning templates to create unique, personalized celebration pages effortlessly.</p>
+      </div>
+
+      <div class="bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 p-6 rounded-3xl shadow-lg transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 text-center">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gradient-to-br from-sky-500 via-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-float">
+          <span class="text-white text-2xl">🎵</span>
+        </div>
+        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Music & Audio</h3>
+        <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Add songs or upload your own to bring the celebration to life with sound and rhythm.</p>
+      </div>
+
+      <div class="bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 p-6 rounded-3xl shadow-lg transform hover:-translate-y-2 hover:scale-105 transition-all duration-500 text-center">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 bg-gradient-to-br from-sky-500 via-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg animate-float">
+          <span class="text-white text-2xl">⚡</span>
+        </div>
+        <h3 class="text-lg sm:text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Fast & Easy</h3>
+        <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Generate pages in seconds with a simple, intuitive interface designed for everyone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPMENT WORKFLOW -->
+  <section class="min-h-screen bg-gray-50 dark:bg-gray-900 px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-center text-gray-800 dark:text-gray-200 mb-12">Development Workflow & Features</h1>
+
+    <div class="relative max-w-4xl mx-auto">
+      <div class="absolute left-1/2 transform -translate-x-1/2 h-full border-l-2 border-gray-300 dark:border-gray-700 hidden md:block"></div>
+      <div class="space-y-12">
+
+        <!-- Feature 1 -->
+        <div class="flex flex-col md:flex-row md:items-center">
+          <div class="md:w-1/2 md:pr-8 text-center md:text-right">
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">1. Idea & Planning</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Define goals, sketch the UI, and plan features to create a smooth user experience.</p>
+          </div>
+          <div class="flex justify-center md:justify-start relative md:w-12 mt-4 md:mt-0">
+            <div class="w-6 h-6 bg-sky-500 rounded-full shadow-lg z-10"></div>
+          </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="flex flex-col md:flex-row-reverse md:items-center">
+          <div class="md:w-1/2 md:pl-8 text-center md:text-left">
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">2. Development</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Write clean code, implement core functionalities, integrate AI modules, and ensure responsiveness.</p>
+          </div>
+          <div class="flex justify-center md:justify-end relative md:w-12 mt-4 md:mt-0">
+            <div class="w-6 h-6 bg-indigo-500 rounded-full shadow-lg z-10"></div>
+          </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="flex flex-col md:flex-row md:items-center">
+          <div class="md:w-1/2 md:pr-8 text-center md:text-right">
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">3. Testing & QA</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Perform thorough testing on multiple devices, fix bugs, and optimize performance.</p>
+          </div>
+          <div class="flex justify-center md:justify-start relative md:w-12 mt-4 md:mt-0">
+            <div class="w-6 h-6 bg-purple-500 rounded-full shadow-lg z-10"></div>
+          </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="flex flex-col md:flex-row-reverse md:items-center">
+          <div class="md:w-1/2 md:pl-8 text-center md:text-left">
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">4. Deployment & Updates</h3>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Deploy the application, monitor performance, and continuously improve features based on feedback.</p>
+          </div>
+          <div class="flex justify-center md:justify-end relative md:w-12 mt-4 md:mt-0">
+            <div class="w-6 h-6 bg-green-500 rounded-full shadow-lg z-10"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPER -->
+  <section class="mt-24 px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-6">Meet the Creator</h2>
+    <div class="max-w-3xl mx-auto bg-white/60 dark:bg-gray-800/40 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 rounded-3xl p-8 shadow-lg">
+      <img src="https://avatars.githubusercontent.com/u/00000000?v=4" alt="Yash Verma" class="w-32 h-32 mx-auto rounded-full border-4 border-sky-500 mb-4 shadow-lg">
+      <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Yash Verma</h3>
+      <p class="text-gray-600 dark:text-gray-300 text-sm sm:text-base mb-4">A passionate web and mobile developer creating seamless, intuitive, and magical experiences. Focused on innovation, UI/UX, and interactive designs.</p>
+      <div class="flex justify-center flex-wrap gap-3 mb-4">
+        <span class="px-4 py-1 rounded-full bg-sky-100 dark:bg-sky-800 text-sky-800 dark:text-sky-200 text-xs font-semibold">Web Development</span>
+        <span class="px-4 py-1 rounded-full bg-indigo-100 dark:bg-indigo-800 text-indigo-800 dark:text-indigo-200 text-xs font-semibold">Mobile Apps</span>
+        <span class="px-4 py-1 rounded-full bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 text-xs font-semibold">UI/UX Design</span>
+        <span class="px-4 py-1 rounded-full bg-pink-100 dark:bg-pink-800 text-pink-800 dark:text-pink-200 text-xs font-semibold">Creative Projects</span>
+      </div>
+      <div class="flex justify-center gap-6 text-2xl">
+        <a href="https://www.instagram.com/yash_verma_690/" target="_blank" class="text-pink-500 hover:text-pink-600 transition">📸</a>
+        <a href="#" class="text-gray-800 dark:text-gray-200 hover:text-sky-500 transition">🌐</a>
+        <a href="#" class="text-blue-500 hover:text-blue-700 transition">🐦</a>
+        <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-gray-500 transition">💼</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mt-20 w-full bg-white/10 dark:bg-black/10 backdrop-blur-xl border-t border-gray-300/30 dark:border-gray-700/30 py-8">
+    <div class="max-w-6xl mx-auto text-center px-4 space-y-2">
+      <h2 class="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200">WishCraft</h2>
+      <p class="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Crafting magical celebration pages ✨</p>
+      <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Developed by Yash Verma • <a href="https://www.instagram.com/yash_verma_690/" target="_blank" class="text-pink-500 hover:text-pink-600">Instagram</a></p>
+      <p class="text-gray-400 dark:text-gray-500 text-xs mt-2">© 2025 WishCraft • Made with ❤️</p>
+    </div>
+  </footer>
+
+</body>
+</html>

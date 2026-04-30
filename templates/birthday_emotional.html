@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Pacifico&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'display': ['Outfit', 'sans-serif'],
+                        'hand': ['Pacifico', 'cursive'],
+                    },
+                    colors: {
+                        'brand': {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        'dark': '#0f172a',
+                        'gold': '#fbbf24',
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-medium': 'float 6s ease-in-out infinite',
+                        'pulse-gentle': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scroll': 'scroll 40s linear infinite',
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'reveal': 'reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(2deg)' },
+                        },
+                        scroll: {
+                            '0%': { transform: 'translateX(0)' },
+                            '100%': { transform: 'translateX(-50%)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        reveal: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary: #f43f5e;
+            --primary-light: #fb7185;
+            --primary-dark: #be123c;
+            --accent: #fbbf24;
+            --bg-dark: #0f172a;
+            --bg-deep: #070b14;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Noise Overlay --- */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.03;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+        }
+
+        /* --- Bokeh Background --- */
+        .bokeh-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0f172a 100%);
+            overflow: hidden;
+        }
+
+        .bokeh {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.2;
+            pointer-events: none;
+            transition: all 5s ease-in-out;
+        }
+
+        /* --- Premium Glassmorphism --- */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Interactive Cake 3.0 --- */
+        .cake-stage {
+            position: relative;
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 28/24;
+            margin: 2rem auto;
+            cursor: pointer;
+            filter: drop-shadow(0 20px 40px rgba(244, 63, 94, 0.3));
+        }
+
+        .cake-layer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 12px 12px 6px 6px;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .layer-1 {
+            width: 80%;
+            height: 27%;
+            bottom: 0;
+            background: linear-gradient(to bottom, #fb7185, #e11d48);
+            z-index: 10;
+        }
+
+        .layer-2 {
+            width: 65%;
+            height: 23%;
+            bottom: 27%;
+            background: linear-gradient(to bottom, #f43f5e, #be123c);
+            z-index: 20;
+        }
+
+        .layer-3 {
+            width: 50%;
+            height: 19%;
+            bottom: 50%;
+            background: linear-gradient(to bottom, #e11d48, #9f1239);
+            z-index: 30;
+        }
+
+        .icing-drip {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 18px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.8));
+            border-radius: 12px 12px 25px 25px;
+            box-shadow: inset 0 -4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .candle-stick {
+            position: absolute;
+            width: 3%;
+            height: 15%;
+            background: linear-gradient(to right, #ffd700, #ffec8b, #ffd700);
+            bottom: 69%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+            z-index: 40;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .flame-glow {
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 14px;
+            height: 22px;
+            background: #fbbf24;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 25px #f59e0b, 0 0 50px #fbbf24;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: flicker 0.6s infinite alternate;
+        }
+
+        .flame-glow.lit {
+            transform: translateX(-50%) scale(1);
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1) skewX(-2deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.1) skewX(2deg);
+            }
+        }
+
+        /* --- Wish Smoke Animation --- */
+        .smoke {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            width: 12px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .blown-out .smoke {
+            animation: rise 2.5s ease-out forwards;
+        }
+
+        @keyframes rise {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-150%, -150px) scale(6);
+            }
+        }
+
+        /* --- Floating Memories --- */
+        .floating-memories {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .mem-photo {
+            position: absolute;
+            width: 160px;
+            padding: 10px;
+            padding-bottom: 35px;
+            background: white;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border-radius: 2px;
+            opacity: 0;
+            transform: translateY(50px) rotate(-5deg);
+            transition: all 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .mem-photo.active {
+            opacity: 0.6;
+            transform: translateY(0) rotate(var(--rot));
+        }
+
+        /* --- Modern Audio Player --- */
+        .audio-bar {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: float-slow 8s infinite alternate;
+        }
+
+        /* --- Progress Bar for Sections --- */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Scroll Bar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary), var(--primary-dark));
+            border-radius: 10px;
+        }
+
+        .hidden-v {
+            opacity: 0;
+            pointer-events: none;
+            display: none !important;
+        }
+
+        .visible-v {
+            opacity: 1;
+            pointer-events: auto;
+            display: flex !important;
+        }
+
+        .hidden-f {
+            display: none !important;
+        }
+
+        /* Modal Animation */
+        .modal-enter {
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+        }
+
+        .modal-active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- --- BOKEH BACKGROUND --- -->
+    <!-- --- OVERLAYS --- -->
+    <div class="noise"></div>
+    <div class="bokeh-container" id="bokeh-bg"></div>
+
+    <!-- --- START SCREEN (The Surprise) --- -->
+    <div id="start-screen"
+        class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#070b14] transition-all duration-1000">
+        <div class="relative max-w-2xl px-6 text-center">
+            <div class="absolute -inset-20 bg-rose-500/10 blur-[120px] animate-pulse"></div>
+            <div class="relative z-10 space-y-10">
+                <div
+                    class="inline-flex items-center gap-3 px-4 py-2 glass rounded-full text-[10px] font-black tracking-[0.3em] text-rose-400 uppercase animate-fade-in-up">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                    </span>
+                    Private Experience for You
+                </div>
+                <div class="overflow-hidden">
+                    <h1
+                        class="font-display font-black text-4xl md:text-8xl text-white tracking-tighter leading-[0.95] animate-reveal">
+                        Something <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-amber-500">
+                            Beautiful
+                        </span>
+                        <br> Just for You
+                    </h1>
+                </div>
+                <button onclick="unlockCelebration()"
+                    class="group relative px-8 md:px-12 py-4 md:py-5 bg-white text-dark font-black rounded-2xl shadow-2xl transition-all duration-500 hover:scale-110 hover:rotate-2 active:scale-95 flex items-center gap-4 mx-auto overflow-hidden animate-fade-in-up"
+                    style="animation-delay: 0.5s;">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-rose-500 to-amber-500 opacity-0 group-hover:opacity-10 transition-opacity">
+                    </div>
+                    <span class="relative z-10">Open Your Heart</span>
+                    <i
+                        class="fas fa-sparkles text-rose-500 group-hover:rotate-45 transition-transform relative z-10"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- FLOATING MEMORIES --- -->
+    <div class="floating-memories" id="floating-memories">
+        <!-- Generated by JS from gallery_images -->
+    </div>
+
+    <!-- --- MAIN CONTENT --- -->
+    <main id="main-content"
+        class="relative z-10 min-h-screen flex flex-col items-center py-12 md:py-20 px-4 md:px-6 opacity-0 transition-opacity duration-1000 overflow-hidden">
+
+        <!-- Header Section -->
+        <header class="text-center mb-24 space-y-6 reveal-on-scroll">
+            <div
+                class="inline-block px-5 py-2 glass rounded-full text-[10px] font-black tracking-[0.4em] text-rose-400 uppercase">
+                A Journey Through Time
+            </div>
+            <h1 class="font-display font-black text-4xl md:text-7xl lg:text-9xl text-white leading-[0.9] tracking-tighter">
+                HAPPY <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-br from-white via-rose-400 to-rose-600">
+                    BIRTHDAY
+                </span>
+                <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-600">
+                    {{ name }}
+                </span>
+            </h1>
+        </header>
+
+        <!-- The Central Memory Feature -->
+        <section class="w-full max-w-6xl mb-32 reveal-on-scroll">
+            <div class="relative group">
+                <div
+                    class="absolute -inset-4 bg-gradient-to-r from-rose-500/20 to-amber-500/20 rounded-[3rem] blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000">
+                </div>
+                <div class="relative glass-card rounded-[3rem] overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <!-- Hero Image -->
+                        <div class="aspect-[4/5] lg:aspect-auto overflow-hidden relative">
+                            <img src="{{ main_image }}" alt="{{ name }}"
+                                class="w-full h-full object-cover transform transition duration-1000 group-hover:scale-110"
+                                onerror="this.src='https://images.unsplash.com/photo-1464347719139-147c551b1509?q=80&w=1000'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <div class="absolute bottom-8 left-8">
+                                <p class="font-hand text-3xl text-rose-300">Always together</p>
+                            </div>
+                        </div>
+                        <!-- Messages Panel -->
+                        <div class="p-6 md:p-10 lg:p-16 flex flex-col justify-center space-y-8 md:space-y-10">
+                            <div class="space-y-4">
+                                <div class="w-12 h-1 overflow-hidden rounded-full bg-rose-500/30">
+                                    <div class="w-full h-full bg-rose-500 animate-pulse"></div>
+                                </div>
+                                <div id="typing-box" class="min-h-[120px] md:min-h-[160px]">
+                                    <p id="typed-text"
+                                        class="text-xl md:text-2xl lg:text-3xl leading-relaxed font-medium text-slate-100 italic break-words">
+                                        <!-- Typed by JS -->
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Interaction Trigger -->
+                            <div class="pt-10 border-t border-white/5 flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 shadow-inner">
+                                        <i class="fas fa-heart text-lg"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-xs font-black tracking-widest text-white/40 uppercase">Heartfelt
+                                            Note</span>
+                                        <span class="text-sm font-bold text-rose-400">Page <span id="msg-num">1</span>
+                                            of {{ messages|length }}</span>
+                                    </div>
+                                </div>
+                                <button onclick="nextMessage()"
+                                    class="w-14 h-14 glass rounded-2xl flex items-center justify-center hover:bg-rose-500 hover:text-white transition-all duration-500 active:scale-90 group">
+                                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THE CELEBRATION STAGE -->
+        <section class="w-full max-w-4xl glass-card rounded-[2.5rem] md:rounded-[4rem] p-8 md:p-16 text-center mb-32 reveal-on-scroll mx-4">
+            <h2 class="font-display font-black text-3xl md:text-5xl mb-4 tracking-tighter">Let's Celebrate Together</h2>
+            <p id="stage-instr" class="text-slate-400 font-medium mb-12 text-lg">Tap the cake to light the candles</p>
+
+            <div class="cake-stage group scale-90 md:scale-100 origin-center" id="cake-main"
+                onclick="handleCakeInteraction()">
+                <div class="cake-layer layer-1">
+                    <div class="icing-drip"></div>
+                </div>
+                <div class="cake-layer layer-2">
+                    <div class="icing-drip"></div>
+                </div>
+                <div class="cake-layer layer-3">
+                    <div class="icing-drip"></div>
+                </div>
+
+                <div class="candle-stick">
+                    <div class="flame-glow" id="candle-flame"></div>
+                    <div class="smoke" id="candle-smoke"></div>
+                </div>
+            </div>
+
+            <!-- Slice Message -->
+            <div id="wish-message" class="hidden transition-all duration-1000 translate-y-10 scale-0">
+                <div
+                    class="inline-block px-10 py-5 bg-gradient-to-r from-rose-600 to-rose-500 text-white rounded-3xl font-black shadow-[0_20px_50px_rgba(225,29,72,0.4)] text-lg">
+                    <i class="fas fa-sparkles mr-2 text-gold"></i> May all your wishes come true!
+                </div>
+            </div>
+        </section>
+
+        <!-- MEMORY LANE (Horizontal Gallery) -->
+        <section class="w-full mb-32 reveal-on-scroll">
+            <div class="flex flex-col md:flex-row justify-between items-end px-4 mb-12 gap-6">
+                <div class="space-y-2">
+                    <h3 class="font-display font-black text-4xl md:text-5xl tracking-tighter">Memory Lane</h3>
+                    <p class="text-slate-400 font-medium">A collection of our favorite moments</p>
+                </div>
+                <a href="{{ gallery_link }}"
+                    class="px-8 py-3 glass rounded-2xl text-rose-400 text-sm font-black tracking-widest uppercase flex items-center gap-3 hover:bg-rose-500 hover:text-white transition-all group">
+                    View Full Story <i class="fas fa-arrow-right group-hover:translate-x-2 transition-transform"></i>
+                </a>
+            </div>
+            <div class="overflow-hidden w-full relative h-[450px]">
+                <div class="flex gap-8 animate-scroll absolute py-10" id="scroll-gallery">
+                    <!-- Gallery items cloned by JS for infinite loop -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center pb-20 opacity-30">
+            <a href="https://wishcraft-pages.vercel.app" style="color:inherit; text-decoration:none; font-weight:600;">
+                <p class="text-sm font-medium italic tracking-widest">Always wishing for your smile <br> <span
+                        class="text-sincere-400">WishCraft pages</span></p>
+            </a>
+        </footer>
+
+
+    </main>
+
+    <!-- --- WISH MODAL --- -->
+    <div id="wish-modal"
+        class="fixed inset-0 z-[300] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="glass max-w-md w-full p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] text-center space-y-8 transform transition-all duration-500 modal-enter"
+            id="wish-content">
+            <div
+                class="w-20 h-20 bg-rose-500 rounded-3xl rotate-12 flex items-center justify-center text-white text-3xl mx-auto shadow-2xl shadow-rose-500/40">
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-3xl font-black">Make a Wish</h3>
+                <p class="text-slate-300">Close your eyes, think of something you truly desire, and when you're ready...
+                </p>
+            </div>
+            <button onclick="blowCandles()"
+                class="w-full py-4 bg-white text-rose-600 font-black rounded-2xl shadow-xl hover:bg-slate-100 transition-colors">
+                I've made my wish
+            </button>
+        </div>
+    </div>
+
+    <!-- --- SURPRISE GIFT MODAL --- -->
+    <div id="gift-modal"
+        class="fixed inset-0 z-[400] hidden items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+        <div class="relative glass max-w-2xl w-full rounded-[3rem] overflow-hidden">
+            <button onclick="closeGift()"
+                class="absolute top-6 right-6 z-10 w-12 h-12 glass rounded-full flex items-center justify-center text-white hover:bg-rose-500 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div class="aspect-video w-full overflow-hidden">
+                <img src="{{ gift_image }}" alt="Gift" class="w-full h-full object-cover">
+            </div>
+            <div class="p-8 text-center space-y-4">
+                <h2 class="text-3xl font-black">Your Special Surprise</h2>
+                <p class="text-slate-400 font-medium">A little something to make your day even more special.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio System -->
+    <div id="audio-container">
+        {% if music %}
+        {% if 'spotify.com' in music %}
+        <iframe id="spotify-api" src="{{ music }}" width="100%" height="80" frameborder="0" allowtransparency="true"
+            allow="encrypted-media" class="hidden"></iframe>
+        <div class="audio-bar glass">
+            <span class="text-xs font-bold text-rose-400">SPOTIFY ACTIVE</span>
+            <button onclick="toggleAudio()"
+                class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center">
+                <i id="audio-icon" class="fas fa-play text-xs"></i>
+            </button>
+        </div>
+        {% else %}
+        <audio id="bg-music" loop>
+            <source src="{{ music }}" type="audio/mpeg">
+        </audio>
+        <div class="audio-bar glass">
+            <span class="text-xs font-bold text-slate-400 tracking-widest uppercase" id="music-status">Now
+                Playing</span>
+            <button onclick="toggleAudio()"
+                class="w-10 h-10 rounded-full bg-rose-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
+                <i id="audio-icon" class="fas fa-pause text-xs text-white"></i>
+            </button>
+        </div>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- Data for JS -->
+    <script id="messages-data" type="application/json">{{ messages | tojson | safe }}</script>
+    <script id="gallery-data" type="application/json">{{ gallery_images | tojson | safe }}</script>
+
+    <script>
+        // --- State Initialization (Top of script to avoid TDZ) ---
+        let isOpened = false;
+        let isLit = false;
+        let isBlown = false;
+        let msgIdx = 0;
+        let charIdx = 0;
+        let isTyping = false;
+        let audioPlaying = false;
+        let messages = [];
+        let galleryImages = [];
+
+        // --- Data Parsing ---
+        try {
+            const messagesData = document.getElementById('messages-data');
+            const galleryData = document.getElementById('gallery-data');
+            const mRaw = messagesData ? messagesData.textContent.trim() : "";
+            const gRaw = galleryData ? galleryData.textContent.trim() : "";
+
+            // Handle non-rendered Jinja2 tags (if opened as local file)
+            // Use hex-escaping for the check to avoid literal characters in source
+            if (mRaw.includes('\x7B\x7B') || mRaw.includes('\x7B\x25')) {
+                console.warn("Template variables not rendered. Please run via Flask server.");
+                messages = ["Enjoy your special day!", "Wishing you the best!"];
+                galleryImages = [];
+            } else {
+                messages = JSON.parse(mRaw || "[]");
+                galleryImages = JSON.parse(gRaw || "[]");
+            }
+        } catch (e) {
+            console.error("JSON Parsing Error:", e);
+            messages = ["Happy Birthday!", "Have a blast!"];
+        }
+
+        // --- Bokeh Setup ---
+        function initBokeh() {
+            const container = document.getElementById('bokeh-bg');
+            const colors = ['#f43f5e', '#fb7185', '#312e81', '#1e1b4b'];
+            for (let i = 0; i < 8; i++) {
+                const b = document.createElement('div');
+                b.className = 'bokeh';
+                b.style.background = colors[i % colors.length];
+                b.style.left = Math.random() * 100 + '%';
+                b.style.top = Math.random() * 100 + '%';
+                b.style.animation = `float ${15 + Math.random() * 10}s infinite alternate`;
+                b.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(b);
+            }
+        }
+
+        // --- Intersection Observer for Reveals ---
+        function initReveals() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // --- Memory Lane Gallery ---
+        function initGallery() {
+            const container = document.getElementById('scroll-gallery');
+            const floatContainer = document.getElementById('floating-memories');
+
+            if (!galleryImages || galleryImages.length === 0) return;
+
+            // Horizontal Scroll
+            const allImages = [...galleryImages, ...galleryImages, ...galleryImages]; // Triple for smoother loop
+            allImages.forEach(src => {
+                const item = document.createElement('div');
+                item.className = 'shrink-0 w-64 md:w-80 aspect-[4/5] rounded-[2rem] overflow-hidden glass-card transform transition-transform hover:scale-105 duration-500';
+                item.innerHTML = `<img src="${src}" class="w-full h-full object-cover">`;
+                container.appendChild(item);
+            });
+
+            // Floating Background Photos (Scatter)
+            galleryImages.forEach((src, i) => {
+                const p = document.createElement('img');
+                p.src = src;
+                p.className = 'mem-photo';
+                const rot = (Math.random() * 20 - 10);
+                p.style.setProperty('--rot', rot + 'deg');
+                p.style.top = (Math.random() * 100) + '%';
+                p.style.left = (Math.random() * 100) + '%';
+                p.style.transitionDelay = (Math.random() * 2) + 's';
+                floatContainer.appendChild(p);
+
+                // Initial scattering after a small delay
+                setTimeout(() => p.classList.add('active'), 2000);
+            });
+        }
+
+        // --- Surpirse Unlock ---
+        function unlockCelebration() {
+            console.log("Unlock Celebration Clicked!");
+            if (isOpened) return;
+            isOpened = true;
+            console.log("Opening celebration...");
+
+            const startScreen = document.getElementById('start-screen');
+            if (startScreen) startScreen.style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('start-screen').classList.add('hidden-f');
+                const mainContent = document.getElementById('main-content');
+                mainContent.classList.add('visible-v');
+                mainContent.style.opacity = '1';
+
+                // Audio
+                const music = document.getElementById('bg-music');
+                if (music) {
+                    music.volume = 0.5;
+                    music.play().then(() => {
+                        audioPlaying = true;
+                        updateAudioUI();
+                    }).catch(e => console.log('Audio requires user interaction'));
+                }
+
+                startTyping();
+                fireInitialConfetti();
+            }, 1000);
+        }
+
+        // --- Typing ---
+        function startTyping() {
+            if (messages.length === 0) return;
+            isTyping = true;
+            typeEffect();
+        }
+
+        function typeEffect() {
+            const container = document.getElementById('typed-text');
+            const msg = messages[msgIdx];
+
+            if (charIdx < msg.length) {
+                container.innerHTML += msg.charAt(charIdx);
+                charIdx++;
+                setTimeout(typeEffect, 50);
+            } else {
+                isTyping = false;
+                // Auto-advance after 3.5 seconds
+                setTimeout(() => {
+                    if (!isTyping && isOpened) nextMessage();
+                }, 3500);
+            }
+        }
+
+        function nextMessage() {
+            if (isTyping || !messages || messages.length === 0) return;
+            msgIdx = (msgIdx + 1) % messages.length;
+            charIdx = 0;
+            document.getElementById('typed-text').innerHTML = '';
+            document.getElementById('msg-num').innerText = msgIdx + 1;
+            startTyping();
+        }
+
+        // --- Cake Logic ---
+        function handleCakeInteraction() {
+            if (!isLit) {
+                isLit = true;
+                document.getElementById('candle-flame').classList.add('lit');
+                document.getElementById('stage-instr').innerText = 'Close your eyes and make a wish...';
+
+                // Show wish modal after 2 seconds
+                setTimeout(() => {
+                    const modal = document.getElementById('wish-modal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                    setTimeout(() => {
+                        document.getElementById('wish-content').classList.remove('modal-enter');
+                        document.getElementById('wish-content').classList.add('modal-active');
+                    }, 50);
+                }, 1500);
+            }
+        }
+
+        function blowCandles() {
+            const modal = document.getElementById('wish-modal');
+            modal.classList.add('opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+
+                // Execute Blow Out
+                document.getElementById('candle-flame').classList.remove('lit');
+                document.getElementById('cake-main').classList.add('blown-out');
+
+                setTimeout(() => {
+                    // Slicing Animation
+                    document.getElementById('cake-main').classList.add('sliced');
+                    const wishMsg = document.getElementById('wish-message');
+                    wishMsg.classList.remove('hidden');
+                    setTimeout(() => wishMsg.classList.add('scale-100'), 50);
+                    document.getElementById('stage-instr').innerText = 'You cut the cake! 🎉';
+
+                    // Final Celebration
+                    if (typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 200,
+                            spread: 160,
+                            origin: { y: 0.6 },
+                            colors: ['#f43f5e', '#fbbf24', '#ffffff']
+                        });
+                    }
+
+                    // Trigger Gift after delay
+                    setTimeout(openGift, 3000);
+                }, 1500);
+            }, 500);
+        }
+
+        // --- Gift ---
+        function openGift() {
+            const modal = document.getElementById('gift-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeGift() {
+            document.getElementById('gift-modal').classList.add('hidden');
+        }
+
+        // --- Audio ---
+        function toggleAudio() {
+            const music = document.getElementById('bg-music');
+            if (!music) return;
+
+            if (audioPlaying) {
+                music.pause();
+                audioPlaying = false;
+            } else {
+                music.play();
+                audioPlaying = true;
+            }
+            updateAudioUI();
+        }
+
+        function updateAudioUI() {
+            const icon = document.getElementById('audio-icon');
+            const status = document.getElementById('music-status');
+            if (audioPlaying) {
+                icon.className = 'fas fa-pause text-xs text-white';
+                status.innerText = 'Now Playing';
+            } else {
+                icon.className = 'fas fa-play text-xs text-white';
+                status.innerText = 'Paused';
+            }
+        }
+
+        function fireInitialConfetti() {
+            if (typeof confetti !== 'function') return;
+            const count = 200;
+            const defaults = { origin: { y: 0.7 }, zIndex: 1000 };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55, });
+            fire(0.2, { spread: 60, });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45, });
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            initBokeh();
+            initGallery();
+            initReveals();
+        };
+
+    </script>
+</body>
+
+</html>

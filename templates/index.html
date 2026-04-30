@@ -1,0 +1,2059 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f43f5e" />
+
+  <!-- Title -->
+  <title>WishCraft | Create Magical Birthday Pages</title>
+
+  <!-- SEO -->
+  <meta name="description"
+    content="Create stunning, aesthetic, Gen-Z style digital birthday pages instantly. Free, fast, responsive birthday page generator with music, photos and animations." />
+  <meta name="keywords"
+    content="birthday generator, birthday page, digital birthday card, birthday template, birthday wish maker, aesthetic birthday page" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://wishcraft-yash.onrender.com" />
+  <meta name="deploy-version" content="2026-03-16-v1" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="🎉 Create a Stunning Digital Birthday Page" />
+  <meta property="og:description"
+    content="Make a trending Gen-Z style birthday page with images, music & animations." />
+  <meta property="og:image" content="https://wishcraft-yash.onrender.com/static/og-image.png" />
+  <meta property="og:url" content="https://wishcraft-yash.onrender.com" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Outfit', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+            },
+            indigo: { 500: '#6366f1', 600: '#6366f1' },
+            emerald: { 500: '#10b981' },
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            shimmer: {
+              '0%': { backgroundPosition: '-200% center' },
+              '100%': { backgroundPosition: '200% center' },
+            },
+          },
+          animation: {
+            float: 'float 3s ease-in-out infinite',
+            shimmer: 'shimmer 2s linear infinite',
+          },
+        },
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #fafafa;
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-heading {
+      font-family: 'Outfit', sans-serif;
+    }
+
+    /* ── Glass Card ── */
+    .glass {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .glass {
+      background: rgba(15, 10, 15, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ── Gradient Text ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #f43f5e 0%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Premium Button ── */
+    .btn-premium {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.4);
+    }
+
+    /* ── Scrollbars ── */
+    .gift-options::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .gift-options::-webkit-scrollbar-thumb {
+      background-color: #fda4af;
+      border-radius: 10px;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ── Blob Animation ── */
+    @keyframes blob {
+      0% {
+        transform: translate(0px, 0px) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+
+      100% {
+        transform: translate(0px, 0px) scale(1);
+      }
+    }
+
+    .animate-blob {
+      animation: blob 7s infinite;
+    }
+
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+
+    /* ── Step Transition ── */
+    .step-container {
+      display: none;
+    }
+
+    .step-container.active {
+      display: block;
+      animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* ── Stepper Glow ── */
+    .step-dot.active {
+      background-color: #f43f5e;
+      box-shadow: 0 0 20px rgba(244, 63, 94, 0.6), 0 0 40px rgba(244, 63, 94, 0.2);
+    }
+
+    /* ── Shimmer Effect ── */
+    .shimmer {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg,
+          transparent 45%,
+          rgba(255, 255, 255, 0.3) 50%,
+          transparent 55%);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translate(-30%, -30%);
+      }
+
+      100% {
+        transform: translate(30%, 30%);
+      }
+    }
+
+    /* ── Premium Inputs ── */
+    .form-group {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .premium-input {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 0.95rem;
+    }
+
+    .premium-input:focus {
+      background: #fff;
+      border-color: #f43f5e;
+      box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .dark .premium-input {
+      background: rgba(15, 10, 15, 0.4);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .dark .premium-input:focus {
+      border-color: #f43f5e;
+      box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.2);
+    }
+
+    /* ── Focus Rings ── */
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+    }
+  </style>
+</head>
+
+<body class="bg-[#fafafa] min-h-screen relative overflow-x-hidden text-slate-900">
+
+  <!-- Background Blobs -->
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <!-- Top-left pink blob -->
+    <div
+      class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/15 rounded-full blur-[120px] animate-pulse">
+    </div>
+    <!-- Bottom-right orange blob -->
+    <div
+      class="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-orange-500/15 rounded-full blur-[100px] animate-pulse"
+      style="animation-delay:1s"></div>
+    <!-- Mid indigo blob -->
+    <div
+      class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[35%] h-[35%] bg-indigo-500/10 rounded-full blur-[100px] animate-blob animation-delay-2000">
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="fixed top-0 left-0 w-full z-50 glass transition-all duration-300" id="mainHeader">
+    <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
+      <a href="https://wishcraft-pages.vercel.app/" class="flex items-center gap-3 group">
+        <div class="flex items-center gap-3 group cursor-pointer"
+          onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+          <img src="/static/icons/favicon-192x192.png" alt="WishCraft Logo"
+            class="w-10 h-10 rounded-xl shadow-lg shadow-brand-500/20 group-hover:scale-110 transition-transform">
+          <span class="text-2xl font-display font-extrabold tracking-tight gradient-text">WishCraft</span>
+        </div>
+      </a>
+
+      <!-- Nav -->
+      <nav class="hidden md:flex items-center gap-8">
+        <a href="#"
+          class="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">Home</a>
+        <a href="javascript:void(0)" onclick="openHowToUse()"
+          class="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">How To
+          Use</a>
+        <a href="about.html"
+          class="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500 transition-colors">About</a>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button class="md:hidden p-2 text-gray-600 dark:text-gray-400"
+        onclick="document.getElementById('mobileNav').classList.toggle('hidden')">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Nav -->
+    <div id="mobileNav"
+      class="hidden md:hidden border-t border-gray-100 dark:border-gray-800 bg-white/95 dark:bg-[#030712]/95 backdrop-blur-md">
+      <div class="px-4 py-6 space-y-4">
+        <a href="#" class="block text-base font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500">Home</a>
+        <a href="javascript:void(0)" onclick="openHowToUse()"
+          class="block text-base font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500">How To Use</a>
+        <a href="about.html"
+          class="block text-base font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-500">About</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HOW TO USE POPUP -->
+  <div id="howToUsePopup"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex justify-center items-center p-4">
+    <div class="glass rounded-3xl p-6 max-w-3xl w-full shadow-2xl relative animate-fadeIn">
+      <button onclick="closeHowToUse()"
+        class="absolute top-4 right-4 text-slate-500 hover:text-red-500 transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">How to Use WishCraft</h2>
+      <div class="aspect-video w-full rounded-2xl overflow-hidden shadow-lg bg-slate-100">
+        <video class="w-full h-full object-cover" controls>
+          <source src="/static/previews/howtouse.mp4" type="video/mp4">
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-5xl mx-auto px-4 pt-32 pb-20">
+
+    <!-- Hero Section -->
+    <div class="text-center mb-16">
+      <h1 class="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight mb-4"
+        style="font-family:'Outfit',sans-serif">
+        Create <span class="gradient-text">Magical</span>
+        Moments
+      </h1>
+      <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto">
+        Generate stunning, personalized birthday pages in seconds. Add music, photos, and your heartfelt wishes.
+      </p>
+    </div>
+
+
+    <!-- Generator Card -->
+    <div
+      class="glass rounded-[2rem] p-6 sm:p-10 shadow-2xl border border-white/50 relative overflow-hidden max-w-2xl mx-auto">
+      <!-- Decorative gradient line -->
+      <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-brand-500 via-orange-500 to-brand-500"></div>
+
+      <!-- Stepper Header -->
+      <div class="mb-12">
+        <div class="flex items-center justify-between max-w-md mx-auto relative">
+          <!-- Connector Line -->
+          <div class="absolute top-1/2 left-0 w-full h-0.5 bg-slate-200 -z-10 -translate-y-1/2"></div>
+          <div id="progressLine"
+            class="absolute top-1/2 left-0 w-0 h-0.5 bg-brand-500 -z-10 -translate-y-1/2 transition-all duration-500">
+          </div>
+
+          <div
+            class="step-dot active w-10 h-10 rounded-full flex items-center justify-center bg-white border-2 border-slate-200 text-sm font-bold text-slate-400 z-10"
+            id="stepDot1">1</div>
+          <div
+            class="step-dot w-10 h-10 rounded-full flex items-center justify-center bg-white border-2 border-slate-200 text-sm font-bold text-slate-400 z-10"
+            id="stepDot2">2</div>
+          <div
+            class="step-dot w-10 h-10 rounded-full flex items-center justify-center bg-white border-2 border-slate-200 text-sm font-bold text-slate-400 z-10"
+            id="stepDot3">3</div>
+        </div>
+        <div class="flex justify-between max-w-md mx-auto mt-2 px-1">
+          <span class="text-[10px] uppercase tracking-widest font-bold text-brand-500" id="stepLabel1">Theme</span>
+          <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400" id="stepLabel2">Details</span>
+          <span class="text-[10px] uppercase tracking-widest font-bold text-slate-400" id="stepLabel3">Magic</span>
+        </div>
+      </div>
+
+      <form id="birthdayForm" enctype="multipart/form-data">
+
+        <!-- STEP 1: Theme Selection -->
+        <div id="step1" class="step-container active space-y-8">
+          <div class="text-center space-y-2 mb-8">
+            <h2 class="text-2xl font-black text-slate-900">Choose a Vibe</h2>
+            <p class="text-slate-500 text-sm">Select the perfect template for your celebration</p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="relative group">
+              <div
+                class="absolute inset-0 bg-gradient-to-br from-brand-500 to-orange-500 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity">
+              </div>
+              <img id="templatePreview" src="/static/previews/hbd_privew.png"
+                class="relative w-full aspect-[16/10] object-cover rounded-3xl shadow-lg border border-white/40 transition-opacity duration-300"
+                alt="Preview">
+            </div>
+
+            <div class="space-y-4">
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Template
+                Style</label>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="birthday.html" data-preview="/static/previews/hbd_privew.png" data-is-premium="false"
+                  data-price="0" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/hbd_privew.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-1.5 right-1.5 bg-emerald-500/90 backdrop-blur text-white text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      Free</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-slate-800/60 backdrop-blur text-white text-[8px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-md">
+                      Simple</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        A beautiful classic birthday template perfect for friends and family.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">🎉</span>
+                    <span class="truncate text-xs">Classic</span>
+                  </div>
+                </button>
+
+                <!-- 2 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="birthday2.html" data-preview="/static/previews/hbd2-preview.png" data-is-premium="true"
+                  data-price="9" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/hbd2-preview.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹9</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-blue-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      🔥 Trending</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        A sleek, modern aesthetic with smooth animations and a minimalist design.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">🎂</span>
+                    <span class="truncate text-xs">Modern</span>
+                  </div>
+                </button>
+
+                <!-- 3 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="birthday3.html" data-preview="/static/previews/hbd3_privew.png" data-is-premium="true"
+                  data-price="19" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/hbd3_privew.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹19</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-brand-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      ✨ Most Popular</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        Vibrant and energetic! Packed with bright colors and playful animations.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">🎈</span>
+                    <span class="truncate text-xs">Fun Vibe</span>
+                  </div>
+                </button>
+
+                <!-- 4 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="birthday_emotional.html" data-preview="/static/previews/emotional_preview.png"
+                  data-is-premium="true" data-price="49" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/emotional_preview.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹49</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-rose-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      ❤️ Most Loved</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        Heartfelt and moving. Features soft music, fading memories, and a cinematic feel.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">✨</span>
+                    <span class="truncate text-xs">Emotional</span>
+                  </div>
+                </button>
+
+                <!-- 5 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="sorry_emotional.html" data-preview="/static/previews/sorry_preview.png"
+                  data-is-premium="true" data-price="9" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/sorry_preview.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹9</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-indigo-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      🤝 Best Choice</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        The ultimate sincere apology page. Express your feelings with grace and warmth.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">😔</span>
+                    <span class="truncate text-xs">Apology</span>
+                  </div>
+                </button>
+
+                <!-- 6 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
+                  data-value="anniversary.html" data-preview="/static/previews/anversary-preview.png"
+                  data-is-premium="true" data-price="19" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/anversary-preview.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹19</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-purple-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      💑 Couples' Top Pick</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full right-0 md:left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        Celebrate your milestone! Romantic styling with floating hearts and elegant typography.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">💑</span>
+                    <span class="truncate text-xs">Anniversary</span>
+                  </div>
+                </button>
+
+                <!-- 7 -->
+                <button type="button"
+                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none md:col-span-3 lg:col-span-1"
+                  data-value="valentine.html" data-preview="/static/previews/valentine_preview.png"
+                  data-is-premium="true" data-price="49" onclick="selectTemplate(this)">
+                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
+                    <img src="/static/previews/valentine_preview.png"
+                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div
+                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
+                      ₹49</div>
+                    <div
+                      class="absolute bottom-1.5 left-1.5 bg-pink-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
+                      💘 Best for Love Birds</div>
+                    <div class="absolute top-1.5 left-1.5 group/info z-10">
+                      <div
+                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
+                          </path>
+                        </svg>
+                      </div>
+                      <div
+                        class="absolute top-full right-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
+                        <div class="flex items-center gap-2 mb-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
+                            Details</span>
+                        </div>
+                        A lovely Valentine's special dedicated to your significant other.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 px-3 py-2 w-full">
+                    <span class="text-lg leading-none">💘</span>
+                    <span class="truncate text-xs">Valentine</span>
+                  </div>
+                </button>
+              </div>
+              <input type="hidden" name="template" id="template_selector" value="birthday.html" data-is-premium="false">
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Basic Info -->
+        <div id="step2" class="step-container space-y-8">
+          <div class="text-center space-y-2 mb-8">
+            <h2 class="text-2xl font-black text-slate-900">Personalize It</h2>
+            <p class="text-slate-500 text-sm">Fill in the details for the special moments</p>
+          </div>
+
+          <div class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Celebrant
+                  Name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Yash" required class="premium-input">
+              </div>
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Page Title</label>
+                <input type="text" id="title" name="title" placeholder="e.g. Happy 21st Birthday!"
+                  class="premium-input">
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Wishes &
+                Messages</label>
+              <textarea id="messages" name="messages" rows="4"
+                placeholder="Wishing you the best day ever!&#10;May all your dreams come true.&#10;Love, Bestie"
+                class="premium-input resize-none"></textarea>
+              <p class="text-[10px] text-slate-400 italic">Pro-tip: Each line appears as a separate message</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Multimedia -->
+        <div id="step3" class="step-container space-y-8">
+          <div class="text-center space-y-2 mb-8">
+            <h2 class="text-2xl font-black text-slate-900">Add the Magic</h2>
+            <p class="text-slate-500 text-sm">Layer in music, photos, and gifts</p>
+          </div>
+
+          <div class="space-y-8">
+            <!-- Main Image & Gift -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="space-y-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Main Photo</label>
+                <div class="group relative">
+                  <input type="file" id="main_image" name="main_image" accept="image/*" required
+                    class="premium-input file:hidden text-xs text-slate-500 h-[54px] flex items-center pr-12 cursor-pointer">
+                  <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-brand-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between items-center mb-0.5">
+                  <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Virtual
+                    Gift</label>
+                  <button type="button" onclick="document.getElementById('gift_image_upload').click()"
+                    class="text-[9px] font-black text-brand-600 uppercase tracking-tighter hover:underline">Custom
+                    +</button>
+                </div>
+                <div class="premium-input h-[54px] flex items-center p-1 bg-slate-50/50">
+                  <div class="gift-options flex gap-2 overflow-x-auto scrollbar-hide w-full px-1">
+                    <img src="/static/previews/hbd-gift4.png" onclick="selectGift(this)"
+                      data-gift-path="/static/previews/hbd-gift4.png"
+                      class="w-10 h-10 object-cover rounded-lg cursor-pointer border-2 border-transparent transition-all shadow-sm">
+                    <img src="/static/previews/hbd-gift1.png" onclick="selectGift(this)"
+                      data-gift-path="/static/previews/hbd-gift1.png"
+                      class="w-10 h-10 object-cover rounded-lg cursor-pointer border-2 border-transparent transition-all shadow-sm">
+                    <img src="/static/previews/hbd-gift2.png" onclick="selectGift(this)"
+                      data-gift-path="/static/previews/hbd-gift2.png"
+                      class="w-10 h-10 object-cover rounded-lg cursor-pointer border-2 border-transparent transition-all shadow-sm">
+                    <img src="/static/previews/hbd-gift3.png" onclick="selectGift(this)"
+                      data-gift-path="/static/previews/hbd-gift3.png"
+                      class="w-10 h-10 object-cover rounded-lg cursor-pointer border-2 border-transparent transition-all shadow-sm">
+                  </div>
+                </div>
+                <input type="hidden" name="gift_image_selected" id="gift_image_selected">
+                <input type="file" name="gift_image" id="gift_image_upload" accept="image/*" class="hidden"
+                  onchange="handleGiftUpload(this)">
+              </div>
+            </div>
+
+            <!-- Music -->
+            <div class="space-y-4 pt-2">
+              <div class="flex justify-between items-center mb-2">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Soundtrack</label>
+                <!-- Upload Custom audio button moved here for cleanliness -->
+                <div class="relative">
+                  <input type="file" name="music" id="music_upload" accept="audio/*" class="hidden">
+                  <button type="button" onclick="document.getElementById('music_upload').click()"
+                    class="text-[10px] font-black text-brand-600 uppercase tracking-wide hover:text-brand-700 bg-brand-50 px-3 py-1.5 rounded-lg transition-colors shadow-sm flex items-center gap-1 border border-brand-100/50">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0l-4 4m4-4v12" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Upload MP3
+                  </button>
+                </div>
+              </div>
+
+              <!-- Inline Music Search Card -->
+              <div id="musicSearchContainer"
+                class="premium-input !p-0 overflow-hidden border-2 border-brand-200/50 bg-white shadow-lg transition-all duration-300">
+                <div class="p-4 space-y-4 bg-gradient-to-br from-brand-50/20 to-orange-50/20">
+                  <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <svg class="w-5 h-5 text-slate-400 group-focus-within:text-brand-500 transition-colors"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2.5"
+                          stroke-linecap="round" />
+                      </svg>
+                    </div>
+                    <input type="text" id="musicSearchInput" placeholder="Search Top Hits, Artists, or Songs..."
+                      class="w-full pl-11 pr-12 py-3.5 bg-white border border-slate-200 shadow-sm rounded-xl focus:bg-white focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10 transition-all font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                      onkeyup="handleDebounceSearch(event)">
+                    <button type="button" onclick="searchMusic()"
+                      class="absolute inset-y-1.5 right-1.5 p-2 bg-slate-900 text-white rounded-lg hover:bg-brand-600 transition-all shadow-md flex items-center justify-center">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div id="searchLoading" class="hidden space-y-3 py-2">
+                    <div class="flex items-center gap-3 animate-pulse">
+                      <div class="w-12 h-12 bg-slate-200/50 rounded-xl"></div>
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-slate-200/50 rounded w-3/4"></div>
+                        <div class="h-3 bg-slate-200/50 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-3 animate-pulse">
+                      <div class="w-12 h-12 bg-slate-200/50 rounded-xl"></div>
+                      <div class="flex-1 space-y-2">
+                        <div class="h-4 bg-slate-200/50 rounded w-5/6"></div>
+                        <div class="h-3 bg-slate-200/50 rounded w-1/3"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h4 id="resultsTitle"
+                    class="hidden text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-200/50 pb-2 pl-1">
+                    Trending Results</h4>
+                  <div id="musicSearchResults" class="max-h-48 overflow-y-auto scrollbar-hide space-y-1.5 pr-1"></div>
+                </div>
+              </div>
+
+              <!-- Selected Audio Preview -->
+              <input type="hidden" name="music_selected" id="music_selected">
+              <audio id="music_preview" controls loop
+                class="hidden w-full h-10 mt-2 opacity-80 rounded-xl shadow-sm"></audio>
+              <div id="spotify_preview_container" class="hidden mt-2 w-full"></div>
+            </div>
+
+            <!-- Gallery -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Visual
+                Gallery</label>
+              <div onclick="document.getElementById('gallery').click()"
+                class="premium-input !p-6 border-dashed border-2 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-brand-50/20 hover:border-brand-300 transition-all">
+                <input type="file" id="gallery" name="gallery" accept="image/*" multiple class="hidden"
+                  onchange="handleGallerySelect(this)">
+                <div id="gallery_placeholder" class="flex flex-col items-center justify-center gap-2">
+                  <div class="w-10 h-10 rounded-full bg-brand-100/50 flex items-center justify-center text-brand-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                  </div>
+                  <p class="text-[11px] font-bold text-slate-500 uppercase tracking-tight">Drop up to 8 photos</p>
+                </div>
+                <div id="gallery_previews" class="grid grid-cols-4 gap-2 mt-4 hidden w-full px-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex items-center gap-4 mt-12 pt-8 border-t border-slate-100">
+          <button type="button" id="prevBtn" onclick="nextStep(-1)"
+            class="w-1/3 py-4 text-slate-400 font-bold text-sm uppercase tracking-widest hover:text-slate-600 transition-colors hidden">Back</button>
+          <button type="button" id="nextBtn" onclick="nextStep(1)"
+            class="flex-1 py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group">
+            <span id="nextBtnText">Next Step</span>
+            <svg class="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <button type="button" id="submitBtn" onclick="handleGenerateClick()"
+            class="hidden w-full py-4 btn-premium shimmer bg-gradient-to-r from-brand-600 to-orange-500 text-white font-black rounded-2xl shadow-2xl flex items-center justify-center gap-3">
+            <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span id="submitBtnText">GENERATE MAGIC</span>
+          </button>
+        </div>
+
+        <input type="hidden" name="payment_method" id="payment_method" value="none">
+        <input type="hidden" name="upi_name" id="upi_name" value="">
+        <input type="hidden" name="upi_utr" id="upi_utr" value="">
+      </form>
+
+      <!-- Result Section (Creative Ticket Style) -->
+      <div id="generatedLinkContainer" class="hidden mt-12 animate-fadeIn scroll-mt-10">
+
+        <div class="relative max-w-2xl mx-auto">
+          <!-- Ticket Visual -->
+          <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 relative z-10">
+            <!-- Ticket Header -->
+            <div
+              class="bg-gradient-to-r from-brand-600 via-brand-500 to-orange-500 p-6 text-white text-center relative overflow-hidden rounded-t-3xl">
+              <div
+                class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20">
+              </div>
+              <h3 class="text-2xl font-bold tracking-tight relative z-10" style="font-family:'Outfit',sans-serif">🎉
+                It's Official!</h3>
+              <p class="text-rose-100 text-sm relative z-10">Your magical birthday page is ready</p>
+            </div>
+
+            <!-- Ticket Body -->
+            <div class="p-6 sm:p-8">
+              <div class="flex flex-col sm:flex-row gap-8 items-center">
+
+                <!-- QR Code -->
+                <div class="shrink-0 text-center group cursor-pointer" onclick="downloadQR()">
+                  <div
+                    class="w-32 h-32 bg-white p-2 rounded-xl border-2 border-slate-100 shadow-inner mx-auto relative overflow-hidden">
+                    <img id="qrCode" src="" alt="QR Code"
+                      class="w-full h-full object-contain opacity-50 transition-opacity duration-500">
+                    <div
+                      class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                      </svg>
+                    </div>
+                  </div>
+                  <p class="text-xs text-slate-400 mt-2 font-mono">SCAN or CLICK</p>
+                </div>
+
+                <!-- Link & Actions -->
+                <div class="flex-1 w-full">
+                  <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Magic
+                    Link</label>
+                  <div
+                    class="flex items-center gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200 mb-6 group focus-within:ring-2 focus-within:ring-brand-500 transition-all">
+                    <input type="text" id="generatedLink" readonly
+                      class="flex-1 bg-transparent border-none text-sm text-slate-700 font-mono focus:ring-0 px-2 w-full truncate">
+                    <button onclick="copyLink()"
+                      class="p-2 bg-white text-brand-600 rounded-lg shadow-sm hover:bg-brand-50 transition-colors border border-slate-100"
+                      title="Copy Link">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z">
+                        </path>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3">
+                    <button onclick="visitPage()"
+                      class="col-span-2 py-3 bg-slate-900 text-white font-medium rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-slate-900/20">
+                      <span>Open Page</span>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                      </svg>
+                    </button>
+
+                    <!-- Instagram Story -->
+                    <button onclick="shareInstagram('story')"
+                      class="py-2.5 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 text-white font-medium rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-md">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                      </svg>
+                      Story
+                    </button>
+
+                    <!-- Instagram Chat -->
+                    <button onclick="shareInstagram('chat')"
+                      class="py-2.5 bg-white border border-slate-200 text-slate-700 font-medium rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                        </path>
+                      </svg>
+                      Chat
+                    </button>
+
+                    <!-- WhatsApp -->
+                    <button onclick="shareWhatsApp()"
+                      class="py-2.5 bg-[#25D366]/10 text-[#25D366] font-medium rounded-xl hover:bg-[#25D366]/20 transition-colors flex items-center justify-center gap-2">
+                      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                      </svg>
+                      WhatsApp
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ticket Footer -->
+            <div class="bg-slate-50 p-4 border-t border-slate-100 text-center">
+              <p class="text-xs text-slate-400">Share the link with your loved one • Made with WishCraft</p>
+            </div>
+          </div>
+
+          <!-- Decorative Elements behind ticket -->
+          <div
+            class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob">
+          </div>
+          <div
+            class="absolute -bottom-4 -left-4 w-24 h-24 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000">
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer
+    class="bg-white dark:bg-[#030712] pt-16 pb-8 border-t border-gray-100 dark:border-gray-800/60 relative overflow-hidden">
+    <!-- Subtle background glow -->
+    <div
+      class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-500/5 dark:bg-brand-500/10 rounded-full blur-[120px] pointer-events-none -z-10">
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 text-center relative z-10">
+      <div class="flex flex-col items-center space-y-8 mb-12">
+        <!-- Brand -->
+        <a href="https://wishcraft-pages.vercel.app/" class="flex items-center gap-3 group">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20 group-hover:scale-110 transition-transform">
+            <span class="text-white font-bold text-xl">W</span>
+          </div>
+          <span class="text-2xl font-display font-black tracking-tight text-gray-900 dark:text-white">Wish<span
+              class="text-brand-500">Craft</span></span>
+        </a>
+
+        <p class="text-gray-500 dark:text-gray-400 text-sm leading-loose font-medium max-w-md mx-auto">
+          The world's most elegant platform for digital celebrations. Craft stunning, personalized aesthetic pages for
+          the people you love in exactly 60 seconds.
+        </p>
+
+        <!-- Social Links -->
+        <div class="flex items-center gap-4">
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/yash_verma_690/" target="_blank" rel="noopener"
+            class="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 hover:text-pink-500 hover:border-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all shadow-sm">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+            </svg>
+          </a>
+          <!-- X/Twitter -->
+          <a href="javascript:void(0)" onclick="showToast('🐦 Follow us on 𝕏!')"
+            class="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:border-gray-900 dark:hover:border-gray-100 transition-all shadow-sm">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
+          <!-- GitHub -->
+          <a href="https://github.com/Yash-verma2" target="_blank" rel="noopener"
+            class="w-10 h-10 rounded-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 flex items-center justify-center text-gray-500 hover:text-black dark:hover:text-white hover:border-gray-900 dark:hover:border-gray-100 transition-all shadow-sm">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0012 2z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <div
+        class="pt-8 border-t border-gray-100 dark:border-gray-800/60 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-gray-400 text-xs font-medium">
+          © 2025 WishCraft. Crafted with ❤️ by <a href="https://github.com/Yash-verma2"
+            class="hover:text-brand-500">Yash Verma</a>.
+        </p>
+        <p class="text-gray-400 text-[10px] uppercase tracking-widest font-bold">
+          Part of ToolNest Family
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal"
+    class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex justify-center items-center p-4">
+    <div
+      class="glass rounded-3xl max-w-md w-full max-h-[95vh] flex flex-col shadow-2xl relative animate-fadeIn overflow-hidden bg-white/95 dark:bg-slate-900/95">
+
+      <!-- Header -->
+      <div
+        class="bg-gradient-to-br from-indigo-600 via-brand-600 to-rose-500 p-6 text-white text-center relative shrink-0">
+        <button onclick="closePaymentModal()"
+          class="absolute top-4 right-4 p-1.5 bg-white/10 hover:bg-white/20 rounded-full text-white/80 hover:text-white transition-all backdrop-blur-md">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 border border-white/20">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+              d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+              clip-rule="evenodd"></path>
+          </svg>
+          Secure Checkout
+        </div>
+
+        <h2 class="text-3xl font-black font-heading tracking-tight">Unlock Premium</h2>
+        <p class="text-white/80 text-xs mt-2 font-medium">Instant Access • Secure • No Hidden Fees</p>
+      </div>
+
+      <div class="p-5 md:p-7 overflow-y-auto scrollbar-hide">
+        <!-- Payment Tabs -->
+        <div
+          class="flex p-1.5 bg-slate-100 dark:bg-slate-800/50 rounded-2xl mb-6 border border-slate-200 dark:border-slate-700/50">
+          <button id="tabUPI" onclick="switchPaymentTab('upi')"
+            class="flex-1 py-2.5 text-sm font-bold rounded-xl bg-white dark:bg-slate-700 shadow-sm text-brand-600 dark:text-brand-400 transition-all">
+            UPI (India)
+          </button>
+          <button id="tabPayPal" onclick="switchPaymentTab('paypal')"
+            class="flex-1 py-2.5 text-sm font-bold rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all">
+            PayPal (Global)
+          </button>
+        </div>
+
+        <!-- UPI Content -->
+        <div id="contentUPI" class="text-center space-y-6">
+          <!-- Price Display -->
+          <div class="relative group">
+            <div
+              class="absolute -inset-1 bg-gradient-to-r from-brand-500 to-orange-500 rounded-2xl blur opacity-20 group-hover:opacity-30 transition duration-1000">
+            </div>
+            <div
+              class="relative bg-white dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl p-4 flex items-center justify-between">
+              <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Premium Access</span>
+              <span
+                class="text-2xl font-black text-slate-900 dark:text-white font-heading dynamic-price-display">₹49</span>
+            </div>
+          </div>
+
+          <!-- QR Card -->
+          <div class="flex flex-col items-center">
+            <div
+              class="relative p-4 bg-white rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-700">
+              <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-900 text-white text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                Scan to Pay</div>
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3D7050628922%40ybl%26pn%3DWishCraft%26am%3D49"
+                alt="UPI QR" class="w-48 h-48 object-contain">
+            </div>
+
+            <!-- Account Confirmation -->
+            <div
+              class="mt-4 flex items-center gap-2 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-full">
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span
+                class="text-[11px] font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Verify:
+                Yash Kumar</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 text-left">
+            <div
+              class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-100 dark:border-slate-700/50">
+              <div
+                class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0">
+                <span class="font-black text-lg">1</span>
+              </div>
+              <p class="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                Pay using the QR code above. Need help?
+                <a href="https://wa.me/917050628922" target="_blank"
+                  class="text-[#25D366] font-bold inline-flex items-center gap-0.5 hover:underline underline-offset-4">
+                  WhatsApp Support
+                </a>
+              </p>
+            </div>
+
+            <!-- Mobile Only Button -->
+            <a href="upi://pay?pa=7050628922@ybl&pn=WishCraft&am=49"
+              class="w-full py-4 bg-[#5f259f] hover:bg-[#4b1d7d] text-white font-bold rounded-2xl shadow-lg shadow-[#5f259f]/20 transition-all flex items-center justify-center gap-3 md:hidden">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+              Open UPI App
+            </a>
+
+            <div class="relative pt-2">
+              <div class="flex items-center gap-3 mb-4">
+                <div
+                  class="w-10 h-10 rounded-xl bg-brand-100 dark:bg-brand-500/20 flex items-center justify-center text-brand-600 dark:text-brand-400 shrink-0">
+                  <span class="font-black text-lg">2</span>
+                </div>
+                <p class="text-xs text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider">Confirm
+                  Transaction</p>
+              </div>
+
+              <div class="space-y-4 ml-2 pl-4 border-l-2 border-slate-100 dark:border-slate-800">
+                <div class="group">
+                  <label
+                    class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-1.5 ml-1">Your
+                    Name</label>
+                  <input type="text" id="upi_name_input" placeholder="Enter name on UPI"
+                    class="premium-input !bg-slate-50/50 dark:!bg-slate-900/50" oninput="checkUPIFields()">
+                </div>
+
+                <div class="group">
+                  <div class="flex justify-between items-center mb-1.5 ml-1">
+                    <label
+                      class="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">12-Digit
+                      UTR No.</label>
+                    <!-- Tooltip Trigger -->
+                    <div class="group/tip relative">
+                      <button class="text-indigo-500 hover:text-indigo-600 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </button>
+                      <!-- Tooltip Content -->
+                      <div
+                        class="absolute bottom-full right-0 w-72 mb-3 opacity-0 invisible group-hover/tip:opacity-100 group-hover/tip:visible transition-all duration-300 z-[110]">
+                        <div
+                          class="p-4 bg-slate-900 text-white rounded-3xl shadow-2xl text-[11px] border border-white/10">
+                          <div class="flex items-center gap-2 mb-4">
+                            <div
+                              class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                              </svg>
+                            </div>
+                            <p class="font-bold text-slate-200">How to find details?</p>
+                          </div>
+
+                          <div class="space-y-3 mb-5 pl-1">
+                            <div class="flex gap-3">
+                              <span class="text-slate-500 font-bold">1.</span>
+                              <p class="text-slate-400">Open <b>History</b> in GPay, PhonePe, or Paytm.</p>
+                            </div>
+                            <div class="flex gap-3">
+                              <span class="text-slate-500 font-bold">2.</span>
+                              <p class="text-slate-400">Select the transaction for <b>₹<span
+                                    class="dynamic-price-display">49</span></b>.</p>
+                            </div>
+                            <div class="flex gap-3">
+                              <span class="text-slate-500 font-bold">3.</span>
+                              <p class="text-slate-400">Copy the <b>12-digit UTR</b> or <b>UPI Ref No.</b></p>
+                            </div>
+                          </div>
+
+                          <!-- Visual Mockup -->
+                          <div
+                            class="bg-white/5 rounded-2xl p-4 border border-white/5 space-y-3 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-2 opacity-20">
+                              <svg class="w-12 h-12 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                  clip-rule="evenodd"></path>
+                              </svg>
+                            </div>
+                            <div class="flex justify-between items-center pb-2 border-b border-white/5">
+                              <span class="text-slate-500 text-[9px] uppercase tracking-tighter">Paid To</span>
+                              <span class="text-white font-bold tracking-tight">Yash Kumar</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1">
+                              <span class="text-slate-500 text-[9px] uppercase tracking-tighter">Your Name</span>
+                              <span
+                                class="text-emerald-400 font-bold bg-emerald-400/10 px-2 py-0.5 rounded ring-1 ring-emerald-400/20">Name
+                                on App</span>
+                            </div>
+                            <div class="flex justify-between items-center py-1">
+                              <span class="text-slate-500 text-[9px] uppercase tracking-tighter">UTR / Ref No.</span>
+                              <span
+                                class="text-emerald-400 font-bold bg-emerald-400/10 px-2 py-0.5 rounded ring-1 ring-emerald-400/20">123456789012</span>
+                            </div>
+                          </div>
+
+                          <div
+                            class="absolute -bottom-1.5 right-1.5 w-3 h-3 bg-slate-900 border-b border-r border-white/10 rotate-45">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <input type="text" id="upi_utr_input" placeholder="e.g. 312345678901"
+                    class="premium-input !bg-slate-50/50 dark:!bg-slate-900/50" oninput="checkUPIFields()">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button id="upi_submit_btn" onclick="confirmUPIPayment()"
+            class="hidden w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black rounded-2xl shadow-xl shadow-emerald-500/20 transition-all items-center justify-center gap-3 mt-4 scale-100 active:scale-95">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
+            I have paid
+          </button>
+        </div>
+
+        <!-- PayPal Content -->
+        <div id="contentPayPal" class="hidden text-center space-y-6 pt-4">
+          <div class="bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10 rounded-2xl p-5">
+            <img src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg" alt="PayPal"
+              class="h-10 mx-auto mb-4 grayscale group-hover:grayscale-0 transition-all duration-500">
+            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium mb-4">Secure International Payment</p>
+            <div class="text-3xl font-black text-slate-900 dark:text-white font-heading mb-6">$0.99</div>
+            <div id="paypal-button-container" class="min-h-[150px]"></div>
+          </div>
+
+          <div
+            class="flex items-center justify-center gap-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+            <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z">
+                </path>
+              </svg> Encrypted</span>
+            <span class="w-1 h-1 bg-slate-300 rounded-full"></span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z">
+                </path>
+              </svg> Verified</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed top-4 right-4 z-[10000] space-y-2 pointer-events-none"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay"
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex flex-col justify-center items-center z-[9999] hidden">
+    <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
+      <div class="w-12 h-12 border-4 border-brand-100 border-t-brand-600 rounded-full animate-spin mb-4"></div>
+      <p class="text-slate-700 font-medium" style="font-family:'Outfit',sans-serif">Creating magic...</p>
+    </div>
+  </div>
+
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=EEhqNV-O5Ywkzh54mcKJM5lNPPK3aFalZrQ7kdcNs3rN8ANhaseJ4RMLgX6PRBy03DmVdqfwTcjHLjZM&currency=USD"></script>
+  <script>
+    // Multi-step Logic
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function nextStep(n) {
+      if (n === 1 && !validateStep(currentStep)) return;
+
+      const steps = document.querySelectorAll('.step-container');
+      steps[currentStep - 1].classList.remove('active');
+      steps[currentStep - 1].style.display = 'none';
+
+      currentStep += n;
+
+      steps[currentStep - 1].style.display = 'block';
+      setTimeout(() => steps[currentStep - 1].classList.add('active'), 10);
+
+      updateStepper();
+
+      // Auto-load trending music on Step 3
+      if (currentStep === 3) {
+        const results = document.getElementById('musicSearchResults');
+        if (results && results.children.length === 0) {
+          quickSearch('Top Hits 2025');
+        }
+      }
+    }
+
+    function validateStep(step) {
+      if (step === 2) {
+        const name = document.getElementById('name').value.trim();
+        const title = document.getElementById('title').value.trim();
+        const messages = document.getElementById('messages').value.trim();
+
+        if (!name) {
+          showToast("Please enter the celebrant's name", true);
+          return false;
+        }
+        if (!title) {
+          showToast("Please enter a page title", true);
+          return false;
+        }
+        if (!messages) {
+          showToast("Please enter some wishes/messages", true);
+          return false;
+        }
+      }
+
+      if (step === 3) {
+        const mainImage = document.getElementById('main_image').files.length > 0;
+        const music = document.getElementById('music_upload').files.length > 0;
+        const musicSelected = document.getElementById('music_selected').value;
+        const giftImage = document.getElementById('gift_image_upload').files.length > 0;
+        const giftSelected = document.getElementById('gift_image_selected').value;
+        const gallery = document.getElementById('gallery').files.length > 0;
+
+        if (!mainImage) {
+          showToast("Please upload a Main Photo", true);
+          return false;
+        }
+        if (!giftImage && !giftSelected) {
+          showToast("Please select or upload a Virtual Gift", true);
+          return false;
+        }
+        if (!music && !musicSelected) {
+          showToast("Please search/select or upload music", true);
+          return false;
+        }
+        if (!gallery) {
+          showToast("Please add at least one photo to the gallery", true);
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function updateStepper() {
+      // Dots
+      for (let i = 1; i <= totalSteps; i++) {
+        const dot = document.getElementById(`stepDot${i}`);
+        const label = document.getElementById(`stepLabel${i}`);
+        dot.classList.remove('active', 'complete', 'border-brand-500', 'text-brand-500');
+        label.classList.remove('text-brand-500', 'text-slate-400');
+
+        if (i < currentStep) {
+          dot.classList.add('complete');
+          dot.innerHTML = '✓';
+        } else if (i === currentStep) {
+          dot.classList.add('active', 'border-brand-500', 'text-brand-500');
+          label.classList.add('text-brand-500');
+          dot.innerHTML = i;
+        } else {
+          label.classList.add('text-slate-400');
+          dot.innerHTML = i;
+        }
+      }
+
+      // Progress Line
+      const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
+      document.getElementById('progressLine').style.width = `${progress}%`;
+
+      // Buttons
+      document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 1);
+      document.getElementById('nextBtn').classList.toggle('hidden', currentStep === totalSteps);
+      document.getElementById('submitBtn').classList.toggle('hidden', currentStep !== totalSteps);
+
+      if (currentStep === 2) {
+        document.getElementById('nextBtnText').innerText = "Looks Good";
+      } else {
+        document.getElementById('nextBtnText').innerText = "Continue";
+      }
+    }
+
+    // Gift Selection
+    function selectGift(img) {
+      const selectedPath = img.getAttribute('data-gift-path');
+      document.querySelectorAll('.gift-options img').forEach(i => {
+        i.classList.remove('border-brand-500', 'ring-2', 'ring-brand-200', 'scale-110');
+        i.classList.add('border-transparent', 'opacity-50');
+      });
+      img.classList.remove('border-transparent', 'opacity-50');
+      img.classList.add('border-brand-500', 'ring-2', 'ring-brand-200', 'scale-110');
+
+      document.getElementById('gift_image_selected').value = selectedPath;
+      document.getElementById('gift_image_upload').value = ''; // Clear upload if curated picked
+    }
+
+    function handleGiftUpload(input) {
+      if (input.files && input.files[0]) {
+        // Clear curated selections
+        document.querySelectorAll('.gift-options img').forEach(i => {
+          i.classList.remove('border-brand-500', 'ring-2', 'ring-brand-200', 'scale-110');
+          i.classList.add('border-transparent', 'opacity-50');
+        });
+        document.getElementById('gift_image_selected').value = ''; // Clear selected path
+        showToast("📸 Custom gift image loaded!");
+      }
+    }
+
+    // --- Logic Scripts ---
+
+    function openHowToUse() {
+      document.getElementById("howToUsePopup").classList.remove("hidden");
+    }
+
+    function closeHowToUse() {
+      document.getElementById("howToUsePopup").classList.add("hidden");
+    }
+
+    // Template Preview & Pricing Logic
+    const templateSelector = document.getElementById('template_selector');
+    const templatePreview = document.getElementById('templatePreview');
+
+    function updateSubmitButton() {
+      const isPremium = templateSelector.getAttribute('data-is-premium') === 'true';
+      const price = templateSelector.getAttribute('data-price') || '49';
+      const btnText = document.getElementById('submitBtnText');
+      if (btnText) {
+        btnText.innerText = isPremium ? `Buy Premium ₹${price}` : 'GENERATE MAGIC';
+      }
+    }
+
+    function selectTemplate(btn) {
+      // Deselect all
+      document.querySelectorAll('.template-chip').forEach(el => {
+        el.classList.remove('ring-4', 'ring-brand-500/30', 'border-brand-500', 'bg-brand-50/30');
+        el.classList.add('border-slate-200', 'bg-white');
+      });
+
+      // Select clicked
+      btn.classList.remove('border-slate-200', 'bg-white');
+      btn.classList.add('ring-4', 'ring-brand-500/30', 'border-brand-500', 'bg-brand-50/30');
+
+      // Update hidden input & price state
+      const price = btn.getAttribute('data-price') || '0';
+      templateSelector.value = btn.getAttribute('data-value');
+      templateSelector.setAttribute('data-is-premium', btn.getAttribute('data-is-premium'));
+      templateSelector.setAttribute('data-price', price);
+
+      // Update Payment Modal UI (Dynamic Price)
+      const priceDisplays = document.querySelectorAll('.dynamic-price-display');
+      priceDisplays.forEach(el => el.innerText = `₹${price}`);
+
+      // Update QR Code & Pay Link
+      if (price !== '0') {
+        const upiID = "7050628922@ybl";
+        const upiName = "WishCraft";
+        const qrImg = document.querySelector('#contentUPI img');
+        const payLink = document.querySelector('#contentUPI a[href^="upi://"]');
+
+        if (qrImg) {
+          qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi%3A%2F%2Fpay%3Fpa%3D${encodeURIComponent(upiID)}%26pn%3D${encodeURIComponent(upiName)}%26am%3D${price}`;
+        }
+        if (payLink) {
+          payLink.href = `upi://pay?pa=${upiID}&pn=${upiName}&am=${price}`;
+        }
+      }
+
+      // Update Preview with subtle fade
+      const previewSrc = btn.getAttribute('data-preview');
+      if (previewSrc) {
+        templatePreview.style.opacity = '0';
+        setTimeout(() => {
+          templatePreview.src = previewSrc;
+          templatePreview.style.opacity = '1';
+        }, 200);
+      }
+
+      updateSubmitButton();
+    }
+
+    // Default Gift & Stepper Init
+    document.addEventListener('DOMContentLoaded', () => {
+      const defaultGift = document.querySelector('.gift-options img:first-child');
+      if (defaultGift) selectGift(defaultGift);
+
+      // Initialize first template
+      const firstTemplate = document.querySelector('.template-chip');
+      if (firstTemplate) selectTemplate(firstTemplate);
+
+      updateStepper();
+      updateSubmitButton();
+      initPayPal();
+    });
+
+    document.getElementById("music_upload").addEventListener("change", function () {
+      const file = this.files[0];
+      const audio = document.getElementById("music_preview");
+      const spotifyContainer = document.getElementById("spotify_preview_container");
+
+      // Reset Spotify
+      spotifyContainer.classList.add("hidden");
+      spotifyContainer.innerHTML = "";
+
+      if (file) {
+        const url = URL.createObjectURL(file);
+        audio.src = url;
+        audio.classList.remove("hidden");
+        audio.play().catch(e => console.log("Auto-play prevented"));
+
+        const searchInput = document.getElementById("musicSearchInput");
+        if (searchInput) searchInput.value = "";
+
+        document.getElementById("music_selected").value = "";
+        showToast("Uploaded custom MP3! 🎵");
+      }
+    });
+
+    // Gallery Previews
+    function handleGallerySelect(input) {
+      const container = document.getElementById('gallery_previews');
+      const placeholder = document.getElementById('gallery_placeholder');
+
+      if (input.files && input.files.length > 0) {
+        container.innerHTML = ''; // Clear previous
+        container.classList.remove('hidden');
+        placeholder.classList.add('hidden');
+
+        Array.from(input.files).forEach(file => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const div = document.createElement('div');
+              div.className = 'relative aspect-square rounded-lg overflow-hidden shadow-sm border border-slate-200 bg-white group';
+
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'w-full h-full object-cover transition-transform group-hover:scale-110';
+
+              div.appendChild(img);
+              container.appendChild(div);
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+      } else {
+        container.classList.add('hidden');
+        placeholder.classList.remove('hidden');
+      }
+    }
+
+    // Form Submission / Payment Logic
+    function handleGenerateClick() {
+      // Final comprehensive validation
+      if (!validateStep(2) || !validateStep(3)) return;
+
+      const isPremium = templateSelector.getAttribute('data-is-premium') === 'true';
+
+      if (isPremium) {
+        openPaymentModal();
+      } else {
+        document.getElementById('payment_method').value = 'none';
+        submitForm();
+      }
+    }
+
+    function openPaymentModal() {
+      document.getElementById('paymentModal').classList.remove('hidden');
+    }
+
+    function closePaymentModal() {
+      document.getElementById('paymentModal').classList.add('hidden');
+    }
+
+    function switchPaymentTab(tab) {
+      const tabUPI = document.getElementById('tabUPI');
+      const tabPayPal = document.getElementById('tabPayPal');
+      const contentUPI = document.getElementById('contentUPI');
+      const contentPayPal = document.getElementById('contentPayPal');
+
+      if (tab === 'upi') {
+        tabUPI.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 shadow-sm text-brand-600 transition-all";
+        tabPayPal.className = "flex-1 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all";
+        contentUPI.classList.remove('hidden');
+        contentPayPal.classList.add('hidden');
+      } else {
+        tabPayPal.className = "flex-1 py-2 text-sm font-bold rounded-lg bg-white dark:bg-slate-700 shadow-sm text-brand-600 transition-all";
+        tabUPI.className = "flex-1 py-2 text-sm font-bold rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all";
+        contentPayPal.classList.remove('hidden');
+        contentUPI.classList.add('hidden');
+      }
+    }
+
+    function confirmUPIPayment() {
+      const upiName = document.getElementById('upi_name_input').value.trim();
+      const upiUtr = document.getElementById('upi_utr_input').value.trim();
+
+      if (!upiName) {
+        showToast("Please enter your Account Name", true);
+        return;
+      }
+      if (!upiUtr || upiUtr.length < 6) {
+        showToast("Please enter a valid UTR number", true);
+        return;
+      }
+
+      document.getElementById('upi_name').value = upiName;
+      document.getElementById('upi_utr').value = upiUtr;
+      document.getElementById('payment_method').value = 'upi';
+
+      closePaymentModal();
+      submitForm();
+    }
+
+    function checkUPIFields() {
+      const name = document.getElementById('upi_name_input').value.trim();
+      const utr = document.getElementById('upi_utr_input').value.trim();
+      const btn = document.getElementById('upi_submit_btn');
+
+      if (name.length > 0 && utr.length >= 6) {
+        btn.classList.remove('hidden');
+        btn.classList.add('flex');
+      } else {
+        btn.classList.add('hidden');
+        btn.classList.remove('flex');
+      }
+    }
+
+    function initPayPal() {
+      if (window.paypal) {
+        paypal.Buttons({
+          createOrder: function (data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                amount: {
+                  value: '0.99'
+                }
+              }]
+            });
+          },
+          onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+              closePaymentModal();
+              document.getElementById('payment_method').value = 'paypal';
+              submitForm();
+            }).catch(function (err) {
+              console.error("PayPal Capture Error:", err);
+              showToast("PayPal failed: " + err.message, true);
+            });
+          },
+          onError: function (err) {
+            showToast("PayPal Payment failed or cancelled", true);
+          }
+        }).render('#paypal-button-container');
+      }
+    }
+
+    function submitForm() {
+      const form = document.getElementById('birthdayForm');
+      const formData = new FormData(form);
+      const overlay = document.getElementById('loadingOverlay');
+      overlay.classList.remove('hidden');
+
+      fetch("/generate", {
+        method: "POST",
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          overlay.classList.add('hidden');
+          if (data.error) throw new Error(data.error);
+
+          const link = data.link;
+          document.getElementById('generatedLink').value = link;
+
+          // Generate QR Code
+          const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(link)}`;
+          document.getElementById('qrCode').src = qrUrl;
+          document.getElementById('qrCode').classList.remove('opacity-50');
+
+          document.getElementById('generatedLinkContainer').classList.remove('hidden');
+          document.getElementById('generatedLinkContainer').scrollIntoView({ behavior: 'smooth' });
+          showToast("✨ Page generated successfully!");
+        })
+        .catch(err => {
+          overlay.classList.add('hidden');
+          showToast(err.message || "Something went wrong", true);
+        });
+    }
+
+    // Toast
+    function showToast(message, isError = false) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `${isError ? 'bg-red-500' : 'bg-emerald-500'} text-white px-6 py-3 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full opacity-0`;
+      toast.textContent = message;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-x-full', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('translate-x-full', 'opacity-0');
+        setTimeout(() => container.removeChild(toast), 300);
+      }, 3000);
+    }
+
+    // Share Utils
+    function visitPage() {
+      const link = document.getElementById('generatedLink').value;
+      if (link) window.open(link, "_blank");
+    }
+
+    function copyLink() {
+      const link = document.getElementById('generatedLink');
+      link.select();
+      document.execCommand('copy');
+      showToast("Link copied to clipboard!");
+    }
+
+    function downloadQR() {
+      const src = document.getElementById('qrCode').src;
+      if (src) {
+        const a = document.createElement('a');
+        a.href = src;
+        a.download = 'wishcraft-qr.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    }
+
+    function shareWhatsApp() {
+      const link = document.getElementById('generatedLink').value;
+      if (link) window.open(`https://wa.me/?text=${encodeURIComponent("Surprise For You: " + link)}`, '_blank');
+    }
+
+    function shareInstagram(type) {
+      const link = document.getElementById('generatedLink').value;
+      if (!link) return;
+
+      // Try native share first for mobile
+      if (navigator.share) {
+        navigator.share({
+          title: 'Birthday Wish',
+          text: 'Surprise For You: ' + link,
+          url: link
+        }).catch(console.error);
+      } else {
+        // Fallback: Copy link and show toast
+        copyLink();
+        showToast("Link copied! Open Instagram to share.");
+      }
+    }
+
+    // --- Professional Music Search Logic ---
+    let searchDebounce;
+    let currentPreviewAudio = null; // Track currently playing preview in search
+
+    function quickSearch(term) {
+      document.getElementById('musicSearchInput').value = term;
+      searchMusic(term);
+    }
+
+    function handleDebounceSearch(e) {
+      if (e.key === 'Enter') {
+        clearTimeout(searchDebounce);
+        searchMusic(e.target.value);
+        return;
+      }
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        searchMusic(e.target.value);
+      }, 800);
+    }
+
+    function searchMusic(term = null) {
+      const query = term || document.getElementById('musicSearchInput').value;
+      if (!query) return;
+
+      const resultsDiv = document.getElementById('musicSearchResults');
+      const loading = document.getElementById('searchLoading');
+      const title = document.getElementById('resultsTitle');
+
+      resultsDiv.classList.add('hidden');
+      loading.classList.remove('hidden');
+      title.classList.add('hidden');
+
+      // Stop any playing preview
+      stopSearchPreview();
+
+      fetch('/api/search-music', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: query })
+      })
+        .then(r => r.json())
+        .then(data => {
+          console.log("Search API Data:", data);
+          resultsDiv.classList.remove('hidden');
+          resultsDiv.innerHTML = '';
+
+          if (data.results && data.results.length > 0) {
+            title.classList.remove('hidden');
+            title.textContent = "Search Results";
+
+            data.results.forEach(track => {
+              const div = document.createElement('div');
+              div.className = "flex items-center gap-3 p-2 hover:bg-white/80 rounded-xl cursor-default border border-transparent hover:border-brand-100 hover:shadow-sm transition-all group";
+
+              // Generate unique ID for this track's audio option
+              const trackId = `track-${Math.random().toString(36).substr(2, 9)}`;
+
+              div.innerHTML = `
+              <div class="relative w-12 h-12 shrink-0">
+                 <img src="${track.album_art || 'https://via.placeholder.com/48'}" class="w-full h-full rounded-lg object-cover shadow-sm group-hover:shadow-md transition-shadow">
+                 <!-- Play/Pause Overlay -->
+                 <button type="button" onclick="playSearchPreview(this, '${track.url}', '${track.type}')" class="absolute inset-0 bg-black/30 backdrop-blur-[2px] rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/50 text-white">
+                    <svg class="w-6 h-6 play-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <svg class="w-6 h-6 stop-icon hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+                 </button>
+              </div>
+              
+              <div class="flex-1 min-w-0 flex flex-col justify-center">
+                <p class="text-[14px] font-bold text-slate-800 truncate tracking-tight" style="font-family:'Outfit',sans-serif">${track.title}</p>
+                <div class="flex items-center gap-2 mt-0.5">
+                   <p class="text-[11px] text-slate-500 truncate max-w-[120px] font-medium">${track.artist}</p>
+                   ${track.type === 'spotify'
+                  ? '<span class="text-[9px] bg-[#1DB954]/10 text-[#1DB954] px-1.5 py-0.5 rounded-full font-bold tracking-wider uppercase">Spotify</span>'
+                  : '<span class="text-[9px] bg-purple-100 text-purple-600 px-1.5 py-0.5 rounded-full font-bold tracking-wider uppercase">Preview</span>'}
+                </div>
+              </div>
+              
+              <button type="button" onclick='selectTrack(${JSON.stringify(track)})' class="px-4 py-2 bg-slate-100 border border-slate-200 text-slate-600 text-[11px] uppercase tracking-wider font-bold rounded-full hover:bg-brand-500 hover:text-white hover:border-brand-500 hover:shadow-md hover:shadow-brand-500/20 transition-all">
+                Select
+              </button>
+            `;
+              resultsDiv.appendChild(div);
+            });
+          } else {
+            resultsDiv.innerHTML = `
+              <div class="text-center py-12">
+                 <div class="inline-block p-4 rounded-full bg-slate-50 mb-3 text-slate-300">
+                    <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                 </div>
+                 <p class="text-sm font-bold text-slate-500 mb-1">No tracks found</p>
+                 <p class="text-[11px] text-slate-400 max-w-[220px] mx-auto leading-relaxed">Try a different song or artist. If search persists, check your internet or API keys.</p>
+              </div>`;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          loading.classList.add('hidden');
+          showToast("Search failed", true);
+        })
+        .finally(() => {
+          loading.classList.add('hidden');
+        });
+    }
+
+    // Preview in Search List (doesn't select)
+    function playSearchPreview(btn, url, type) {
+      // Note: iTunes previews (mp3) can be played directly. 
+      // Spotify links are usually embeds (iframe) not direct audio, so we might not be able to "preview" them easily in button without iframe.
+      // However, new MusicClient code returns 'preview_url' ? 
+      // MusicHelper: 'url' is Embed URL for Spotify. We can't play embed in a button efficiently.
+      // If Spotify, we'll just auto-select it maybe? Or show a toast "Spotify requires selection".
+
+      if (type === 'spotify') {
+        showToast("Select track to hear Spotify preview", true);
+        return;
+      }
+
+      const playIcon = btn.querySelector('.play-icon');
+      const stopIcon = btn.querySelector('.stop-icon');
+
+      if (currentPreviewAudio && currentPreviewAudio.src === url && !currentPreviewAudio.paused) {
+        stopSearchPreview();
+        return;
+      }
+
+      stopSearchPreview(); // Stop any other
+
+      const audio = new Audio(url);
+      audio.volume = 0.5;
+      audio.onended = () => {
+        playIcon.classList.remove('hidden');
+        stopIcon.classList.add('hidden');
+      };
+
+      audio.play();
+      currentPreviewAudio = audio;
+
+      // Update UI
+      playIcon.classList.add('hidden');
+      stopIcon.classList.remove('hidden');
+
+      // Store btn ref to reset icon later if needed
+      currentPreviewAudio.btnRef = btn;
+    }
+
+    function stopSearchPreview() {
+      if (currentPreviewAudio) {
+        currentPreviewAudio.pause();
+        if (currentPreviewAudio.btnRef) {
+          const btn = currentPreviewAudio.btnRef;
+          btn.querySelector('.play-icon').classList.remove('hidden');
+          btn.querySelector('.stop-icon').classList.add('hidden');
+        }
+        currentPreviewAudio = null;
+      }
+    }
+
+    function selectTrack(track) {
+      stopSearchPreview(); // Stop list preview
+
+      // 1. Update Hidden Input
+      document.getElementById('music_selected').value = track.url;
+
+      // 2. Removed old selector logic
+
+      // 3. UI Feedback
+
+      // 4. Trigger Main Preview Player
+      const audio = document.getElementById("music_preview");
+      const spotifyContainer = document.getElementById("spotify_preview_container");
+
+      if (track.type === 'spotify') {
+        audio.pause();
+        audio.classList.add("hidden");
+        spotifyContainer.classList.remove("hidden");
+        spotifyContainer.innerHTML = `<iframe src="${track.url}" width="100%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class="rounded-lg shadow-sm"></iframe>`;
+      } else {
+        spotifyContainer.classList.add("hidden");
+        spotifyContainer.innerHTML = "";
+
+        audio.src = track.url;
+        audio.loop = true; // Loop enabled
+        audio.classList.remove("hidden");
+        audio.play().catch(e => console.log("Auto-play prevented"));
+      }
+
+      showToast(`Selected: ${track.title} 🎵`);
+    }
+  </script>
+</body>
+
+</html>

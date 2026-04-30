@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'hand': ['Pacifico', 'cursive'],
+                        'body': ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#ff6b6b',
+                        'secondary': '#ff9f43',
+                        'accent': '#feca57',
+                        'pastel-pink': '#ffcccc',
+                        'pastel-blue': '#d1e8e2',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'slice': 'slice 1.5s ease-in-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        slice: {
+                            '0%': {
+                                transform: 'translate(60px, -80px) rotate(45deg)',
+                                opacity: 0
+                            },
+                            '20%': {
+                                transform: 'translate(30px, -40px) rotate(30deg)',
+                                opacity: 1
+                            },
+                            '40%': {
+                                transform: 'translate(0px, 0px) rotate(0deg)',
+                                opacity: 1
+                            },
+                            '60%': {
+                                transform: 'translate(-10px, 50px) rotate(-10deg)',
+                                opacity: 1
+                            },
+                            '80%': {
+                                transform: 'translate(-20px, 60px) rotate(-20deg)',
+                                opacity: 0.5
+                            },
+                            '100%': {
+                                transform: 'translate(-30px, 70px) rotate(-30deg)',
+                                opacity: 0
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff6b6b;
+            border-radius: 4px;
+        }
+
+        /* Cake CSS */
+        .cake-container {
+            position: relative;
+            width: 250px;
+            height: 200px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .cake-container:hover {
+            transform: scale(1.05);
+        }
+
+        .plate {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 270px;
+            height: 10px;
+            background: #eee;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .layer {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff9f43;
+            border-radius: 10px 10px 0 0;
+            box-shadow: inset -10px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .layer-bottom {
+            width: 240px;
+            height: 60px;
+            bottom: 10px;
+            background: #ffcccc;
+            border-bottom: 5px solid #e6b3b3;
+            z-index: 10;
+        }
+
+        .layer-middle {
+            width: 200px;
+            height: 50px;
+            bottom: 70px;
+            background: #9c88ff;
+            border-bottom: 5px solid #8c7ae6;
+            z-index: 20;
+        }
+
+        .layer-top {
+            width: 160px;
+            height: 50px;
+            bottom: 120px;
+            background: #feca57;
+            border-bottom: 5px solid #ff9f43;
+            z-index: 30;
+        }
+
+        .icing {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            background: #fff;
+            border-radius: 10px 10px 20px 20px;
+            opacity: 0.9;
+        }
+
+        .drip {
+            position: absolute;
+            top: 10px;
+            width: 15px;
+            height: 20px;
+            background: #fff;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .drip:nth-child(1) {
+            left: 20%;
+            height: 25px;
+        }
+
+        .drip:nth-child(2) {
+            left: 50%;
+            height: 18px;
+        }
+
+        .drip:nth-child(3) {
+            left: 80%;
+            height: 22px;
+        }
+
+        .candle {
+            position: absolute;
+            bottom: 170px;
+            width: 10px;
+            height: 35px;
+            background: repeating-linear-gradient(45deg, #ff6b6b, #ff6b6b 5px, #fff 5px, #fff 10px);
+            border-radius: 4px;
+            transform-origin: bottom;
+            transition: transform 0.5s ease;
+        }
+
+        .candle-1 {
+            left: 40%;
+            transform: translateX(-50%) rotate(-5deg);
+        }
+
+        .candle-2 {
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 40;
+            height: 40px;
+            bottom: 170px;
+        }
+
+        .candle-3 {
+            left: 60%;
+            transform: translateX(-50%) rotate(5deg);
+        }
+
+        .flame {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            width: 12px;
+            height: 18px;
+            background: #ff9f43;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 10px #ff6b6b, 0 0 20px #feca57;
+            animation: flicker 1s infinite alternate;
+            transition: transform 0.3s ease;
+        }
+
+        .flame.lit {
+            transform: translateX(-50%) scale(1);
+        }
+
+        @keyframes flicker {
+            0% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1) skewX(-2deg);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.1) skewX(2deg);
+            }
+        }
+
+        /* Enhanced Realistic Cake Cutting */
+        .cut-line {
+            position: absolute;
+            left: 50%;
+            bottom: 10px;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0) 0%,
+                    rgba(100, 50, 50, 0.3) 20%,
+                    rgba(100, 50, 50, 0.5) 50%,
+                    rgba(100, 50, 50, 0.3) 80%,
+                    rgba(0, 0, 0, 0) 100%);
+            transform: translateX(-50%);
+            z-index: 35;
+            transition: height 0.8s ease-in;
+            opacity: 0;
+            border-radius: 2px;
+            box-shadow: 0 0 8px rgba(100, 50, 50, 0.3);
+        }
+
+        /* Cake cutting effect */
+        .cake-cut .cut-line {
+            height: 160px;
+            opacity: 1;
+        }
+
+        /* Cake slice separation effect */
+        .cake-cut .layer {
+            transform: translateX(-50%) scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .cake-cut .layer-bottom {
+            transform: translateX(calc(-50% + 5px)) scale(1.02);
+        }
+
+        .cake-cut .layer-middle {
+            transform: translateX(calc(-50% - 3px)) scale(1.02);
+        }
+
+        .cake-cut .layer-top {
+            transform: translateX(calc(-50% + 2px)) scale(1.02);
+        }
+
+        /* Crumbs effect */
+        .cake-crumbs {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 10px;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .cake-cut .cake-crumbs {
+            opacity: 1;
+        }
+
+        .crumb {
+            position: absolute;
+            bottom: 0;
+            width: 6px;
+            height: 6px;
+            background: #e6b3b3;
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .cake-cut .crumb {
+            animation: crumbFall 0.8s ease-out forwards;
+        }
+
+        .crumb:nth-child(1) {
+            left: 45%;
+            animation-delay: 0.3s;
+        }
+
+        .crumb:nth-child(2) {
+            left: 48%;
+            animation-delay: 0.5s;
+        }
+
+        .crumb:nth-child(3) {
+            left: 52%;
+            animation-delay: 0.4s;
+        }
+
+        .crumb:nth-child(4) {
+            left: 55%;
+            animation-delay: 0.6s;
+        }
+
+        @keyframes crumbFall {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+
+            50% {
+                transform: translateY(-5px) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(10px) scale(0.8);
+                opacity: 0.7;
+            }
+        }
+
+        /* Knife styling */
+        .knife {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            z-index: 60;
+            pointer-events: none;
+            opacity: 0;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .knife-slice {
+            animation: slice 1.5s ease-in-out forwards;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backup-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .hidden-f {
+            display: none !important;
+        }
+
+        /* Cursor */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: currentColor;
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive message box */
+        .message-container {
+            max-height: 200px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .cake-container {
+                width: 200px;
+                height: 160px;
+            }
+
+            .plate {
+                width: 220px;
+            }
+
+            .layer-bottom {
+                width: 190px;
+                height: 50px;
+            }
+
+            .layer-middle {
+                width: 160px;
+                height: 40px;
+                bottom: 60px;
+            }
+
+            .layer-top {
+                width: 130px;
+                height: 40px;
+                bottom: 100px;
+            }
+
+            .candle {
+                bottom: 140px;
+            }
+
+            .candle-2 {
+                bottom: 140px;
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen text-gray-800 font-body overflow-x-hidden selection:bg-pink-300">
+
+    <!-- --- START SCREEN (Overlay) --- -->
+    <div id="start-screen"
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gray-900/90 text-white transition-opacity duration-1000">
+        <div class="text-center animate-bounce-slow">
+            <i class="fas fa-gift text-6xl mb-4 text-pink-400"></i>
+            <h1 class="font-hand text-4xl md:text-6xl mb-6">A Special Surprise Awaits!</h1>
+            <button onclick="startCelebration()"
+                class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:scale-110">
+                Tap to Open <i class="fas fa-sparkles ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- --- MAIN CONTENT --- -->
+    <main id="main-content"
+        class="relative min-h-screen flex flex-col items-center opacity-0 transition-opacity duration-1000 py-8 px-4">
+
+        <!-- Decor items (Background) -->
+        <div class="absolute top-10 left-10 text-pink-200 opacity-50 animate-float hidden md:block"
+            style="animation-duration: 7s;">
+            <i class="fas fa-balloon text-6xl"></i>
+        </div>
+        <div class="absolute top-20 right-10 text-purple-200 opacity-50 animate-float hidden md:block"
+            style="animation-duration: 5s;">
+            <i class="fas fa-star text-4xl"></i>
+        </div>
+        <div class="absolute bottom-20 left-20 text-yellow-200 opacity-50 animate-float hidden md:block"
+            style="animation-duration: 8s;">
+            <i class="fas fa-music text-5xl"></i>
+        </div>
+
+        <!-- Header -->
+        <header class="text-center mb-8 z-10 w-full px-4">
+            <div
+                class="inline-block bg-white/30 backdrop-blur-md px-6 py-2 rounded-full text-white text-sm font-bold tracking-widest uppercase mb-2 shadow-sm">
+                It's Your Special Day
+            </div>
+            <h1 class="font-hand text-4xl md:text-7xl text-white drop-shadow-lg px-4">
+                Happy Birthday <br> <span class="text-yellow-300">{{ name }}</span>!
+            </h1>
+        </header>
+
+        <!-- Central Stage Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl z-10 px-4">
+
+            <!-- Left: The Memory/Image -->
+            <div class="flex flex-col items-center justify-center">
+                <div
+                    class="glass p-4 rounded-2xl transform rotate-[-2deg] hover:rotate-0 transition duration-500 w-full max-w-md">
+                    <div class="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-gray-200">
+                        <!-- Main Image Placeholder -->
+                        <img src="{{ main_image }}" alt="Birthday Person"
+                            class="object-cover w-full h-full hover:scale-110 transition duration-700"
+                            onerror="this.src='https://images.unsplash.com/photo-1530103862676-de3c9da59af7?q=80&w=2000&auto=format&fit=crop'">
+
+                        <!-- Sticker overlay -->
+                        <div
+                            class="absolute bottom-4 right-4 bg-yellow-400 text-xs font-bold px-2 py-1 rounded transform rotate-12 shadow-md">
+                            #PartyTime
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center text-white font-hand text-2xl">
+                        Making Memories
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Zone -->
+            <div class="flex flex-col items-center justify-between space-y-8">
+
+                <!-- Dynamic Typing Message Box - FIXED RESPONSIVENESS -->
+                <div
+                    class="glass w-full p-4 md:p-6 rounded-2xl min-h-[120px] md:min-h-[150px] flex items-center justify-center text-center relative message-container">
+                    <i
+                        class="fas fa-quote-left absolute top-2 md:top-4 left-2 md:left-4 text-white/40 text-lg md:text-2xl"></i>
+                    <p id="typing-container"
+                        class="text-white text-lg md:text-2xl font-medium leading-relaxed px-4 md:px-8 py-2 break-words w-full">
+                        <!-- Text injected by JS -->
+                    </p>
+                    <i
+                        class="fas fa-quote-right absolute bottom-2 md:bottom-4 right-2 md:right-4 text-white/40 text-lg md:text-2xl"></i>
+                </div>
+
+                <!-- Interactive Cake -->
+                <div class="bg-white/10 backdrop-blur-sm p-4 md:p-8 rounded-3xl w-full flex flex-col items-center">
+                    <h3 id="cake-instruction"
+                        class="text-white font-bold mb-4 md:mb-6 animate-pulse text-base md:text-lg text-center px-2">
+                        <i class="fas fa-hand-pointer mr-2"></i> Tap cake to light candles!
+                    </h3>
+
+                    <div class="cake-container" id="cake-interaction">
+                        <div class="plate"></div>
+                        <div class="layer layer-bottom">
+                            <div class="icing">
+                                <div class="drip"></div>
+                                <div class="drip"></div>
+                                <div class="drip"></div>
+                            </div>
+                        </div>
+                        <div class="layer layer-middle">
+                            <div class="icing">
+                                <div class="drip"></div>
+                                <div class="drip"></div>
+                            </div>
+                        </div>
+                        <div class="layer layer-top">
+                            <div class="icing">
+                                <div class="drip"></div>
+                                <div class="drip"></div>
+                                <div class="drip"></div>
+                            </div>
+                        </div>
+
+                        <!-- Cake crumbs -->
+                        <div class="cake-crumbs">
+                            <div class="crumb"></div>
+                            <div class="crumb"></div>
+                            <div class="crumb"></div>
+                            <div class="crumb"></div>
+                        </div>
+
+                        <!-- The Cut Line Mark -->
+                        <div class="cut-line"></div>
+
+                        <div class="candle candle-1">
+                            <div class="flame" id="flame-1"></div>
+                        </div>
+                        <div class="candle candle-2">
+                            <div class="flame" id="flame-2"></div>
+                        </div>
+                        <div class="candle candle-3">
+                            <div class="flame" id="flame-3"></div>
+                        </div>
+
+                        <!-- Knife Element -->
+                        <div id="knife-icon" class="knife">
+                            🔪
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap gap-3 md:gap-4 justify-center w-full px-2">
+                    <!-- Gift Button -->
+                    <button onclick="openGift()"
+                        class="animate-shake bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-full shadow-lg transform transition hover:-translate-y-1 hover:shadow-2xl flex items-center text-sm md:text-base">
+                        <i class="fas fa-gift mr-2 md:mr-3 text-xl md:text-2xl"></i> Open Gift
+                    </button>
+
+                    <!-- Gallery Link - FIXED -->
+                    <a id="gallery-btn" href="#" target="_blank"
+                        class="glass text-white font-bold py-3 md:py-4 px-6 md:px-8 rounded-full hover:bg-white/20 transition flex items-center text-sm md:text-base">
+                        <i class="fas fa-images mr-2 md:mr-3 text-xl md:text-2xl"></i> Gallery
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <footer style="
+  text-align:center;
+  font-size:0.7rem;
+  opacity:0.55;
+  margin-top:2rem;
+  padding-bottom:1rem;
+  font-family:'Baloo 2', sans-serif;
+">
+            Made for you with
+            <a href="https://toolnest-yash.vercel.app" style="color:inherit; text-decoration:none; font-weight:600;">
+                ToolNest's WishCraft ✨
+            </a>
+        </footer>
+
+    </main>
+
+    <!-- --- GIFT MODAL --- -->
+    <div id="gift-modal"
+        class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-2 max-w-2xl w-full transform transition-all scale-0 duration-500"
+            id="gift-content">
+            <div class="relative rounded-2xl overflow-hidden border-4 border-pink-200">
+                <button onclick="closeGift()"
+                    class="absolute top-2 right-2 z-10 bg-white/80 rounded-full p-2 hover:bg-red-500 hover:text-white transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <img src="{{ gift_image }}" alt="Your Gift" class="w-full h-auto object-cover"
+                    onerror="this.src='https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=2000&auto=format&fit=crop'">
+                <div
+                    class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6 pt-20 text-center">
+                    <h2 class="text-white font-hand text-3xl">Here is your surprise!</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- AUDIO SYSTEM --- -->
+    <div id="audio-container">
+        {% if music %}
+        {% if 'spotify.com' in music %}
+        <!-- Spotify Embed -->
+        <div id="spotify-player" class="fixed bottom-4 right-4 z-[100] transition-transform duration-500 translate-y-[150%]">
+            <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true"
+                allow="encrypted-media"></iframe>
+            <button onclick="document.getElementById('spotify-player').classList.add('translate-y-[150%]')"
+                class="absolute -top-3 -right-3 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <script>window.isSpotify = true;</script>
+        {% else %}
+        <!-- Standard Audio -->
+        <audio id="bg-music" loop>
+            <source src="{{ music }}" type="audio/mpeg">
+        </audio>
+        <script>window.isSpotify = false;</script>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- --- JAVASCRIPT LOGIC --- -->
+    <script>
+        // App configuration with safe template variable handling
+        let opened = false;
+        let isCakeLit = false;
+        let isCakeCut = false;
+
+        // Safe template variable parsing
+        const msgs = JSON.parse(`{{ messages | tojson }}`);
+        const galleryLink = "{{ gallery_link }}";
+        const userName = "{{ name }}";
+        const musicUrl = "{{ music }}";
+        const mainImage = "{{ main_image }}";
+        const giftImage = "{{ gift_image }}";
+
+        // DOM Elements
+        const audio = document.getElementById('bg-music');
+        const cakeContainer = document.getElementById('cake-interaction');
+        const instruction = document.getElementById('cake-instruction');
+        const flames = [document.getElementById('flame-1'), document.getElementById('flame-2'), document.getElementById('flame-3')];
+        const knife = document.getElementById('knife-icon');
+        const modal = document.getElementById('gift-modal');
+        const modalContent = document.getElementById('gift-content');
+        const typingContainer = document.getElementById('typing-container');
+        const galleryBtn = document.getElementById('gallery-btn');
+
+        // Debug logging
+        console.log("Template variables loaded:");
+        console.log("Messages:", msgs);
+        console.log("User Name:", userName);
+        console.log("Music URL:", musicUrl);
+        console.log("Gallery Link:", galleryLink);
+
+        // Set audio source if standard audio
+        if (!window.isSpotify && audio) {
+            if (musicUrl && musicUrl !== "{{ music }}") {
+                audio.src = musicUrl;
+            } else {
+                audio.src = "{{ music }}";
+            }
+        }
+
+        // Update gallery link on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set gallery link
+            if (galleryLink && galleryLink !== "{{ gallery_link }}" && galleryLink !== "#") {
+                galleryBtn.href = galleryLink;
+                galleryBtn.style.display = 'flex';
+            } else {
+                // Hide gallery button if no valid link
+                galleryBtn.style.display = 'none';
+            }
+
+            console.log("Page fully loaded with template variables");
+        });
+
+        // Start celebration function
+        function startCelebration() {
+            if (opened) return;
+            opened = true;
+
+            const startScreen = document.getElementById('start-screen');
+            const mainContent = document.getElementById('main-content');
+
+            startScreen.style.opacity = '0';
+            setTimeout(() => startScreen.classList.add('hidden-f'), 1000);
+            mainContent.classList.remove('hidden-f');
+            mainContent.style.opacity = '1';
+
+            if (!window.isSpotify) {
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log("Audio requires interaction"));
+            } else {
+                const p = document.getElementById('spotify-player');
+                if (p) p.classList.remove('translate-y-[150%]');
+            }
+
+            fireConfetti();
+            startTyping();
+        }
+
+        // Confetti effect
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var interval = setInterval(function () {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // Typing effect - FIXED for long messages
+        let msgIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function startTyping() {
+            // Use the parsed messages
+            const messages = Array.isArray(msgs) && msgs.length > 0 ? msgs : ["Wishing you a wonderful birthday!", "May all your dreams come true!"];
+
+            if (messages.length === 0) return;
+            const currentMsg = messages[msgIndex];
+
+            if (isDeleting) {
+                typingContainer.innerHTML = currentMsg.substring(0, charIndex - 1) + '<span class="cursor">&nbsp;</span>';
+                charIndex--;
+            } else {
+                typingContainer.innerHTML = currentMsg.substring(0, charIndex + 1) + '<span class="cursor">&nbsp;</span>';
+                charIndex++;
+            }
+
+            let typeSpeed = 100;
+            if (isDeleting) typeSpeed /= 2;
+
+            if (!isDeleting && charIndex === currentMsg.length) {
+                typeSpeed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                msgIndex = (msgIndex + 1) % messages.length;
+                typeSpeed = 500;
+            }
+
+            setTimeout(startTyping, typeSpeed);
+        }
+
+        // --- FIXED CAKE INTERACTION ---
+        cakeContainer.addEventListener('click', () => {
+            console.log("Cake clicked! isCakeLit:", isCakeLit, "isCakeCut:", isCakeCut);
+
+            if (!isCakeLit) {
+                // STEP 1: Light Candles
+                console.log("Lighting candles...");
+                flames.forEach((f, i) => {
+                    setTimeout(() => {
+                        f.classList.add('lit');
+                        console.log("Candle " + i + " lit");
+                    }, i * 200);
+                });
+                instruction.innerHTML = '<i class="fas fa-wind mr-2"></i> Tap again to make a wish & blow!';
+                isCakeLit = true;
+            } else if (!isCakeCut) {
+                // STEP 2: Cut Sequence
+                console.log("Cutting cake...");
+
+                // A. Blow Candles with animation
+                flames.forEach((f, i) => {
+                    setTimeout(() => {
+                        f.classList.remove('lit');
+                        f.style.transform = 'translateX(-50%) scale(0)';
+                        console.log("Candle " + i + " blown out");
+                    }, i * 100);
+                });
+
+                // B. Show and animate knife
+                knife.classList.remove('opacity-0');
+                knife.classList.add('knife-slice');
+                console.log("Knife animation started");
+
+                // C. Visual Cut Impact (Delayed to match knife hitting cake)
+                setTimeout(() => {
+                    // Add cut line and shake cake
+                    cakeContainer.classList.add('cake-cut');
+                    cakeContainer.classList.add('animate-shake');
+                    console.log("Cake cut effect applied");
+
+                    // Play confetti
+                    confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                }, 600);
+
+                // D. Update UI
+                instruction.innerHTML = '<i class="fas fa-birthday-cake mr-2"></i> Yummy! Happy Birthday!!';
+                instruction.classList.add('text-yellow-300', 'text-xl', 'md:text-2xl');
+
+                isCakeCut = true;
+
+                // Clean up Knife after it fades out
+                setTimeout(() => {
+                    // Reset knife state so it disappears
+                    knife.classList.remove('knife-slice');
+                    knife.classList.add('opacity-0');
+                    cakeContainer.classList.remove('animate-shake'); // Stop shaking
+                    console.log("Knife animation completed");
+                }, 1500);
+            }
+        });
+
+        // Gift modal functions
+        function openGift() {
+            modal.classList.remove('hidden-f');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-0');
+                modalContent.classList.add('scale-100');
+            }, 10);
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        }
+
+        function closeGift() {
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-0');
+            setTimeout(() => {
+                modal.classList.add('hidden-f');
+            }, 300);
+        }
+    </script>
+</body>
+
+</html>

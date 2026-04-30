@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        valentine: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'lato': ['Lato', 'sans-serif'],
+                        'great-vibes': ['"Great Vibes"', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'typewriter': 'blink 1s step-end infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        heartbeat: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.1)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        blink: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Lato:wght@300;400;700&family=Playfair+Display:wght@700&display=swap"
+        rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(244, 63, 94, 0.5);
+        }
+
+        /* Parallax Background */
+        .parallax-wrapper {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Timeline Nodes */
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #fda4af;
+            transform: translateX(-50%);
+        }
+
+        /* Handwritten Letter */
+        .paper-texture {
+            background-color: #fffbf0;
+            background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Reasons Stack */
+        .card-stack {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .stack-card {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 1rem;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #ffe4e6;
+        }
+
+        .stack-card:nth-child(1) {
+            transform: scale(1);
+            z-index: 3;
+        }
+
+        .stack-card:nth-child(2) {
+            transform: scale(0.95) translateY(10px);
+            z-index: 2;
+            opacity: 0.8;
+        }
+
+        .stack-card:nth-child(3) {
+            transform: scale(0.90) translateY(20px);
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        /* Sunset Gradient */
+        .sunset-bg {
+            background: linear-gradient(to top, #4c1d95, #be123c, #fb923c);
+        }
+
+        /* Coupon */
+        .coupon-edge {
+            mask-image: radial-gradient(circle at 2px 50%, transparent 2px, black 3px);
+            mask-size: 10px 100%;
+            mask-position: 0 0, 100% 0;
+            mask-repeat: repeat-y;
+        }
+    </style>
+</head>
+
+<body class="bg-valentine-50 text-slate-800">
+
+    <!-- MUSIC LOGIC -->
+    {% if music %}
+    {% if 'spotify.com' in music %}
+    <!-- Spotify Embed (Hidden initially, shown in controller) -->
+    <div id="spotifyPlayer"
+        class="fixed bottom-20 right-6 z-50 transition-transform transform translate-y-full opacity-0 duration-500">
+        <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true"
+            allow="encrypted-media"></iframe>
+    </div>
+
+    <script>
+        // Auto-show Spotify player when experience starts
+        window.isSpotify = true;
+    </script>
+    {% else %}
+    <!-- Standard Audio -->
+    <audio id="bgMusic" loop>
+        <source src="{{ music }}" type="audio/mpeg">
+    </audio>
+    <script>window.isSpotify = false;</script>
+    {% endif %}
+    {% endif %}
+
+    <!-- INTRO SCENE -->
+    <div id="introScene"
+        class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div id="heartbeatText" class="text-center">
+            <div class="text-6xl text-valentine-500 animate-heartbeat mb-8">💓</div>
+            <h1 class="text-white font-playfair text-2xl sm:text-4xl tracking-widest opacity-80">
+                Every love story begins with a heartbeat
+            </h1>
+        </div>
+
+        <!-- Hidden Envelope (Reveals after text) -->
+        <div id="envelopeWrapper" class="hidden transform scale-0 transition-transform duration-500">
+            <div class="relative w-72 h-48 cursor-pointer group" onclick="startExperience()">
+                <div class="absolute inset-0 bg-valentine-600 rounded-b-xl shadow-[0_0_50px_rgba(244,63,94,0.5)] z-10">
+                </div>
+                <!-- Flap -->
+                <div id="introFlap"
+                    class="absolute top-0 left-0 w-full h-full bg-valentine-700 rounded-t-xl origin-top transition-all duration-700 z-20 group-hover:brightness-110"
+                    style="clip-path: polygon(0 0, 50% 50%, 100% 0);"></div>
+                <div
+                    class="absolute inset-0 bg-white rounded-lg transform scale-90 translate-y-2 z-0 flex items-center justify-center">
+                    <span class="text-4xl font-great-vibes text-valentine-600">Open Me</span>
+                </div>
+                <!-- Seal -->
+                <div
+                    class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-12 h-12 bg-gold-500 rounded-full border-2 border-gold-400 shadow-lg z-30 flex items-center justify-center animate-pulse-slow">
+                    <span class="text-white text-xl">❤️</span>
+                </div>
+            </div>
+            <p class="text-valentine-300 text-center mt-12 animate-bounce uppercase tracking-widest text-xs">Tap to Open
+            </p>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main id="mainContent" class="hidden opacity-0 transition-opacity duration-1500 overflow-x-hidden">
+
+        <!-- 1. PARALLAX HERO -->
+        <section class="relative min-h-screen flex items-center justify-center overflow-hidden parallax-wrapper">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-valentine-900/10 to-valentine-50 z-0"></div>
+            <!-- Background Image Blur -->
+            {% if main_image %}
+            <div class="absolute inset-0 z-[-1]">
+                <img src="{{ main_image }}" class="w-full h-full object-cover blur-sm scale-110">
+            </div>
+            {% endif %}
+
+            <!-- Floating Hearts Canvas -->
+            <canvas id="heroCanvas" class="absolute inset-0 pointer-events-none"></canvas>
+
+            <div class="relative z-10 text-center px-6">
+                <h1 class="font-great-vibes text-6xl sm:text-9xl text-white text-glow mb-6 animate-float">
+                    {{ title }}
+                </h1>
+                <div class="inline-block p-2 rounded-full border border-white/30 backdrop-blur-md bg-white/10 mt-8">
+                    <div
+                        class="w-40 h-40 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl">
+                        <img src="{{ main_image }}" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <h2 class="font-playfair text-white text-2xl sm:text-4xl mt-8 tracking-wide">
+                    Dearest {{ name }}
+                </h2>
+                <div class="mt-12 animate-bounce">
+                    <svg class="w-8 h-8 text-white mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. TYPEWRITER LOVE LETTER -->
+        <section class="min-h-[80vh] flex items-center justify-center py-20 px-4 relative">
+            <div
+                class="absolute top-0 right-0 w-64 h-64 bg-valentine-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-float">
+            </div>
+
+            <div class="max-w-3xl w-full paper-texture p-8 sm:p-16 transform rotate-1 shadow-xl relative">
+                <!-- Tape effect -->
+                <div
+                    class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-white/50 backdrop-blur rotate-3 shadow-sm">
+                </div>
+
+                <div class="font-great-vibes text-4xl mb-8 text-valentine-800">My Dearest {{ name }},</div>
+
+                <div class="font-dancing text-xl sm:text-2xl leading-loose text-slate-700 min-h-[200px]"
+                    id="typewriterContainer">
+                    <!-- Typing effect will inject text here -->
+                </div>
+
+                <div class="mt-12 text-right font-great-vibes text-3xl text-valentine-800">
+                    With all my love,<br>
+                    <span class="text-xl font-sans text-slate-500 not-italic">Forever Yours</span>
+                </div>
+            </div>
+            <!-- Hidden source for typewriter -->
+            <div id="fullLetterText" class="hidden">{% for msg in messages %}{{ msg }}<br><br>{% endfor %}</div>
+        </section>
+
+        <!-- 3. TIMELINE OF MEMORIES -->
+        {% if gallery_images %}
+        <section class="py-24 bg-white relative">
+            <h2 class="text-center font-playfair text-4xl text-valentine-900 mb-16">Our Beautiful Journey</h2>
+
+            <div class="max-w-4xl mx-auto relative px-4">
+                <!-- Vertical Line -->
+                <div class="timeline-line hidden sm:block"></div>
+
+                <div class="space-y-12 sm:space-y-24">
+                    {% for img in gallery_images %}
+                    <div
+                        class="relative flex flex-col sm:flex-row items-center justify-between {% if loop.index is even %}sm:flex-row-reverse{% endif %} group">
+                        <!-- Dot -->
+                        <div
+                            class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-valentine-500 rounded-full border-4 border-white shadow-md hidden sm:block">
+                        </div>
+
+                        <!-- Image -->
+                        <div
+                            class="w-full sm:w-5/12 mb-6 sm:mb-0 transform transition-transform duration-500 group-hover:scale-105">
+                            <div
+                                class="aspect-[4/3] overflow-hidden rounded-2xl shadow-lg border-2 border-white rotate-1 group-hover:rotate-0 transition-all">
+                                <img src="{{ img }}" class="w-full h-full object-cover">
+                            </div>
+                        </div>
+
+                        <!-- Text/Context -->
+                        <div
+                            class="w-full sm:w-5/12 text-center sm:text-left {% if loop.index is even %}sm:text-right{% endif %}">
+                            <h3 class="font-dancing text-3xl text-valentine-600 mb-2">Memory #{{ loop.index }}</h3>
+                            <p class="text-slate-500 italic">"Every moment with you is a treasure."</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 4. REASONS WHY (Card Stack) -->
+        <section class="py-24 bg-valentine-50 overflow-hidden">
+            <div class="text-center mb-12">
+                <h2 class="font-playfair text-4xl text-valentine-900">Reasons Why I Love You</h2>
+                <p class="text-valentine-400 mt-2 text-sm uppercase tracking-wide">Tap to see next</p>
+            </div>
+
+            <div class="card-stack" id="cardStack">
+                <!-- Cards injected via JS based on Messages lines -->
+            </div>
+        </section>
+
+        <!-- 5. SECRET GIFT BOX (Coupons) -->
+        <section class="py-24 bg-white text-center">
+            <h2 class="font-playfair text-4xl text-valentine-900 mb-12">A Little Something Extra...</h2>
+
+            <div id="giftBoxContainer" class="relative inline-block cursor-pointer" onclick="openGiftBox()">
+                <div class="relative w-48 h-48 mx-auto animate-bounce hover:animate-none">
+                    <img src="/static/previews/hbd-gift4.png"
+                        class="w-full h-full object-contain drop-shadow-2xl">
+                    <div class="absolute inset-0 bg-white/30 rounded-full blur-2xl -z-10 animate-pulse"></div>
+                </div>
+                <p class="mt-6 font-bold text-valentine-500 uppercase tracking-widest">Tap to Unwrap</p>
+            </div>
+
+            <!-- Revealed Coupons -->
+            <div id="couponsGrid"
+                class="hidden max-w-4xl mx-auto px-4 mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 animate-fade-in">
+                <!-- Generic Coupons -->
+                <div
+                    class="bg-valentine-100 p-6 rounded-xl border-dashed border-2 border-valentine-300 relative overflow-hidden group hover:bg-valentine-200 transition-colors">
+                    <div class="absolute -right-4 -top-4 w-16 h-16 bg-valentine-300 rounded-full opacity-20"></div>
+                    <div class="text-4xl mb-4">🍽️</div>
+                    <h3 class="font-playfair text-xl font-bold text-valentine-900 mb-2">Romantic Dinner</h3>
+                    <p class="text-sm text-valentine-700">Good for one candlelit dinner date of your choice.</p>
+                </div>
+
+                <div
+                    class="bg-valentine-100 p-6 rounded-xl border-dashed border-2 border-valentine-300 relative overflow-hidden group hover:bg-valentine-200 transition-colors">
+                    <div class="text-4xl mb-4">💆‍♀️</div>
+                    <h3 class="font-playfair text-xl font-bold text-valentine-900 mb-2">Massage Night</h3>
+                    <p class="text-sm text-valentine-700">Redeemable for a relaxing back massage anytime.</p>
+                </div>
+
+                <div
+                    class="bg-valentine-100 p-6 rounded-xl border-dashed border-2 border-valentine-300 relative overflow-hidden group hover:bg-valentine-200 transition-colors">
+                    <div class="text-4xl mb-4">🎬</div>
+                    <h3 class="font-playfair text-xl font-bold text-valentine-900 mb-2">Movie Pick</h3>
+                    <p class="text-sm text-valentine-700">You pick the movie, I bring the popcorn.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. SUNSET PROMISE FINAL -->
+        <footer class="relative py-32 sunset-bg text-center text-white overflow-hidden">
+            <canvas id="petalsCanvas" class="absolute inset-0 opacity-60 pointer-events-none"></canvas>
+
+            <div class="relative z-10 max-w-2xl mx-auto px-6">
+                <div class="text-6xl mb-8 animate-pulse">💖</div>
+                <h2 class="font-great-vibes text-5xl sm:text-7xl mb-8">Forever & Always</h2>
+                <p class="font-playfair text-xl text-white/90 leading-relaxed mb-12">
+                    "I promise to love you in every moment, <br>through every sunset and every sunrise."
+                </p>
+                <div class="text-sm uppercase tracking-widest opacity-70">Happy Valentine's Day</div>
+            </div>
+
+            <div class="absolute bottom-4 w-full text-center text-white/40 text-xs">
+                Made with Love • WishCraft
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- Floating Music Toggle -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <button onclick="toggleMusic()"
+            class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/50 text-white shadow-lg flex items-center justify-center hover:bg-white/40 transition-all">
+            <span id="musicIcon" class="text-xl">🎵</span>
+        </button>
+    </div>
+
+    <!-- MAIN SCRIPT -->
+    <script>
+        // --- 1. INTRO SEQUENCE ---
+        function startExperience() {
+            const flap = document.getElementById('introFlap');
+            const intro = document.getElementById('introScene');
+            const main = document.getElementById('mainContent');
+            const music = document.getElementById('bgMusic');
+
+            // Play music
+            if (music) music.play().catch(() => console.log('Autoplay blocked'));
+            if (typeof showSpotify === 'function') showSpotify();
+
+            // Open Envelope
+            flap.style.transform = 'rotateX(180deg)';
+            flap.style.zIndex = '0';
+
+            setTimeout(() => {
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    main.classList.remove('hidden');
+                    // Force reflow
+                    void main.offsetWidth;
+                    main.style.opacity = '1';
+
+                    // Init Canvas Effects
+                    initHeroHearts();
+                    initPetals();
+
+                    // Trigger Scroll Observer for Typewriter
+                    observeTypewriter();
+                }, 1000);
+            }, 800);
+        }
+
+        // Auto-show envelope after text heartbeat
+        setTimeout(() => {
+            const text = document.getElementById('heartbeatText');
+            const env = document.getElementById('envelopeWrapper');
+
+            text.style.transition = 'opacity 1s';
+            text.style.opacity = '0';
+
+            setTimeout(() => {
+                text.style.display = 'none';
+                env.classList.remove('hidden');
+                // Force reflow
+                void env.offsetWidth;
+                env.classList.remove('transform', 'scale-0');
+            }, 1000);
+        }, 3000);
+
+
+        // --- 2. TYPEWRITER EFFECT ---
+        function observeTypewriter() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        typeWriter();
+                        observer.disconnect();
+                    }
+                });
+            });
+            observer.observe(document.getElementById('typewriterContainer'));
+        }
+
+        function typeWriter() {
+            const container = document.getElementById('typewriterContainer');
+            const rawText = document.getElementById('fullLetterText').innerHTML;
+
+            // Just simulate typing by revealing chunks for HTML compatibility
+            // Or simple text replacement if we stripped HTML. 
+            // Better approach: Use the raw messages array and type nicely.
+
+            // Quick Typewriter impl
+            container.innerHTML = "";
+            let i = 0;
+            // Decode HTML entities roughly or use hidden div text
+            const text = document.getElementById('fullLetterText').innerText;
+
+            function type() {
+                if (i < text.length) {
+                    container.innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
+                    i++;
+                    setTimeout(type, 30 + Math.random() * 50); // Human variation
+                }
+            }
+            type();
+        }
+
+        // --- 3. INTERACTIVE CARDS (REASONS) ---
+        // Parse messages for cards
+        const rawMessages = `{% for msg in messages %}{{ msg }}|{% endfor %}`.split('|').filter(m => m.trim().length > 0);
+        const stackContainer = document.getElementById('cardStack');
+
+        // If we have messages, render them as cards
+        if (rawMessages.length > 0) {
+            rawMessages.forEach((msg, index) => {
+                const card = document.createElement('div');
+                card.className = 'stack-card';
+                card.style.zIndex = rawMessages.length - index;
+                card.innerHTML = `
+                    <div class="text-center">
+                        <div class="text-4xl text-valentine-400 mb-4 font-playfair">${index + 1}</div>
+                        <p class="font-dancing text-2xl text-slate-700 leading-normal">${msg}</p>
+                    </div>
+                `;
+
+                // Add click event to dismiss
+                card.onclick = () => {
+                    card.style.transform = 'translate(100px, -50px) rotate(20deg)';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+
+                    // Rearrange remaining
+                    const remaining = document.querySelectorAll('.stack-card:not([style*="opacity: 0"])');
+                    remaining.forEach((c, idx) => {
+                        if (idx === 0) c.style.transform = 'scale(1)';
+                        if (idx === 1) c.style.transform = 'scale(0.95) translateY(10px) opacity(0.8)';
+                    });
+                };
+
+                stackContainer.appendChild(card);
+            });
+        } else {
+            stackContainer.innerHTML = '<p class="text-center text-valentine-400">Add messages to see reasons here!</p>';
+        }
+
+        // --- 4. GIFT BOX ---
+        function openGiftBox() {
+            const box = document.getElementById('giftBoxContainer');
+            const grid = document.getElementById('couponsGrid');
+
+            box.style.transform = 'scale(0)';
+            box.style.opacity = '0';
+            setTimeout(() => {
+                box.style.display = 'none';
+                grid.classList.remove('hidden');
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    colors: ['#fbbf24', '#f43f5e', '#be123c']
+                });
+            }, 300);
+        }
+
+        // --- 5. MUSIC TOGGLE ---
+        // --- 5. MUSIC TOGGLE ---
+        function toggleMusic() {
+            if (window.isSpotify) {
+                const p = document.getElementById('spotifyPlayer');
+                const btn = document.getElementById('musicIcon');
+
+                if (p.classList.contains('translate-y-full')) {
+                    p.classList.remove('translate-y-full', 'opacity-0');
+                    btn.innerText = "🔽";
+                } else {
+                    p.classList.add('translate-y-full', 'opacity-0');
+                    btn.innerText = "🎵";
+                }
+            } else {
+                const m = document.getElementById('bgMusic');
+                const icon = document.getElementById('musicIcon');
+                if (m && m.paused) {
+                    m.play();
+                    icon.innerText = "🎵";
+                } else if (m) {
+                    m.pause();
+                    icon.innerText = "🔇";
+                }
+            }
+        }
+
+        function showSpotify() {
+            if (window.isSpotify) {
+                setTimeout(() => {
+                    const p = document.getElementById('spotifyPlayer');
+                    if (p) p.classList.remove('translate-y-full', 'opacity-0');
+                }, 1500);
+            }
+        }
+
+        // --- 6. CANVAS EFFECTS (Hearts & Petals) ---
+        function initHeroHearts() {
+            const canvas = document.getElementById('heroCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            for (let i = 0; i < 30; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 10 + 5,
+                    speed: Math.random() * 1 + 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+
+                particles.forEach(p => {
+                    p.y -= p.speed;
+                    if (p.y < -20) p.y = canvas.height + 20;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function initPetals() {
+            const canvas = document.getElementById('petalsCanvas');
+            const ctx = canvas.getContext('2d');
+            // Basic Falling Petals Logic (same structure as hearts but downward)
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const petals = [];
+            for (let i = 0; i < 40; i++) {
+                petals.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * -canvas.height, // start above
+                    size: Math.random() * 5 + 3,
+                    speed: Math.random() * 1 + 0.5,
+                    rotation: Math.random() * 360,
+                    rotationSpeed: (Math.random() - 0.5) * 2
+                });
+            }
+
+            function animatePetals() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+
+                petals.forEach(p => {
+                    p.y += p.speed;
+                    p.rotation += p.rotationSpeed;
+
+                    if (p.y > canvas.height) p.y = -20;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rotation * Math.PI / 180);
+                    ctx.beginPath();
+                    // Simple petal shape
+                    ctx.ellipse(0, 0, p.size, p.size / 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                });
+                requestAnimationFrame(animatePetals);
+            }
+            animatePetals();
+        }
+
+    </script>
+</body>
+
+</html>

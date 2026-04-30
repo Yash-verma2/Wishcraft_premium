@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'display': ['Outfit', 'sans-serif'],
+                        'serif': ['Playfair Display', 'serif'],
+                        'hand': ['Pacifico', 'cursive'],
+                    },
+                    colors: {
+                        'sincere': {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                        'charcoal': '#121212',
+                        'slate-deep': '#0f172a',
+                    },
+                    animation: {
+                        'float-slow': 'float 10s ease-in-out infinite',
+                        'pulse-gentle': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards',
+                        'reveal': 'reveal 2s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+                        'heartbeat': 'heartbeat 1.5s ease-in-out infinite',
+                        'petal-fall': 'petalFall 15s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-30px) rotate(3deg)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(40px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        reveal: {
+                            '0%': { transform: 'translateY(100%)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        heartbeat: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '25%': { transform: 'scale(1.1)' },
+                            '40%': { transform: 'scale(1)' },
+                            '60%': { transform: 'scale(1.05)' },
+                        },
+                        petalFall: {
+                            '0%': { transform: 'translateY(-10vh) rotate(0deg)', opacity: '0' },
+                            '10%': { opacity: '0.8' },
+                            '90%': { opacity: '0.8' },
+                            '100%': { transform: 'translateY(110vh) rotate(720deg)', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --bg-dark: #121212;
+            --bg-deep: #0a0a0a;
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: #e2e8f0;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Noise Overlay --- */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.04;
+            background: url('data:image/svg+xml,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)"/></svg>');
+        }
+
+        /* --- Atmospheric Background --- */
+        .atm-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0a0a 100%);
+            overflow: hidden;
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            transition: all 8s ease-in-out;
+        }
+
+        /* --- Petals Overlay --- */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .petal {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 100% 0% 100% 100%;
+            filter: blur(1px);
+        }
+
+        /* --- Premium Glassmorphism --- */
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- Mending Heart Animation --- */
+        .heart-stage {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            aspect-ratio: 1/1;
+            margin: 2rem auto;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .heart-half {
+            position: absolute;
+            width: 100px;
+            height: 160px;
+            background: #8b5cf6;
+            border-radius: 50px 50px 0 0;
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .heart-left {
+            left: 16%;
+            top: 16%;
+            transform: rotate(-45deg) translateX(-20px);
+        }
+
+        .heart-right {
+            right: 16%;
+            top: 16%;
+            transform: rotate(45deg) translateX(20px);
+        }
+
+        .heart-stage.mended .heart-left {
+            transform: rotate(-45deg) translateX(0);
+        }
+
+        .heart-stage.mended .heart-right {
+            transform: rotate(45deg) translateX(0);
+        }
+
+        .heart-stage.mended .heart-half {
+            box-shadow: 0 0 60px rgba(139, 92, 246, 0.5);
+            background: #a78bfa;
+        }
+
+        /* --- Floating Memories --- */
+        .floating-memories {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .mem-bubble {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            opacity: 0;
+            transform: scale(0.5) translateY(50px);
+            transition: all 2s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .mem-bubble.active {
+            opacity: 0.4;
+            transform: scale(1) translateY(0);
+        }
+
+        /* --- Scroll Logic --- */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .reveal-on-scroll.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- Audio Bar --- */
+        .audio-bar {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            padding: 0.6rem 1rem;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: float-slow 12s infinite alternate;
+        }
+
+        /* --- Scroll Bar --- */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--primary), #4c1d95);
+            border-radius: 10px;
+        }
+
+        .hidden-v {
+            opacity: 0;
+            pointer-events: none;
+            display: none !important;
+        }
+
+        .visible-v {
+            opacity: 1;
+            pointer-events: auto;
+            display: flex !important;
+        }
+
+        .hidden-f {
+            display: none !important;
+        }
+
+        /* Modal Animation */
+        .modal-enter {
+            transform: translateY(30px) scale(0.9);
+            opacity: 0;
+        }
+
+        .modal-active {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- --- OVERLAYS --- -->
+    <div class="noise"></div>
+    <div class="atm-container" id="atm-bg"></div>
+    <div class="petals-container" id="petals"></div>
+
+    <!-- --- START SCREEN --- -->
+    <div id="start-screen"
+        class="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-[#0a0a0a] transition-all duration-1500">
+        <div class="relative max-w-3xl px-8 text-center">
+            <div class="absolute -inset-40 bg-sincere-600/10 blur-[150px] animate-pulse"></div>
+            <div class="relative z-10 space-y-12">
+                <div
+                    class="inline-flex items-center gap-4 px-5 py-2.5 glass rounded-full text-[11px] font-black tracking-[0.4em] text-sincere-300 uppercase animate-fade-in-up">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sincere-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-sincere-500"></span>
+                    </span>
+                    A Personal Message
+                </div>
+                <div class="overflow-hidden">
+                    <h1
+                        class="font-serif italic font-black text-4xl md:text-8xl text-white tracking-tighter leading-[0.95] animate-reveal">
+                        A Heartfelt <br>
+                        <span
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-sincere-300 via-white to-sincere-100">
+                            Apology
+                        </span>
+                        <br> From the Soul
+                    </h1>
+                </div>
+                <button onclick="unlockExperience()"
+                    class="group relative px-8 md:px-16 py-4 md:py-6 bg-white text-charcoal font-black rounded-[2rem] shadow-2xl transition-all duration-700 hover:scale-105 hover:-translate-y-2 active:scale-95 flex items-center gap-5 mx-auto overflow-hidden animate-fade-in-up"
+                    style="animation-delay: 0.6s;">
+                    <div
+                        class="absolute inset-0 bg-gradient-to-r from-sincere-500 to-white opacity-0 group-hover:opacity-10 transition-opacity">
+                    </div>
+                    <span class="relative z-10 text-lg uppercase tracking-widest">Listen to Me</span>
+                    <i
+                        class="fas fa-heart text-sincere-600 group-hover:scale-125 transition-transform relative z-10"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- --- FLOATING MEMORIES --- -->
+    <div class="floating-memories" id="floating-memories">
+        <!-- Generated by JS -->
+    </div>
+
+    <!-- --- MAIN CONTENT --- -->
+    <main id="main-content"
+        class="relative z-10 min-h-screen flex flex-col items-center py-16 md:py-32 px-4 md:px-8 opacity-0 transition-opacity duration-1500 overflow-hidden">
+
+        <!-- Header Section -->
+        <header class="text-center mb-32 space-y-8 reveal-on-scroll">
+            <div
+                class="inline-block px-6 py-2 glass rounded-full text-[10px] font-black tracking-[0.5em] text-sincere-200 uppercase">
+                Sincere Echoes
+            </div>
+            <h1 class="font-serif italic font-medium text-3xl md:text-6xl lg:text-8xl text-white leading-[1.1] max-w-4xl px-4">
+                Dear <span class="font-hand text-sincere-400 not-italic ml-2 md:ml-4">{{ name }}</span>,<br>
+                Please forgive my <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-slate-400 via-white to-slate-400">
+                    Silly Mistakes.
+                </span>
+            </h1>
+        </header>
+
+        <!-- The Central Reflection Feature -->
+        <section class="w-full max-w-6xl mb-40 reveal-on-scroll">
+            <div class="relative group">
+                <div
+                    class="absolute -inset-8 bg-gradient-to-r from-sincere-500/10 to-white/5 rounded-[4rem] blur-3xl opacity-0 group-hover:opacity-100 transition duration-1500">
+                </div>
+                <div class="relative glass-card rounded-[4rem] overflow-hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <!-- Hero Image -->
+                        <div class="aspect-[4/5] lg:aspect-auto overflow-hidden relative">
+                            <img src="{{ main_image }}" alt="Sincere Message"
+                                class="w-full h-full object-cover transform transition duration-2000 group-hover:scale-105"
+                                onerror="this.src='https://images.unsplash.com/photo-1518199266791-5375a02cfc0b?q=80&w=1000'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent"></div>
+                            <div class="absolute bottom-12 left-12">
+                                <p class="font-hand text-4xl text-sincere-200">Missing Us</p>
+                            </div>
+                        </div>
+                        <!-- Messages Panel -->
+                        <div class="p-8 md:p-12 lg:p-20 flex flex-col justify-center space-y-8 md:space-y-12">
+                            <div class="space-y-6">
+                                <div class="w-16 h-1.5 overflow-hidden rounded-full bg-white/10">
+                                    <div class="w-full h-full bg-sincere-500 animate-pulse"></div>
+                                </div>
+                                <div id="typing-box" class="min-h-[150px] md:min-h-[220px]">
+                                    <p id="typed-text"
+                                        class="text-2xl md:text-3xl lg:text-4xl leading-[1.4] font-serif italic text-slate-50 break-words">
+                                        <!-- Typed by JS -->
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Navigation -->
+                            <div class="pt-12 border-t border-white/5 flex items-center justify-between">
+                                <div class="flex items-center gap-5">
+                                    <div
+                                        class="w-14 h-14 rounded-3xl bg-sincere-500/10 flex items-center justify-center text-sincere-400 shadow-inner">
+                                        <i class="fas fa-feather-pointed text-xl"></i>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span
+                                            class="text-[10px] font-black tracking-widest text-white/30 uppercase">From
+                                            the Heart</span>
+                                        <span class="text-base font-bold text-sincere-300">Note <span
+                                                id="msg-num">1</span> of {{ messages|length }}</span>
+                                    </div>
+                                </div>
+                                <button onclick="nextMessage()"
+                                    class="w-16 h-16 glass rounded-3xl flex items-center justify-center hover:bg-sincere-500 hover:text-white transition-all duration-700 active:scale-90 group">
+                                    <i class="fas fa-chevron-right group-hover:translate-x-2 transition-transform"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THE MENDING HEART STAGE -->
+        <section class="w-full max-w-4xl glass-card rounded-[3rem] md:rounded-[5rem] p-8 md:p-24 text-center mb-40 reveal-on-scroll mx-4">
+            <h2 class="font-serif italic text-3xl md:text-6xl mb-6 tracking-tighter">Reach Out to Me</h2>
+            <p id="stage-instr" class="text-slate-400 font-medium mb-12 md:mb-16 text-lg md:text-xl max-w-lg mx-auto">Click to mend what was
+                broken and bring us back together.</p>
+
+            <div class="heart-stage group scale-75 md:scale-100 origin-center" id="heart-main" onclick="mendHeart()">
+                <div class="heart-half heart-left"></div>
+                <div class="heart-half heart-right"></div>
+            </div>
+
+            <!-- Forgiveness Message -->
+            <div id="mend-message" class="hidden transition-all duration-1500 translate-y-12 scale-0 mt-10">
+                <div
+                    class="inline-block px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-sincere-600 to-sincere-400 text-white rounded-full font-black shadow-[0_30px_70px_rgba(139,92,246,0.5)] text-lg md:text-xl uppercase tracking-widest">
+                    <i class="fas fa-sparkles mr-3 text-white"></i> Together Again
+                </div>
+            </div>
+        </section>
+
+        <!-- GALLERY SECTION -->
+        <section class="w-full mb-40 reveal-on-scroll">
+            <div class="flex flex-col md:flex-row justify-between items-end px-6 mb-16 gap-8">
+                <div class="space-y-4">
+                    <h3 class="font-serif italic text-5xl md:text-6xl tracking-tighter">Sincere Memories</h3>
+                    <p class="text-slate-400 font-medium text-lg italic">The moments I cherish the most</p>
+                </div>
+                <a href="{{ gallery_link }}"
+                    class="px-10 py-4 glass rounded-2xl text-sincere-200 text-xs font-black tracking-[0.3em] uppercase flex items-center gap-4 hover:bg-sincere-500 hover:text-white transition-all group">
+                    Our Full Story <i
+                        class="fas fa-long-arrow-alt-right group-hover:translate-x-3 transition-transform text-lg"></i>
+                </a>
+            </div>
+
+            <!-- Elegant Static Gallery for Sorry Template -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 px-4">
+                {% for img in gallery_images[:4] %}
+                <div class="aspect-[3/4] rounded-[2.5rem] overflow-hidden glass-card group/item reveal-on-scroll">
+                    <img src="{{ img }}"
+                        class="w-full h-full object-cover grayscale group-hover/item:grayscale-0 transition-all duration-1000 scale-110 group-hover/item:scale-100">
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center pb-20 opacity-30">
+            <a href="https://wishcraft-pages.vercel.app" style="color:inherit; text-decoration:none; font-weight:600;">
+                <p class="text-sm font-medium italic tracking-widest">Always wishing for your smile <br> <span
+                        class="text-sincere-400">WishCraft pages</span></p>
+            </a>
+        </footer>
+
+    </main>
+
+    <!-- --- REACH OUT MODAL --- -->
+    <div id="reach-modal"
+        class="fixed inset-0 z-[300] hidden items-center justify-center p-4 md:p-6 bg-black/85 backdrop-blur-2xl">
+        <div class="glass max-w-lg w-full p-8 md:p-16 rounded-[3rem] md:rounded-[4rem] text-center space-y-8 md:space-y-10 transform transition-all duration-700 modal-enter"
+            id="reach-content">
+            <div
+                class="w-24 h-24 bg-sincere-500 rounded-[2.5rem] -rotate-12 flex items-center justify-center text-white text-4xl mx-auto shadow-2xl shadow-sincere-500/40">
+                <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <div class="space-y-6">
+                <h3 class="text-4xl font-serif italic font-black">A Sincere Wish</h3>
+                <p class="text-slate-300 text-lg leading-relaxed italic">I truly promise to be better. To listen more,
+                    care more, and never let you down again.</p>
+            </div>
+            <button onclick="confirmForgive()"
+                class="w-full py-5 bg-white text-charcoal font-black rounded-3xl shadow-2xl hover:bg-slate-100 transition-all text-lg uppercase tracking-widest">
+                I Forgive You
+            </button>
+        </div>
+    </div>
+
+    <!-- Audio System -->
+    <div id="audio-container">
+        {% if music %}
+        <audio id="bg-music" loop>
+            <source src="{{ music }}" type="audio/mpeg">
+        </audio>
+        <div class="audio-bar glass">
+            <span class="text-[10px] font-black text-sincere-300 tracking-[0.4em] uppercase" id="music-status">Now
+                Playing</span>
+            <button onclick="toggleAudio()"
+                class="w-12 h-12 rounded-full bg-sincere-500 flex items-center justify-center shadow-2xl shadow-sincere-500/40 transform hover:scale-110 transition-transform">
+                <i id="audio-icon" class="fas fa-pause text-sm text-white"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Data for JS -->
+    <script id="messages-data" type="application/json">{{ messages | tojson | safe }}</script>
+    <script id="gallery-data" type="application/json">{{ gallery_images | tojson | safe }}</script>
+
+    <script>
+        // --- State Initialization (Top of script to avoid TDZ) ---
+        let isOpened = false;
+        let isMended = false;
+        let msgIdx = 0;
+        let charIdx = 0;
+        let isTyping = false;
+        let audioPlaying = false;
+        let messages = [];
+        let galleryImages = [];
+
+        // --- Data Parsing ---
+        try {
+            const mRaw = document.getElementById('messages-data').textContent.trim();
+            const gRaw = document.getElementById('gallery-data').textContent.trim();
+
+            // Handle non-rendered Jinja2 tags (if opened as local file)
+            // Use hex-escaping for the check to avoid literal characters in source
+            if (mRaw.includes('\x7B\x7B') || mRaw.includes('\x7B\x25')) {
+                console.warn("Template variables not rendered. Please run via Flask server.");
+                messages = ["Example: Please forgive me.", "I promise to do better."];
+                galleryImages = [];
+            } else {
+                messages = JSON.parse(mRaw || "[]");
+                galleryImages = JSON.parse(gRaw || "[]");
+            }
+        } catch (e) {
+            console.error("Error parsing data:", e);
+            messages = ["Deepest apologies.", "I cherish our bond."];
+        }
+
+        // --- Atmospheric Orbs ---
+        function initAtm() {
+            const container = document.getElementById('atm-bg');
+            const colors = ['#8b5cf6', '#6d28d9', '#1e1b4b', '#4c1d95'];
+            for (let i = 0; i < 8; i++) {
+                const orb = document.createElement('div');
+                orb.className = 'glow-orb';
+                orb.style.background = colors[i % colors.length];
+                orb.style.left = Math.random() * 100 + '%';
+                orb.style.top = Math.random() * 100 + '%';
+                orb.style.animation = `float ${20 + Math.random() * 15}s infinite alternate`;
+                orb.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(orb);
+            }
+        }
+
+        // --- Petals System ---
+        function initPetals() {
+            const container = document.getElementById('petals');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'petal animate-petal-fall';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (10 + Math.random() * 10) + 's';
+                p.style.animationDelay = (Math.random() * 15) + 's';
+                p.style.opacity = Math.random() * 0.5 + 0.2;
+                p.style.width = p.style.height = (5 + Math.random() * 10) + 'px';
+                container.appendChild(p);
+            }
+        }
+
+        // --- Revealer ---
+        function initReveals() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // --- Memories Bubbles ---
+        function initMemories() {
+            const container = document.getElementById('floating-memories');
+            galleryImages.forEach((src, i) => {
+                const b = document.createElement('div');
+                b.className = 'mem-bubble';
+                b.innerHTML = `<img src="${src}" class="w-full h-full object-cover grayscale opacity-70">`;
+                b.style.left = (Math.random() * 100) + '%';
+                b.style.top = (Math.random() * 100) + '%';
+                container.appendChild(b);
+
+                setTimeout(() => b.classList.add('active'), 2500 + (i * 200));
+            });
+        }
+
+        // --- Start Experience ---
+        function unlockExperience() {
+            if (isOpened) return;
+            isOpened = true;
+
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+            startScreen.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                startScreen.classList.add('hidden-f');
+                const main = document.getElementById('main-content');
+                main.classList.add('visible-v');
+                main.style.opacity = '1';
+
+                // Audio
+                const music = document.getElementById('bg-music');
+                if (music) {
+                    music.volume = 0.4;
+                    music.play().then(() => {
+                        audioPlaying = true;
+                        updateAudioUI();
+                    }).catch(() => console.log('User interaction required for audio'));
+                }
+
+                startTyping();
+                initMemories();
+            }, 1500);
+        }
+
+        // --- Typing ---
+        function startTyping() {
+            if (messages.length === 0) return;
+            isTyping = true;
+            typeEffect();
+        }
+
+        function typeEffect() {
+            const container = document.getElementById('typed-text');
+            const msg = messages[msgIdx];
+
+            if (charIdx < msg.length) {
+                container.innerHTML += msg.charAt(charIdx);
+                charIdx++;
+                setTimeout(typeEffect, 60);
+            } else {
+                isTyping = false;
+                // Auto-advance after 3.5 seconds
+                setTimeout(() => {
+                    if (!isTyping && isOpened) nextMessage();
+                }, 3500);
+            }
+        }
+
+        function nextMessage() {
+            if (isTyping || messages.length === 0) return;
+            msgIdx = (msgIdx + 1) % messages.length;
+            charIdx = 0;
+            document.getElementById('typed-text').innerHTML = '';
+            document.getElementById('msg-num').innerText = msgIdx + 1;
+            startTyping();
+        }
+
+        // --- Mend Heart Logic ---
+        function mendHeart() {
+            if (isMended) return;
+            isMended = true;
+            document.getElementById('heart-main').classList.add('mended');
+            document.getElementById('stage-instr').innerText = 'The heart is healing...';
+
+            // Show forgiveness modal
+            setTimeout(() => {
+                const modal = document.getElementById('reach-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    document.getElementById('reach-content').classList.remove('modal-enter');
+                    document.getElementById('reach-content').classList.add('modal-active');
+                }, 50);
+            }, 2000);
+        }
+
+        function confirmForgive() {
+            const modal = document.getElementById('reach-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+
+                // Final Mend
+                const heart = document.getElementById('heart-main');
+                heart.classList.add('animate-heartbeat');
+
+                const mendMsg = document.getElementById('mend-message');
+                mendMsg.classList.remove('hidden');
+                setTimeout(() => mendMsg.classList.add('scale-100'), 50);
+                document.getElementById('stage-instr').innerText = 'Forgiveness is beautiful. Thank you. ❤️';
+
+                fireSincereConfetti();
+            }, 1000);
+        }
+
+        function fireSincereConfetti() {
+            const count = 150;
+            const defaults = { origin: { y: 0.7 }, zIndex: 1000, colors: ['#8b5cf6', '#ffffff', '#ddd6fe'] };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        }
+
+        // --- Audio ---
+        function toggleAudio() {
+            const music = document.getElementById('bg-music');
+            if (!music) return;
+            if (audioPlaying) {
+                music.pause();
+                audioPlaying = false;
+            } else {
+                music.play();
+                audioPlaying = true;
+            }
+            updateAudioUI();
+        }
+
+        function updateAudioUI() {
+            const icon = document.getElementById('audio-icon');
+            const status = document.getElementById('music-status');
+            if (audioPlaying) {
+                icon.className = 'fas fa-pause text-sm text-white';
+                status.innerText = 'Now Playing';
+            } else {
+                icon.className = 'fas fa-play text-sm text-white';
+                status.innerText = 'Paused';
+            }
+        }
+
+        // --- Boot ---
+        window.onload = () => {
+            initAtm();
+            initPetals();
+            initReveals();
+        };
+
+    </script>
+</body>
+
+</html>
