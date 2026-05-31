@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} 🎂</title>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- GSAP for Smooth Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            heading: ['Outfit', 'sans-serif'],
+            hand: ['Pacifico', 'cursive'],
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'spin-slow': 'spin 12s linear infinite',
+            'twinkle': 'twinkle 3s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+              '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+            },
+            twinkle: {
+              '0%, 100%': { opacity: 0.3, transform: 'scale(1)' },
+              '50%': { opacity: 1, transform: 'scale(1.2)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      overflow-x: hidden;
+      background: #0f172a; /* Dark sleek background for better contrast */
+      color: #f8fafc;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .premium-gradient {
+      background: linear-gradient(135deg, #f43f5e 0%, #6366f1 100%);
+    }
+
+    .gift-box {
+      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .gift-box:hover {
+      transform: scale(1.1) rotate(5deg);
+      filter: drop-shadow(0 0 30px rgba(244, 63, 94, 0.4));
+    }
+
+    .floating-icon {
+      position: absolute;
+      pointer-events: auto;
+      z-index: 1;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .floating-icon:hover {
+      transform: scale(1.3) !important;
+      opacity: 1 !important;
+      filter: drop-shadow(0 0 15px currentColor);
+    }
+
+    /* Star Background */
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* Interactive Cake Styling */
+    .cake {
+      position: relative;
+      width: 120px;
+      height: 80px;
+      background: #fecaca;
+      border-radius: 10px 10px 4px 4px;
+      margin: 0 auto;
+      box-shadow: inset 0 -5px rgba(0,0,0,0.1);
+    }
+    .cake::before {
+      content: '';
+      position: absolute;
+      top: -15px;
+      left: 5%;
+      width: 90%;
+      height: 25px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 5px #fecaca;
+    }
+    .candle {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 8px;
+      height: 25px;
+      background: #fbbf24;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .flame {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 18px;
+      background: #f97316;
+      border-radius: 50% 50% 20% 20%;
+      box-shadow: 0 0 10px #f97316;
+      animation: flicker 0.6s infinite alternate;
+      display: none;
+    }
+    @keyframes flicker {
+      from { transform: translateX(-50%) scale(1); opacity: 0.8; }
+      to { transform: translateX(-50%) scale(1.1); opacity: 1; }
+    }
+
+    /* Heart Rain */
+    .heart-particle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 100;
+      animation: heartFly 2s linear forwards;
+    }
+    @keyframes heartFly {
+      0% { transform: translateY(0) scale(0); opacity: 0; }
+      20% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+      100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+    }
+
+    /* Typed cursor style */
+    .typed-cursor {
+      color: #f43f5e;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #f43f5e; border-radius: 10px; }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-pink-500 selection:text-white">
+
+  <!-- Twinkling Star Background -->
+  <div id="star-container" class="fixed inset-0 overflow-hidden pointer-events-none -z-10"></div>
+
+  <!-- Background Decorations (Interactive) -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="floating-icon top-[15%] left-[8%] animate-float text-pink-400" style="animation-delay: 0s;">
+      <i class="fas fa-balloon text-6xl opacity-40"></i>
+    </div>
+    <div class="floating-icon top-[65%] right-[12%] animate-float text-indigo-400" style="animation-delay: 2s;">
+      <i class="fas fa-cake-candles text-5xl opacity-40"></i>
+    </div>
+    <div class="floating-icon bottom-[15%] left-[18%] animate-float text-orange-400" style="animation-delay: 1s;">
+      <i class="fas fa-gift text-4xl opacity-40"></i>
+    </div>
+    <div class="floating-icon top-[25%] right-[25%] animate-float text-yellow-400" style="animation-delay: 3s;">
+      <i class="fas fa-star text-3xl opacity-40"></i>
+    </div>
+    
+    <!-- Large Blur Orbs -->
+    <div class="absolute top-[20%] left-[30%] w-96 h-96 bg-pink-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+    <div class="absolute bottom-[20%] right-[20%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[150px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div id="reveal-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#0f172a] transition-all duration-1000">
+    <div class="text-center space-y-8">
+      <div class="relative group cursor-pointer" onclick="startCelebration()">
+        <div class="absolute inset-0 bg-pink-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse"></div>
+        <div class="gift-box relative">
+          <img src="{{ gift_image }}" alt="Gift" class="w-56 h-56 object-contain drop-shadow-[0_0_20px_rgba(244,63,94,0.3)]">
+          <!-- Floating 'Tap Me' Tag -->
+          <div class="absolute -top-4 -right-4 bg-pink-500 text-white text-xs font-black px-3 py-1.5 rounded-full shadow-lg animate-bounce uppercase tracking-tighter">
+            Open Me!
+          </div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-2xl md:text-3xl font-heading font-black text-white">Something special for you...</h2>
+        <p class="text-slate-400 font-medium animate-pulse">Click the gift to start the magic</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content" class="hidden w-full max-w-2xl mx-auto space-y-8 py-10 opacity-0 transition-all duration-1000">
+    
+    <!-- Hero Card -->
+    <section class="glass rounded-[3rem] p-8 md:p-12 text-center space-y-8 relative overflow-hidden group">
+      <!-- Premium Animated Border -->
+      <div class="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-pink-500 via-indigo-500 to-pink-500 animate-shimmer"></div>
+      
+      <div class="space-y-3">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-black uppercase tracking-widest mx-auto">
+          <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+          Celebration Live
+        </div>
+        <h1 class="text-5xl md:text-7xl font-heading font-black text-white leading-tight">
+          {{ name }}<br>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-indigo-400">Happy Birthday!</span>
+        </h1>
+      </div>
+
+      <!-- Main Photo with Interactive Frame -->
+      <div class="relative group mx-auto w-full max-w-sm" id="photo-container">
+        <div class="absolute -inset-4 bg-gradient-to-br from-pink-500 to-indigo-600 rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-50 transition-opacity duration-700"></div>
+        <div class="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border-[6px] border-white/10 shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.02] group-hover:rotate-1">
+          <img src="{{ main_image }}" alt="{{ name }}" class="w-full h-full object-cover">
+          <!-- Glass Overlay on Hover -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-8 text-left">
+            <p class="text-white font-hand text-3xl">Looking amazing! ✨</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Typed Messages -->
+      <div class="min-h-[100px] flex items-center justify-center px-4 bg-white/5 rounded-3xl py-6 border border-white/5">
+        <p id="typed-text" class="text-xl md:text-3xl font-medium text-slate-200 leading-relaxed italic font-hand"></p>
+      </div>
+
+      <!-- Interactive Reaction Zone -->
+      <div class="grid grid-cols-2 gap-4">
+        <button onclick="makeAWish()" class="group relative px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-pink-500/20 hover:border-pink-500/50 transition-all overflow-hidden">
+          <div class="relative z-10 flex flex-col items-center gap-1">
+            <span class="text-2xl group-hover:scale-125 transition-transform">✨</span>
+            <span class="text-xs font-black uppercase tracking-widest text-slate-400 group-hover:text-pink-300">Make a Wish</span>
+          </div>
+        </button>
+        <button onclick="sendLove()" class="group relative px-6 py-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-all overflow-hidden">
+          <div class="relative z-10 flex flex-col items-center gap-1">
+            <span class="text-2xl group-hover:scale-125 transition-transform">❤️</span>
+            <span class="text-xs font-black uppercase tracking-widest text-slate-400 group-hover:text-indigo-300">Send Love</span>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Interactive Magic Cake Section -->
+    <section class="glass rounded-[3rem] p-10 text-center space-y-6">
+      <h3 class="text-xl font-heading font-black text-white">Digital Birthday Cake 🎂</h3>
+      <p class="text-sm text-slate-400">Click the candle to light it, then click again to blow!</p>
+      
+      <div class="py-10">
+        <div class="cake group" id="cake-body">
+          <div class="candle" id="main-candle" onclick="handleCandle()">
+            <div class="flame" id="main-flame"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA & Footer -->
+    <div class="flex flex-col items-center gap-6 pb-10">
+      {% if gallery_images %}
+      <a href="{{ gallery_link }}" class="premium-gradient px-10 py-5 rounded-full font-black text-white shadow-xl shadow-pink-500/20 hover:scale-105 hover:shadow-pink-500/40 transition-all flex items-center gap-3 group">
+        <i class="fas fa-images text-xl group-hover:rotate-12 transition-transform"></i>
+        SEE OUR MEMORIES
+      </a>
+      {% endif %}
+      
+      <div class="flex flex-col items-center gap-2 opacity-50">
+        <p class="text-[10px] uppercase tracking-[0.3em] font-black text-slate-400">
+          Created with magic by WishCraft
+        </p>
+        <div class="flex gap-4 text-xs">
+          <i class="fas fa-heart text-pink-500 animate-pulse"></i>
+          <i class="fas fa-star text-yellow-500 animate-spin-slow"></i>
+          <i class="fas fa-music text-indigo-500"></i>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Audio System -->
+  <div id="audio-container" class="hidden">
+    {% if music and 'spotify.com' in music %}
+    <div id="spotify-player" class="fixed bottom-6 right-6 z-[200] transition-transform duration-500 translate-y-40">
+        <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class="rounded-2xl shadow-2xl border border-white/10"></iframe>
+        <button onclick="toggleSpotify()" class="absolute -top-3 -right-3 bg-slate-800 text-white rounded-full w-8 h-8 flex items-center justify-center border border-white/10 hover:bg-pink-500 transition-colors">
+            <i class="fas fa-minus text-xs"></i>
+        </button>
+    </div>
+    {% else %}
+    <audio id="bg-music" src="{{ music }}" loop></audio>
+    {% endif %}
+  </div>
+
+  <script>
+    let opened = false;
+    let candleLit = false;
+    const messages = JSON.parse(`{{ messages | tojson }}`);
+
+    // Create Twinkling Stars
+    function initStars() {
+      const container = document.getElementById('star-container');
+      const count = 100;
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'star animate-twinkle';
+        const size = Math.random() * 3 + 1;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        star.style.animationDelay = `${Math.random() * 3}s`;
+        container.appendChild(star);
+      }
+    }
+
+    initStars();
+
+    function startCelebration() {
+      if (opened) return;
+      opened = true;
+
+      const revealScreen = document.getElementById('reveal-screen');
+      const mainContent = document.getElementById('main-content');
+      const bgMusic = document.getElementById('bg-music');
+
+      // GSAP Reveal Animation
+      gsap.to(revealScreen, {
+        y: -window.innerHeight,
+        duration: 1.2,
+        ease: "power4.inOut",
+        onComplete: () => {
+          revealScreen.style.display = 'none';
+          mainContent.classList.remove('hidden');
+          
+          gsap.to(mainContent, {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "back.out(1.7)",
+            onComplete: () => {
+              startTyping();
+              launchInitialConfetti();
+              playMusic();
+            }
+          });
+        }
+      });
+    }
+
+    function startTyping() {
+      new Typed('#typed-text', {
+        strings: messages,
+        typeSpeed: 60,
+        backSpeed: 40,
+        backDelay: 2500,
+        loop: true,
+        showCursor: true,
+        cursorChar: '_'
+      });
+    }
+
+    function playMusic() {
+      const bgMusic = document.getElementById('bg-music');
+      const spotify = document.getElementById('spotify-player');
+      
+      if (bgMusic) {
+        bgMusic.volume = 0.5;
+        bgMusic.play().catch(() => console.log("Audio blocked"));
+      }
+      if (spotify) {
+        spotify.classList.remove('translate-y-40');
+      }
+    }
+
+    function toggleSpotify() {
+        const s = document.getElementById('spotify-player');
+        s.classList.toggle('translate-y-40');
+    }
+
+    // Interactive Functions
+    function handleCandle() {
+      const flame = document.getElementById('main-flame');
+      const cake = document.getElementById('cake-body');
+      
+      if (!candleLit) {
+        // Light it
+        flame.style.display = 'block';
+        gsap.from(flame, { scale: 0, duration: 0.3, ease: "back.out" });
+        candleLit = true;
+        showToast("Candle Lit! Now blow it out! 🌬️");
+      } else {
+        // Blow it out
+        flame.style.display = 'none';
+        candleLit = false;
+        launchConfetti(0.5); // Mini confetti
+        gsap.to(cake, { y: 5, duration: 0.1, yoyo: true, repeat: 3 });
+        showToast("Happy Birthday! 🎉");
+      }
+    }
+
+    function makeAWish() {
+      launchConfetti(1);
+      gsap.to('#main-content', { scale: 1.02, duration: 0.1, yoyo: true, repeat: 1 });
+    }
+
+    function sendLove() {
+      for (let i = 0; i < 15; i++) {
+        setTimeout(createHeart, i * 100);
+      }
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart-particle text-2xl';
+      heart.innerHTML = '❤️';
+      heart.style.left = `${Math.random() * 80 + 10}%`;
+      heart.style.bottom = '0';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+
+    function launchInitialConfetti() {
+        launchConfetti(1.5);
+    }
+
+    function launchConfetti(scale = 1) {
+      const duration = 2000 * scale;
+      const end = Date.now() + duration;
+
+      (function frame() {
+        confetti({
+          particleCount: 5,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#f43f5e', '#6366f1']
+        });
+        confetti({
+          particleCount: 5,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#f43f5e', '#6366f1']
+        });
+
+        if (Date.now() < end) {
+          requestAnimationFrame(frame);
+        }
+      }());
+    }
+
+    function showToast(text) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 glass px-6 py-3 rounded-full text-white font-bold z-[300] transition-all duration-500 translate-y-10 opacity-0';
+        toast.innerHTML = text;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }, 50);
+    }
+  </script>
+</body>
+
+</html>

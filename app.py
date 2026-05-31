@@ -73,7 +73,8 @@ music_client = MusicClient()
 @app.after_request
 def add_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # Allow iframe embedding for simulator support
+    # response.headers['X-Frame-Options'] = 'SAMEORIGIN'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
@@ -251,6 +252,7 @@ def generate():
                 'anniversary.html': "💖 Happy Anniversary",
                 'birthday2.html': "🎊 Happy Birthday",
                 'birthday3.html': "🎊 Happy Birthday",
+                'birthday_v2.html': "✨ Happy Birthday",
                 'birthday_emotional.html': "✨ Happy Birthday",
                 'sorry_emotional.html': "✨ From the Heart",
                 'valentine.html': "💖 Happy Valentine's Day"
