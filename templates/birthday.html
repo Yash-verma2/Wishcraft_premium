@@ -172,7 +172,6 @@
       animation: rise var(--speed) linear forwards, sway 3s ease-in-out infinite;
       box-shadow: inset -6px -8px 14px rgba(255, 255, 255, 0.2),
         0 10px 20px rgba(0, 0, 0, 0.1);
-      will-change: transform, opacity;
     }
 
     .balloon::after {
@@ -292,14 +291,11 @@
     function launchConfetti() {
       const duration = 4500;
       const end = Date.now() + duration;
-      const interval = setInterval(() => {
-        if (Date.now() > end) {
-          clearInterval(interval);
-          return;
-        }
-        confetti({ particleCount: 15, angle: 60, spread: 55, origin: { x: 0 } });
-        confetti({ particleCount: 15, angle: 120, spread: 55, origin: { x: 1 } });
-      }, 250);
+      (function frame() {
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
     }
 
     /* ------------------ BALLOON GENERATOR ------------------ */

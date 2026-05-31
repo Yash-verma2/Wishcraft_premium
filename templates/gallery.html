@@ -34,6 +34,7 @@
       max-height: 320px;
       position: relative;
       transform-style: preserve-3d;
+      transition: transform 1s;
     }
 
     .carousel img {
@@ -84,7 +85,6 @@
       opacity: 0.8;
       top: -10px;
       animation: fall linear infinite;
-      will-change: transform, opacity;
     }
 
     @keyframes fall {
