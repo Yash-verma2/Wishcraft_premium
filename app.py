@@ -201,6 +201,164 @@ def get_manifest(uid):
         logger.error(f"Error fetching manifest from Cloudinary for {uid}: {e}")
         return None
 
+def background_upload_and_update_manifest(uid, local_image_paths, local_music_path, manifest_data):
+    """
+    Worker function running in a background thread.
+    Uploads local files to Cloudinary and updates the manifest JSON file locally and on Cloudinary.
+    """
+    logger.info(f"[{uid}] Starting background upload task to Cloudinary")
+    folder_name = f"birthday_app/{uid}"
+    
+    # Track if anything changed to avoid useless writes/uploads
+    changed = False
+
+    # 1. Upload Main Image
+    main_path = local_image_paths.get('main_image')
+    if main_path and os.path.exists(main_path):
+        try:
+            filename = os.path.basename(main_path).rsplit('.', 1)[0]
+            public_id = f"main_{filename}"
+            logger.info(f"[{uid}] Background uploading main image: {main_path}")
+            result = cloudinary.uploader.upload(
+                main_path,
+                public_id=public_id,
+                folder=folder_name,
+                resource_type="image",
+                transformation=[
+                    {'width': 1024, 'height': 1024, 'crop': 'limit'},
+                    {'quality': 'auto', 'fetch_format': 'auto'}
+                ]
+            )
+            secure_url = result.get('secure_url')
+            if secure_url:
+                manifest_data['context']['main_image'] = secure_url
+                changed = True
+                logger.info(f"[{uid}] Main image uploaded successfully: {secure_url}")
+        except Exception as e:
+            logger.error(f"[{uid}] Background main image upload failed: {e}")
+
+    # 2. Upload Gift Image
+    gift_path = local_image_paths.get('gift_image')
+    if gift_path and os.path.exists(gift_path):
+        try:
+            filename = os.path.basename(gift_path).rsplit('.', 1)[0]
+            public_id = f"gift_{filename}"
+            logger.info(f"[{uid}] Background uploading gift image: {gift_path}")
+            result = cloudinary.uploader.upload(
+                gift_path,
+                public_id=public_id,
+                folder=folder_name,
+                resource_type="image",
+                transformation=[
+                    {'width': 1024, 'height': 1024, 'crop': 'limit'},
+                    {'quality': 'auto', 'fetch_format': 'auto'}
+                ]
+            )
+            secure_url = result.get('secure_url')
+            if secure_url:
+                manifest_data['context']['gift_image'] = secure_url
+                changed = True
+                logger.info(f"[{uid}] Gift image uploaded successfully: {secure_url}")
+        except Exception as e:
+            logger.error(f"[{uid}] Background gift image upload failed: {e}")
+
+    # 3. Upload Gallery Images
+    gallery_paths = local_image_paths.get('gallery', [])
+    cloudinary_gallery_urls = []
+    if gallery_paths:
+        for i, path in enumerate(gallery_paths):
+            if path and os.path.exists(path):
+                try:
+                    filename = os.path.basename(path).rsplit('.', 1)[0]
+                    public_id = f"gallery_{i}_{filename}"
+                    logger.info(f"[{uid}] Background uploading gallery image {i}: {path}")
+                    result = cloudinary.uploader.upload(
+                        path,
+                        public_id=public_id,
+                        folder=folder_name,
+                        resource_type="image",
+                        transformation=[
+                            {'width': 1024, 'height': 1024, 'crop': 'limit'},
+                            {'quality': 'auto', 'fetch_format': 'auto'}
+                        ]
+                    )
+                    secure_url = result.get('secure_url')
+                    if secure_url:
+                        cloudinary_gallery_urls.append(secure_url)
+                        logger.info(f"[{uid}] Gallery image {i} uploaded successfully: {secure_url}")
+                    else:
+                        local_url = f"/static/uploads/{uid}/{os.path.basename(path)}"
+                        cloudinary_gallery_urls.append(local_url)
+                except Exception as e:
+                    logger.error(f"[{uid}] Background gallery image {i} upload failed: {e}")
+                    local_url = f"/static/uploads/{uid}/{os.path.basename(path)}"
+                    cloudinary_gallery_urls.append(local_url)
+        
+        if cloudinary_gallery_urls:
+            manifest_data['context']['gallery_images'] = cloudinary_gallery_urls
+            changed = True
+
+    # 4. Upload Music
+    music_path = local_music_path
+    if music_path and os.path.exists(music_path):
+        try:
+            filename = os.path.basename(music_path).rsplit('.', 1)[0]
+            public_id = f"music_{filename}"
+            logger.info(f"[{uid}] Background uploading music: {music_path}")
+            result = cloudinary.uploader.upload(
+                music_path,
+                public_id=public_id,
+                folder=folder_name,
+                resource_type="video"
+            )
+            secure_url = result.get('secure_url')
+            if secure_url:
+                manifest_data['context']['music'] = secure_url
+                changed = True
+                logger.info(f"[{uid}] Music uploaded successfully: {secure_url}")
+        except Exception as e:
+            logger.error(f"[{uid}] Background music upload failed: {e}")
+
+    # 5. Save updated manifest locally and upload it to Cloudinary
+    if changed:
+        try:
+            local_dir = os.path.join("generated", uid)
+            os.makedirs(local_dir, exist_ok=True)
+            local_path = os.path.join(local_dir, f"manifest_{uid}.json")
+            with open(local_path, "w", encoding="utf-8") as f:
+                json.dump(manifest_data, f, indent=2)
+            logger.info(f"[{uid}] Background thread: Updated manifest saved locally: {local_path}")
+        except Exception as e:
+            logger.error(f"[{uid}] Background thread: Failed to save updated manifest locally: {e}")
+
+        # Upload manifest to Cloudinary
+        try:
+            json_bytes = json.dumps(manifest_data).encode('utf-8')
+            cloudinary.uploader.upload(
+                json_bytes,
+                public_id=f"manifest_{uid}.json",
+                folder=folder_name,
+                resource_type="raw",
+                format="json"
+            )
+            logger.info(f"[{uid}] Background thread: Uploaded updated manifest to Cloudinary")
+        except Exception as e:
+            logger.error(f"[{uid}] Background thread: Failed to upload updated manifest to Cloudinary: {e}")
+    else:
+        # Upload the initial manifest to Cloudinary anyway (so it exists in both places)
+        try:
+            json_bytes = json.dumps(manifest_data).encode('utf-8')
+            cloudinary.uploader.upload(
+                json_bytes,
+                public_id=f"manifest_{uid}.json",
+                folder=folder_name,
+                resource_type="raw",
+                format="json"
+            )
+            logger.info(f"[{uid}] Background thread: Uploaded initial manifest to Cloudinary (no files uploaded)")
+        except Exception as e:
+            logger.error(f"[{uid}] Background thread: Failed to upload initial manifest to Cloudinary: {e}")
+
 # ---------------- ROUTES ----------------
 
 @app.route('/health')
@@ -265,92 +423,70 @@ def generate():
         uid = uuid.uuid4().hex[:10]
         folder_name = f"birthday_app/{uid}"
 
-        # --- Parallel Asset Processing ---
-        futures = {} 
+        # --- Local Asset Saving ---
+        local_dir = os.path.join("static", "uploads", uid)
+        os.makedirs(local_dir, exist_ok=True)
         
-        # Helper to process an upload
-        def handle_upload(file_obj, prefix):
-            if file_obj and allowed(file_obj.filename, Config.ALLOWED_IMAGES):
-                safe_name = secure_filename(file_obj.filename).rsplit('.', 1)[0]
-                public_id = f"{prefix}_{safe_name}"
-                return executor.submit(upload_image_task, file_obj, public_id, folder_name, uid)
-            return None
+        local_image_paths = {
+            'gallery': []
+        }
+        local_music_path = None
 
-        # 1. Main & Gift Images
-        main_future = handle_upload(request.files.get("main_image"), "main")
-        gift_future = handle_upload(request.files.get("gift_image"), "gift")
+        def save_file_locally(file_storage, prefix):
+            if file_storage and file_storage.filename:
+                ext = file_storage.filename.rsplit('.', 1)[1].lower() if '.' in file_storage.filename else 'png'
+                safe_name = secure_filename(file_storage.filename).rsplit('.', 1)[0]
+                local_filename = f"{prefix}_{safe_name}.{ext}"
+                local_path = os.path.join(local_dir, local_filename)
+                
+                file_storage.seek(0)
+                file_storage.save(local_path)
+                
+                local_url = f"/static/uploads/{uid}/{local_filename}"
+                return local_path, local_url
+            return None, None
 
-        # 2. Gallery Images
-        gallery_futures = []
-        for i, g_file in enumerate(request.files.getlist("gallery")[:Config.MAX_GALLERY]):
-            fut = handle_upload(g_file, f"gallery_{i}")
-            if fut:
-                gallery_futures.append(fut)
-
-        # 3. Music 
-        music_file = request.files.get("music")
-        music_url = "/static/default_music.mp3"
-        music_future = None
-        
-        if music_file and allowed(music_file.filename, Config.ALLOWED_MUSIC):
-             def upload_music_task(f_obj, pid, fldr, current_uid):
-                 locals_url = None
-                 # Local Save
-                 try:
-                     ext = f_obj.filename.rsplit('.', 1)[1].lower()
-                     l_dir = os.path.join("static", "uploads", current_uid)
-                     os.makedirs(l_dir, exist_ok=True)
-                     l_filename = f"{pid}.{ext}"
-                     l_path = os.path.join(l_dir, l_filename)
-                     f_obj.seek(0)
-                     f_obj.save(l_path)
-                     locals_url = f"/static/uploads/{current_uid}/{l_filename}"
-                     logger.info(f"Music saved locally: {l_path}")
-                 except Exception as e:
-                     logger.error(f"Local music save failed: {e}")
-
-                 # Cloudinary
-                 try:
-                     f_obj.seek(0)
-                     res = cloudinary.uploader.upload(f_obj, public_id=pid, folder=fldr, resource_type="video")
-                     return res.get('secure_url') or locals_url
-                 except Exception as e:
-                     logger.error(f"Cloudinary music upload failed: {e}")
-                     return locals_url
-                 
-             safe_music_name = secure_filename(music_file.filename).rsplit('.', 1)[0]
-             music_future = executor.submit(upload_music_task, music_file, f"music_{safe_music_name}", folder_name, uid)
-
-        # --- Resolve Futures ---
-        
-        # Main Image
+        # 1. Main Image
+        main_file = request.files.get("main_image")
         main_url = None
-        if main_future:
-            main_url = main_future.result()
+        if main_file and allowed(main_file.filename, Config.ALLOWED_IMAGES):
+            local_path, local_url = save_file_locally(main_file, "main")
+            if local_path:
+                local_image_paths['main_image'] = local_path
+                main_url = local_url
         if not main_url:
             main_url = request.form.get("main_image_selected")
 
-        # Gift Image
+        # 2. Gift Image
+        gift_file = request.files.get("gift_image")
         gift_url = None
-        if gift_future:
-            gift_url = gift_future.result()
+        if gift_file and allowed(gift_file.filename, Config.ALLOWED_IMAGES):
+            local_path, local_url = save_file_locally(gift_file, "gift")
+            if local_path:
+                local_image_paths['gift_image'] = local_path
+                gift_url = local_url
         if not gift_url:
             gift_url = request.form.get("gift_image_selected") or "/static/default_gift.png"
 
-        # Gallery Images
+        # 3. Gallery Images
         gallery_urls = []
-        for fut in gallery_futures:
-            url = fut.result()
-            if url:
-                gallery_urls.append(url)
-        
-        # Music
-        if music_future:
-            uploaded_music_url = music_future.result()
-            if uploaded_music_url:
-                music_url = uploaded_music_url
+        for i, g_file in enumerate(request.files.getlist("gallery")[:Config.MAX_GALLERY]):
+            if g_file and allowed(g_file.filename, Config.ALLOWED_IMAGES):
+                local_path, local_url = save_file_locally(g_file, f"gallery_{i}")
+                if local_path:
+                    local_image_paths['gallery'].append(local_path)
+                    gallery_urls.append(local_url)
+
+        # 4. Music File
+        music_file = request.files.get("music")
+        music_url = "/static/default_music.mp3"
+        if music_file and allowed(music_file.filename, Config.ALLOWED_MUSIC):
+            local_path, local_url = save_file_locally(music_file, "music")
+            if local_path:
+                local_music_path = local_path
+                music_url = local_url
         else:
-             music_url = request.form.get('music_selected') or request.form.get('music_option') or music_url
+            music_url = request.form.get('music_selected') or request.form.get('music_option') or music_url
 
         # --- Payment Tracking ---
         payment_method = request.form.get("payment_method", "none")
@@ -409,7 +545,6 @@ def generate():
                 firebase_api_key = "AIzaSyAyof4JXS10wiMyJVNFoDpSxs713bId3Ug"
                 
                 import urllib.parse
-                # Create a readable document ID: e.g. "JohnDoe_1a2b3c"
                 safe_name = urllib.parse.quote((upi_name or name).replace(" ", "_"))
                 doc_id = f"{safe_name}_{uid[:6]}"
                 
@@ -429,7 +564,6 @@ def generate():
                     }
                 }
                 
-                # Execute push in background so it doesn't block response if Firebase is slow
                 def push_to_firebase(url, payload):
                     try:
                         requests.post(url, json=payload, timeout=5)
@@ -440,17 +574,22 @@ def generate():
             except Exception as e:
                 logger.error(f"Failed to initiate Firebase push for UID {uid}: {e}")
 
-        # Upload Manifest to Cloudinary & Save Locally
-        manifest_url = upload_raw_task(manifest_data, f"manifest_{uid}.json", folder_name, uid)
-        
-        if not manifest_url:
-            # Fallback for dev without Cloudinary: Save local if we really want, 
-            # but user specifically asked for Cloudinary persistence.
-            logger.error("Manifest upload failed!")
-            # In production without keys this will fail.
+        # Save manifest locally first (so it can be served instantly)
+        try:
+            local_manifest_dir = os.path.join("generated", uid)
+            os.makedirs(local_manifest_dir, exist_ok=True)
+            local_manifest_path = os.path.join(local_manifest_dir, f"manifest_{uid}.json")
+            with open(local_manifest_path, "w", encoding="utf-8") as f:
+                json.dump(manifest_data, f, indent=2)
+            logger.info(f"Initial manifest saved locally: {local_manifest_path}")
+        except Exception as e:
+            logger.error(f"Failed to save initial manifest locally: {e}")
+
+        # Spawn the background worker to upload files and update manifest on Cloudinary
+        executor.submit(background_upload_and_update_manifest, uid, local_image_paths, local_music_path, manifest_data)
 
         duration = time.time() - start_time
-        logger.info(f"[{request_id}] Generation complete in {duration:.2f}s. UID: {uid}")
+        logger.info(f"[{request_id}] Local generation complete in {duration:.2f}s. Spawning background upload task. UID: {uid}")
         
         link = request.host_url.rstrip('/') + f"/generated/{uid}/"
         return jsonify({"link": link, "uid": uid})
