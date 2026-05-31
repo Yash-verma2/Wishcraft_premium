@@ -112,6 +112,12 @@
             background-size: cover;
         }
 
+        @media (max-width: 768px) {
+            .parallax-wrapper {
+                background-attachment: scroll;
+            }
+        }
+
         /* Timeline Nodes */
         .timeline-line {
             position: absolute;
@@ -623,11 +629,21 @@
         }
 
         // --- 6. CANVAS EFFECTS (Hearts & Petals) ---
+        let heroCanvasVisible = false;
+        let petalsCanvasVisible = false;
+        let heroAnimFrameId = null;
+        let petalsAnimFrameId = null;
+
         function initHeroHearts() {
             const canvas = document.getElementById('heroCanvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            
+            function resizeCanvas() {
+                canvas.width = canvas.parentElement.clientWidth || window.innerWidth;
+                canvas.height = canvas.parentElement.clientHeight || window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
 
             const particles = [];
             for (let i = 0; i < 30; i++) {
@@ -640,6 +656,10 @@
             }
 
             function animate() {
+                if (!heroCanvasVisible) {
+                    heroAnimFrameId = null;
+                    return;
+                }
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
 
@@ -652,17 +672,31 @@
                     ctx.fill();
                 });
 
-                requestAnimationFrame(animate);
+                heroAnimFrameId = requestAnimationFrame(animate);
             }
-            animate();
+
+            // Setup Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    heroCanvasVisible = entry.isIntersecting;
+                    if (heroCanvasVisible && !heroAnimFrameId) {
+                        heroAnimFrameId = requestAnimationFrame(animate);
+                    }
+                });
+            }, { threshold: 0.01 });
+            observer.observe(canvas);
         }
 
         function initPetals() {
             const canvas = document.getElementById('petalsCanvas');
             const ctx = canvas.getContext('2d');
-            // Basic Falling Petals Logic (same structure as hearts but downward)
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            
+            function resizeCanvas() {
+                canvas.width = canvas.parentElement.clientWidth || window.innerWidth;
+                canvas.height = canvas.parentElement.clientHeight || window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
 
             const petals = [];
             for (let i = 0; i < 40; i++) {
@@ -677,6 +711,10 @@
             }
 
             function animatePetals() {
+                if (!petalsCanvasVisible) {
+                    petalsAnimFrameId = null;
+                    return;
+                }
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
 
@@ -695,9 +733,19 @@
                     ctx.fill();
                     ctx.restore();
                 });
-                requestAnimationFrame(animatePetals);
+                petalsAnimFrameId = requestAnimationFrame(animatePetals);
             }
-            animatePetals();
+
+            // Setup Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    petalsCanvasVisible = entry.isIntersecting;
+                    if (petalsCanvasVisible && !petalsAnimFrameId) {
+                        petalsAnimFrameId = requestAnimationFrame(animatePetals);
+                    }
+                });
+            }, { threshold: 0.01 });
+            observer.observe(canvas);
         }
 
     </script>

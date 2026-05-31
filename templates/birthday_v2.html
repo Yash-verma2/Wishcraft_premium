@@ -467,26 +467,26 @@
       const duration = 2000 * scale;
       const end = Date.now() + duration;
 
-      (function frame() {
+      const interval = setInterval(() => {
+        if (Date.now() > end) {
+          clearInterval(interval);
+          return;
+        }
         confetti({
-          particleCount: 5,
+          particleCount: 15,
           angle: 60,
           spread: 55,
           origin: { x: 0 },
           colors: ['#f43f5e', '#6366f1']
         });
         confetti({
-          particleCount: 5,
+          particleCount: 15,
           angle: 120,
           spread: 55,
           origin: { x: 1 },
           colors: ['#f43f5e', '#6366f1']
         });
-
-        if (Date.now() < end) {
-          requestAnimationFrame(frame);
-        }
-      }());
+      }, 250);
     }
 
     function showToast(text) {
