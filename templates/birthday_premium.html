@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} ✨</title>
+
+  <!-- Favicons -->
+  <link class="favicon" rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link class="favicon" rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link class="favicon" rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+  <link class="favicon" rel="apple-touch-icon" sizes="180x180" href="/static/icons/favicon-180x180.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800;900&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Pinyon+Script&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Typed.js -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- GSAP for Smooth Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            display: ['Cinzel', 'serif'],
+            serif: ['Playfair Display', 'serif'],
+            royal: ['Pinyon Script', 'cursive'],
+          },
+          animation: {
+            'float-slow': 'float 8s ease-in-out infinite',
+            'shimmer-gold': 'shimmerGold 6s linear infinite',
+            'pulse-glow': 'pulseGlow 3s ease-in-out infinite',
+            'spin-record': 'spinRecord 10s linear infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+              '50%': { transform: 'translateY(-15px) rotate(2deg)' },
+            },
+            shimmerGold: {
+              '0%': { backgroundPosition: '-200% center' },
+              '100%': { backgroundPosition: '200% center' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: 0.15, transform: 'scale(1)' },
+              '50%': { opacity: 0.35, transform: 'scale(1.05)' },
+            },
+            spinRecord: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      overflow-x: hidden;
+      background-color: #050508;
+      color: #fafafa;
+    }
+
+    /* ── Metallic Gold System ── */
+    .gold-text {
+      background: linear-gradient(to right, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .gold-border {
+      border: 1px solid transparent;
+      background-image: linear-gradient(#09090b, #09090b), linear-gradient(135deg, #BF953F 0%, #FCF6BA 30%, #B38728 70%, #AA771C 100%);
+      background-origin: border-box;
+      background-clip: content-box, border-box;
+    }
+
+    .gold-btn {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 40%, #B38728 80%, #AA771C 100%);
+      color: #050508;
+      box-shadow: 0 4px 20px rgba(179, 135, 40, 0.25);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .gold-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(179, 135, 40, 0.45);
+    }
+
+    .glass-premium {
+      background: rgba(10, 10, 14, 0.75);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid rgba(191, 149, 63, 0.2);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ── Envelope Open/Close ── */
+    #envelope {
+      perspective: 1200px;
+    }
+
+    .envelope-open #envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 15;
+    }
+
+    /* ── Sky Lanterns ── */
+    .lantern {
+      position: absolute;
+      background: radial-gradient(circle at 50% 80%, rgba(255, 185, 80, 0.9) 0%, rgba(220, 75, 20, 0.7) 80%);
+      border-radius: 6px 6px 14px 14px;
+      box-shadow: 0 0 15px rgba(255, 150, 50, 0.75), 0 0 30px rgba(255, 100, 20, 0.5);
+      pointer-events: none;
+      opacity: 0.95;
+    }
+
+    .lantern::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #ffe082;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ffca28;
+    }
+
+    /* ── Falling Gold Dust ── */
+    .gold-dust {
+      position: absolute;
+      background: linear-gradient(135deg, #FCF6BA, #BF953F);
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(0.5px);
+    }
+
+    /* Typed cursor style */
+    .typed-cursor {
+      color: #BF953F;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #050508;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #BF953F;
+      border-radius: 10px;
+    }
+
+    /* Piano Guide Highlight styling */
+    .guide-highlight {
+      animation: pulseKeyGlow 0.8s infinite alternate !important;
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.95), inset 0 0 10px rgba(255, 255, 255, 0.6) !important;
+      border-color: #fbbf24 !important;
+      color: #000 !important;
+      font-weight: 900 !important;
+    }
+
+    @keyframes pulseKeyGlow {
+      from {
+        filter: brightness(1);
+        transform: scaleY(1);
+      }
+
+      to {
+        filter: brightness(1.3) contrast(1.1);
+        transform: scaleY(0.97);
+      }
+    }
+
+    /* ── Sky Lanterns & Balloons Keyframes ── */
+    @keyframes floatUpLantern {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 0.8;
+      }
+
+      90% {
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(-125vh);
+        opacity: 0;
+      }
+    }
+
+    @keyframes swayLantern {
+
+      0%,
+      100% {
+        margin-left: 0;
+      }
+
+      50% {
+        margin-left: 25px;
+      }
+    }
+
+    @keyframes floatUpB {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
+
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-125vh);
+        opacity: 0;
+      }
+    }
+
+    @keyframes swayB {
+
+      0%,
+      100% {
+        margin-left: 0;
+      }
+
+      50% {
+        margin-left: 35px;
+      }
+    }
+
+    /* Mobile Cake Scaling */
+    @media (max-w: 480px) {
+      #cake-container {
+        transform: scale(0.85);
+        transform-origin: center bottom;
+      }
+    }
+  </style>
+</head>
+
+<body
+  class="min-h-screen flex flex-col items-center justify-center p-4 selection:bg-amber-500 selection:text-zinc-950 font-sans">
+
+  <!-- Ambient Luxury Backgrounds -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-20">
+    <div
+      class="absolute top-[10%] left-[20%] w-[400px] h-[400px] bg-amber-500/10 rounded-full blur-[140px] animate-pulse-glow">
+    </div>
+    <div
+      class="absolute bottom-[20%] right-[15%] w-[500px] h-[500px] bg-yellow-600/10 rounded-full blur-[160px] animate-pulse-glow"
+      style="animation-delay: 1.5s;"></div>
+  </div>
+
+  <!-- Star Dust & Flower Petals Overlay -->
+  <div id="gold-dust-container" class="fixed inset-0 overflow-hidden pointer-events-none -z-15"></div>
+  <!-- Sky Lantern and Balloon Containers -->
+  <div id="sky-lantern-container" class="fixed inset-0 overflow-hidden pointer-events-none -z-10"></div>
+  <div id="balloon-container" class="fixed inset-0 overflow-hidden pointer-events-none z-[80]"></div>
+
+  <!-- PHASE 1: Golden Wax-Sealed Opening Envelope with Gold Ribbon Ties -->
+  <div id="envelope-wrapper" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-zinc-950 p-4">
+    <!-- Background sparkles -->
+    <div class="absolute inset-0 opacity-40 pointer-events-none" id="envelope-bg-sparkles"></div>
+
+    <div
+      class="relative w-full max-w-[420px] aspect-[1.4] bg-[#120824] rounded-2xl shadow-[0_30px_70px_rgba(0,0,0,0.95)] flex items-center justify-center border border-amber-500/20"
+      id="envelope">
+
+      <!-- Gold Ribbon - Vertical -->
+      <div
+        class="absolute top-0 bottom-0 left-[calc(50%-10px)] w-5 bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#AA771C] z-35 shadow-lg"
+        id="ribbon-vertical"></div>
+      <!-- Gold Ribbon - Horizontal -->
+      <div
+        class="absolute left-0 right-0 top-[calc(50%-10px)] h-5 bg-gradient-to-b from-[#BF953F] via-[#FCF6BA] to-[#AA771C] z-35 shadow-lg"
+        id="ribbon-horizontal"></div>
+
+      <!-- Flap (SVG for scaling) -->
+      <svg
+        class="absolute top-0 left-0 w-full h-1/2 z-30 transition-transform duration-1000 origin-top overflow-visible filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]"
+        id="envelope-flap" viewBox="0 0 100 50" preserveAspectRatio="none">
+        <polygon points="0,0 100,0 50,50" fill="#261244" stroke="#BF953F" stroke-width="0.5" />
+      </svg>
+
+      <!-- Side Flaps -->
+      <svg class="absolute top-0 left-0 w-1/2 h-full z-25" viewBox="0 0 50 100" preserveAspectRatio="none">
+        <polygon points="0,0 50,50 0,100" fill="#1c0c33" stroke="#BF953F" stroke-width="0.3" />
+      </svg>
+      <svg class="absolute top-0 right-0 w-1/2 h-full z-25" viewBox="0 0 50 100" preserveAspectRatio="none">
+        <polygon points="50,0 0,50 50,100" fill="#1c0c33" stroke="#BF953F" stroke-width="0.3" />
+      </svg>
+      <!-- Bottom Flap -->
+      <svg class="absolute bottom-0 left-0 w-full h-[60%] z-26" viewBox="0 0 100 60" preserveAspectRatio="none">
+        <polygon points="0,60 100,60 50,0" fill="#150827" stroke="#BF953F" stroke-width="0.3" />
+      </svg>
+
+      <!-- Wax Seal -->
+      <div class="absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 cursor-pointer" id="wax-seal"
+        onclick="openEnvelope(event)">
+        <div
+          class="relative w-20 h-20 bg-gradient-to-br from-rose-800 to-red-900 hover:from-rose-700 hover:to-red-800 rounded-full border-[3px] border-amber-400 shadow-[0_10px_25px_rgba(0,0,0,0.5)] flex items-center justify-center transform hover:scale-105 transition-transform duration-300">
+          <span class="text-amber-300 text-3xl font-serif select-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">✨</span>
+          <span class="absolute -inset-2 rounded-full border border-amber-400/40 animate-ping"></span>
+        </div>
+      </div>
+
+      <!-- The Invitation Card Inside -->
+      <div
+        class="absolute w-[92%] h-[92%] bg-zinc-900 border border-amber-500/30 rounded-xl p-6 text-center flex flex-col items-center justify-center transform scale-95 z-20"
+        id="envelope-card">
+        <span class="font-display font-semibold text-xs tracking-[0.25em] text-amber-500 mb-1">EXCLUSIVE
+          INVITATION</span>
+        <div class="w-10 h-0.5 bg-amber-500/40 mb-3"></div>
+        <p class="text-zinc-400 text-[10px] uppercase tracking-widest font-medium mb-3">Created especially for</p>
+        <h2 class="font-display font-black text-2xl text-white tracking-wider mb-6 gold-text uppercase">{{ name }}</h2>
+        <button onclick="openEnvelope(event)"
+          class="gold-btn px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-wider">Open Invitation</button>
+      </div>
+    </div>
+
+    <div class="text-center mt-8 space-y-2" id="envelope-hint">
+      <h3 class="text-white font-serif text-lg tracking-wide">You have received a premium birthday wish! 💌</h3>
+      <p class="text-amber-500/80 text-xs font-bold tracking-[0.25em] animate-pulse uppercase">Tap the Golden Seal to
+        open the invitation</p>
+    </div>
+
+    <!-- Envelope Footer Branding -->
+    <div class="flex flex-col items-center gap-1 opacity-50 text-center mt-12 scale-90">
+      <a href="https://wishcraft-pages.vercel.app/" target="_blank" class="text-[9px] uppercase tracking-[0.35em] font-black text-amber-300/80 hover:text-amber-200 transition-colors duration-300">
+        Exquisite Design by WishCraft Premium
+      </a>
+      <span class="flex items-center gap-1.5 font-semibold text-[9px] text-amber-400 normal-case tracking-normal">
+        <i class="fas fa-arrow-turn-up fa-rotate-90 text-[8px]"></i> a Yash Verma's product
+      </span>
+    </div>
+  </div>
+
+  <!-- Fixed Floating Progress Tracker -->
+  <div id="progress-tracker"
+    class="fixed top-4 left-1/2 -translate-x-1/2 z-[90] glass-premium rounded-full px-5 py-2.5 flex items-center gap-6 shadow-2xl border border-amber-500/20 translate-y-[-100px] transition-transform duration-700">
+    <div class="flex items-center gap-2" id="progress-step-1">
+      <span
+        class="w-7 h-7 rounded-full bg-amber-500 text-zinc-950 font-bold text-xs flex items-center justify-center shadow-[0_0_10px_#f59e0b] transition-all">1</span>
+      <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 hidden sm:inline">Wish</span>
+    </div>
+    <div class="w-6 h-[1.5px] bg-zinc-800" id="progress-line-1"></div>
+    <div class="flex items-center gap-2" id="progress-step-2">
+      <span
+        class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 font-bold text-xs flex items-center justify-center transition-all">2</span>
+      <span class="text-[10px] font-black uppercase tracking-wider text-zinc-500 hidden sm:inline">Cake</span>
+    </div>
+    <div class="w-6 h-[1.5px] bg-zinc-800" id="progress-line-2"></div>
+    <div class="flex items-center gap-2" id="progress-step-3">
+      <span
+        class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 font-bold text-xs flex items-center justify-center transition-all">3</span>
+      <span class="text-[10px] font-black uppercase tracking-wider text-zinc-500 hidden sm:inline">Music</span>
+    </div>
+    <div class="w-6 h-[1.5px] bg-zinc-800" id="progress-line-3"></div>
+    <div class="flex items-center gap-2" id="progress-step-4">
+      <span
+        class="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 font-bold text-xs flex items-center justify-center transition-all">4</span>
+      <span class="text-[10px] font-black uppercase tracking-wider text-zinc-500 hidden sm:inline">Gallery</span>
+    </div>
+  </div>
+
+  <!-- MAIN PREMIUM WEB APP CONTENT -->
+  <main id="main-content" class="hidden w-full max-w-2xl mx-auto space-y-10 py-10 opacity-0">
+
+    <!-- Scene 1: Welcome & Wishes -->
+    <div id="scene-1" class="space-y-8">
+      <!-- Hero Luxury Card -->
+      <section class="glass-premium rounded-[3rem] p-8 md:p-12 text-center space-y-8 relative overflow-hidden group">
+        <!-- Shimmer gold top strip -->
+        <div
+          class="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-amber-500 via-yellow-200 to-amber-500 animate-shimmer-gold"
+          style="background-size: 200% auto;"></div>
+
+        <div class="space-y-3">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black uppercase tracking-widest mx-auto">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            Exclusive Premium Celebration for you
+          </div>
+          <h1 class="text-4xl md:text-6xl font-display font-black leading-tight text-white">
+            <span class="gold-text">HAPPY BIRTHDAY</span><br>
+            {{ name }}
+          </h1>
+        </div>
+
+        <!-- Main Photo with Golden Picture Frame -->
+        <div class="relative group mx-auto w-full max-w-[320px]" id="photo-container">
+          <!-- Floating orbs behind photo -->
+          <div
+            class="absolute -inset-4 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-[2.5rem] blur-2xl opacity-25 group-hover:opacity-40 transition-opacity duration-700">
+          </div>
+
+          <!-- Frame -->
+          <div
+            class="relative aspect-[4/5] rounded-[2.2rem] overflow-hidden border-[6px] border-[#BF953F] shadow-2xl transform transition-transform duration-700 group-hover:scale-[1.01] group-hover:rotate-1">
+            <!-- Glass glow reflection overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 z-10 pointer-events-none">
+            </div>
+            <img src="{{ main_image }}" alt="{{ name }}" class="w-full h-full object-cover">
+
+            <!-- Hover caption -->
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-8 text-left z-20">
+              <span class="font-royal text-4xl text-amber-300">Happy Birthday ✨</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typed Birthday Message Box -->
+        <div
+          class="min-h-[110px] flex items-center justify-center px-6 bg-zinc-950/40 rounded-3xl py-6 border border-amber-500/10 shadow-[inset_0_2px_10px_rgba(0,0,0,0.5)]">
+          <p id="typed-text" class="text-lg md:text-2xl font-serif text-amber-100/90 leading-relaxed italic"></p>
+        </div>
+
+        <!-- Interaction buttons -->
+        <div class="grid grid-cols-2 gap-4">
+          <button onclick="makeAWish()"
+            class="group relative px-6 py-4 rounded-2xl bg-zinc-950/40 border border-amber-500/10 hover:bg-amber-500/10 hover:border-amber-500/40 transition-all duration-300 overflow-hidden">
+            <div class="relative z-10 flex flex-col items-center gap-1.5">
+              <span class="text-2xl transform group-hover:scale-125 transition-transform duration-300">✨</span>
+              <span
+                class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-amber-300">Make a
+                Wish</span>
+            </div>
+          </button>
+          <button onclick="sendLove()"
+            class="group relative px-6 py-4 rounded-2xl bg-zinc-950/40 border border-amber-500/10 hover:bg-rose-500/10 hover:border-rose-500/40 transition-all duration-300 overflow-hidden">
+            <div class="relative z-10 flex flex-col items-center gap-1.5">
+              <span class="text-2xl transform group-hover:scale-125 transition-transform duration-300">💖</span>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-rose-400">Send
+                Love</span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Action Button 1 -->
+      <div class="flex justify-center pt-2 opacity-0 pointer-events-none transition-all duration-700"
+        id="action-btn-container-1">
+        <button onclick="revealScene(2)"
+          class="gold-btn px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 animate-bounce">
+          Light the Candles! 🎂 <i class="fas fa-arrow-down ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scene 2: Realistic Cake Cutting -->
+    <div id="scene-2" class="hidden opacity-0 space-y-8">
+      <!-- Phase 4: Majestic 3-Tier Interactive Cake Slicing Section -->
+      <section class="glass-premium rounded-[3rem] p-8 md:p-10 text-center space-y-6 relative overflow-hidden">
+        <div
+          class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent">
+        </div>
+        <h3 class="text-xl font-display font-bold text-white tracking-wider">Celebrate your bday cut the cake 🎂</h3>
+        <p id="cake-instruction" class="text-xs text-zinc-400 uppercase tracking-widest animate-pulse">Light the candle
+          to begin the celebration!</p>
+
+        <div class="py-12 flex items-center justify-center select-none overflow-visible">
+
+          <div class="relative w-full max-w-[300px] h-[230px] overflow-visible" id="cake-container">
+            <!-- Ambient Plate Glow -->
+            <div
+              class="absolute bottom-[-10px] left-1/2 -translate-x-1/2 w-[250px] h-[30px] bg-amber-500/0 rounded-full blur-2xl z-5 transition-all duration-1000"
+              id="plate-glow"></div>
+
+            <!-- Gold Plate -->
+            <div
+              class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[270px] h-[16px] bg-gradient-to-r from-amber-600 via-amber-300 to-amber-700 rounded-full border border-amber-500/30 shadow-2xl z-10">
+            </div>
+
+            <!-- Small plate for the cut slice that moves to the side -->
+            <div
+              class="absolute bottom-0 left-[60%] w-[100px] h-[12px] bg-gradient-to-r from-amber-600 via-amber-300 to-amber-700 rounded-full border border-amber-500/30 shadow-lg z-9 opacity-0 transition-opacity duration-500"
+              id="slice-plate"></div>
+
+            <!-- CAKE LEFT PARTS -->
+            <div
+              class="cake-side cake-left absolute bottom-[12px] left-[calc(50%-85px)] w-[85px] h-[130px] overflow-visible z-15 origin-left">
+              <!-- Tier 1: Bottom (Dark Chocolate) -->
+              <div
+                class="absolute bottom-0 left-0 w-full h-[55px] bg-gradient-to-r from-[#1c0d07] via-[#3a1d11] to-[#27130b] rounded-tl-[10px] rounded-bl-sm border-l border-amber-500/10">
+                <!-- Golden drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[12px] bg-gradient-to-r from-[#aa771c] via-[#fcf6ba] to-[#bf953f] rounded-tl-[10px] rounded-br-[6px] rounded-bl-[6px]">
+                </div>
+                <div class="absolute top-[10px] left-[15px] w-[5px] h-[10px] bg-[#BF953F] rounded-full"></div>
+                <div class="absolute top-[10px] left-[45px] w-[6px] h-[15px] bg-[#BF953F] rounded-full"></div>
+              </div>
+
+              <!-- Tier 2: Middle (Strawberry Pink) -->
+              <div
+                class="absolute bottom-[55px] left-[15px] w-[70px] h-[45px] bg-gradient-to-r from-[#5a1b2a] via-[#8f2f47] to-[#732336] rounded-tl-[8px] rounded-bl-sm border-l border-amber-500/10">
+                <!-- Vanilla Cream drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[10px] bg-gradient-to-r from-[#e2d4c9] via-[#ffffff] to-[#f4ebe1] rounded-tl-[8px] rounded-br-[4px] rounded-bl-[4px]">
+                </div>
+                <div class="absolute top-[8px] left-[12px] w-[4px] h-[8px] bg-[#fff] rounded-full"></div>
+                <div class="absolute top-[8px] left-[35px] w-[5px] h-[12px] bg-[#fff] rounded-full"></div>
+              </div>
+
+              <!-- Tier 3: Top (Vanilla/White) -->
+              <div
+                class="absolute bottom-[100px] left-[30px] w-[55px] h-[35px] bg-gradient-to-r from-[#cfbc96] via-[#ecdcc0] to-[#dec9a3] rounded-tl-[6px] rounded-bl-sm border-l border-amber-500/10">
+                <!-- Cherry Glaze drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[8px] bg-gradient-to-r from-[#7f1d1d] via-[#b91c1c] to-[#991b1b] rounded-tl-[6px] rounded-br-[4px] rounded-bl-[4px]">
+                </div>
+              </div>
+            </div>
+
+            <!-- CAKE RIGHT PARTS -->
+            <div
+              class="cake-side cake-right absolute bottom-[12px] right-[calc(50%-85px)] w-[85px] h-[130px] overflow-visible z-15 origin-right">
+              <!-- Tier 1: Bottom (Dark Chocolate) -->
+              <div
+                class="absolute bottom-0 left-0 w-full h-[55px] bg-gradient-to-r from-[#27130b] via-[#3a1d11] to-[#1c0d07] rounded-tr-[10px] rounded-br-sm border-r border-amber-500/10">
+                <!-- Golden drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[12px] bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-tr-[10px] rounded-bl-[6px] rounded-br-[6px]">
+                </div>
+                <div class="absolute top-[10px] right-[15px] w-[5px] h-[10px] bg-[#BF953F] rounded-full"></div>
+                <div class="absolute top-[10px] right-[45px] w-[6px] h-[15px] bg-[#BF953F] rounded-full"></div>
+              </div>
+
+              <!-- Tier 2: Middle (Strawberry Pink) -->
+              <div
+                class="absolute bottom-[55px] right-[15px] w-[70px] h-[45px] bg-gradient-to-r from-[#732336] via-[#8f2f47] to-[#5a1b2a] rounded-tr-[8px] rounded-br-sm border-r border-amber-500/10">
+                <!-- Vanilla Cream drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[10px] bg-gradient-to-r from-[#f4ebe1] via-[#ffffff] to-[#e2d4c9] rounded-tr-[8px] rounded-bl-[4px] rounded-br-[4px]">
+                </div>
+                <div class="absolute top-[8px] right-[12px] w-[4px] h-[8px] bg-[#fff] rounded-full"></div>
+                <div class="absolute top-[8px] right-[35px] w-[5px] h-[12px] bg-[#fff] rounded-full"></div>
+              </div>
+
+              <!-- Tier 3: Top (Vanilla/White) -->
+              <div
+                class="absolute bottom-[100px] right-[30px] w-[55px] h-[35px] bg-gradient-to-r from-[#dec9a3] via-[#ecdcc0] to-[#cfbc96] rounded-tr-[6px] rounded-br-sm border-r border-amber-500/10">
+                <!-- Cherry Glaze drips -->
+                <div
+                  class="absolute top-0 left-0 w-full h-[8px] bg-gradient-to-r from-[#991b1b] via-[#b91c1c] to-[#7f1d1d] rounded-tr-[6px] rounded-bl-[4px] rounded-br-[4px]">
+                </div>
+              </div>
+            </div>
+
+            <!-- Cake Slice -->
+            <div
+              class="absolute bottom-[12px] left-[calc(50%-18px)] w-[36px] h-[130px] z-14 opacity-0 scale-75 origin-bottom transition-all duration-1000"
+              id="cake-slice-piece">
+              <!-- Tier 1: Bottom -->
+              <div
+                class="absolute bottom-0 left-0 w-full h-[55px] bg-gradient-to-r from-[#27130b] via-[#3a1d11] to-[#27130b] border-l border-r border-amber-600/35">
+                <div
+                  class="absolute top-0 left-0 w-full h-[12px] bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#bf953f]">
+                </div>
+              </div>
+              <!-- Tier 2: Middle -->
+              <div
+                class="absolute bottom-[55px] left-[4px] w-[28px] h-[45px] bg-gradient-to-r from-[#882d43] via-[#a33750] to-[#882d43] border-l border-r border-white/20">
+                <div
+                  class="absolute top-0 left-0 w-full h-[10px] bg-gradient-to-r from-[#f4ebe1] via-[#ffffff] to-[#f4ebe1]">
+                </div>
+              </div>
+              <!-- Tier 3: Top -->
+              <div
+                class="absolute bottom-[100px] left-[8px] w-[20px] h-[35px] bg-gradient-to-r from-[#dfcca7] via-[#ecdcc0] to-[#dfcca7] border-l border-r border-white/10">
+                <div
+                  class="absolute top-0 left-0 w-full h-[8px] bg-gradient-to-r from-[#b91c1c] via-[#ef4444] to-[#b91c1c]">
+                </div>
+              </div>
+            </div>
+
+            <!-- Candle -->
+            <div
+              class="absolute top-[40px] left-1/2 -translate-x-1/2 w-4 h-16 bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 rounded-md shadow-md z-20 cursor-pointer"
+              id="cake-candle" onclick="handleCandle(event)">
+              <!-- Candle stripes -->
+              <div class="w-full h-2 bg-rose-600/70 my-2"></div>
+              <div class="w-full h-2 bg-rose-600/70 my-2"></div>
+
+              <!-- Flame -->
+              <div
+                class="absolute -top-6 left-1/2 -translate-x-1/2 w-5 h-8 bg-gradient-to-t from-red-600 via-orange-400 to-yellow-100 rounded-full blur-[0.5px] shadow-[0_0_15px_#f59e0b,0_0_30px_#ef4444] animate-pulse hidden"
+                id="cake-flame"></div>
+            </div>
+
+            <!-- Knife -->
+            <div class="absolute -top-16 left-[65%] w-10 h-24 rotate-45 opacity-0 z-30 pointer-events-none"
+              id="cake-knife">
+              <svg viewBox="0 0 100 200" class="w-full h-full drop-shadow-[0_8px_16px_rgba(0,0,0,0.7)]">
+                <path d="M45,15 L38,130 L52,130 Z" fill="url(#goldGrad4)" />
+                <rect x="42" y="130" width="6" height="45" rx="3" fill="#1c1917" />
+                <circle cx="45" cy="130" r="5" fill="#BF953F" />
+                <defs>
+                  <linearGradient id="goldGrad4" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#BF953F" />
+                    <stop offset="50%" stop-color="#FCF6BA" />
+                    <stop offset="100%" stop-color="#AA771C" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Action Button 2 (hidden initially) -->
+      <div class="flex justify-center pt-2 opacity-0 h-0 overflow-hidden" id="action-btn-container-2">
+        <button onclick="revealScene(3)"
+          class="gold-btn px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 animate-bounce">
+          Open the Music Box! 🎵 <i class="fas fa-arrow-down ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scene 3: The Golden Piano & Blessings Jar -->
+    <div id="scene-3" class="hidden opacity-0 space-y-10">
+      <!-- Scene 3 Quest Header -->
+      <section class="glass-premium rounded-[3rem] p-6 text-center space-y-2 relative overflow-hidden">
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
+        </div>
+        <h3 class="text-2xl font-display font-black text-white tracking-widest gold-text">THE CELEBRATION STAGE 🌟</h3>
+        <p class="text-xs text-zinc-300">Complete the activities below to unlock the memory gallery.</p>
+        <div
+          class="flex flex-wrap gap-4 justify-center items-center text-[9px] font-black uppercase tracking-widest mt-3">
+          <span id="status-musicbox" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
+              class="far fa-circle text-xs"></i> Wind Music Box</span>
+          <span class="text-zinc-700">•</span>
+          <span id="status-jar" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
+              class="far fa-circle text-xs"></i> Wish Jar</span>
+          <span class="text-zinc-700">•</span>
+          <span id="status-spinner" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
+              class="far fa-circle text-xs"></i> Destiny Spinner</span>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE VINTAGE MUSIC BOX -->
+      <section
+        class="glass-premium rounded-[3rem] p-8 md:p-10 text-center space-y-6 relative overflow-hidden flex flex-col items-center">
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
+        </div>
+        <h3 class="text-xl font-display font-bold text-white tracking-wider">Symphony Music Box 🎵</h3>
+        <p id="music-box-instruction" class="text-xs text-zinc-400 uppercase tracking-widest animate-pulse">Rotate the
+          key to wind up and play the music box.</p>
+
+        <div class="relative w-72 h-64 flex items-center justify-center select-none overflow-visible py-8">
+
+          <!-- Outer Pulsing Visualizer Rings -->
+          <div
+            class="absolute w-56 h-56 rounded-full border-2 border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700"
+            id="visualizer-ring-1"></div>
+          <div
+            class="absolute w-64 h-64 rounded-full border border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700"
+            id="visualizer-ring-2" style="transition-delay: 150ms;"></div>
+
+          <!-- THE 3D MUSIC BOX -->
+          <div
+            class="relative w-44 h-28 bg-gradient-to-b from-[#180a24] to-[#0d0415] rounded-lg border-2 border-amber-500/40 shadow-2xl z-10 flex items-center justify-center overflow-visible"
+            id="music-box" style="perspective: 600px;">
+
+            <!-- Wood Panels / Gold Ornaments on Box corners -->
+            <div
+              class="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-amber-600 to-amber-700 rounded-l border-r border-amber-500/20">
+            </div>
+            <div
+              class="absolute top-0 bottom-0 right-0 w-2.5 bg-gradient-to-l from-amber-600 to-amber-700 rounded-r border-l border-amber-500/20">
+            </div>
+
+            <!-- Lid (Top Cover) that opens up in 3D -->
+            <div
+              class="absolute -top-4 left-0 right-0 h-5 bg-gradient-to-b from-amber-600 via-[#BF953F] to-amber-700 rounded-t-lg border-2 border-zinc-950 z-25 origin-bottom transition-all duration-1000 shadow-md"
+              id="music-box-lid" style="transform: rotateX(0deg);">
+              <!-- Golden Lock Plate -->
+              <div
+                class="absolute bottom-[-2px] left-1/2 -translate-x-1/2 w-7 h-5 bg-gradient-to-br from-[#BF953F] to-[#AA771C] rounded border border-zinc-950 flex items-center justify-center">
+                <div class="w-1.5 h-1.5 bg-zinc-950 rounded-full"></div>
+              </div>
+            </div>
+
+            <!-- Velvet Inside Compartment (visible when lid opens) -->
+            <div
+              class="absolute inset-x-2 top-2 bottom-2 bg-gradient-to-b from-[#400d18] to-[#1a0208] rounded border border-rose-900/35 overflow-hidden z-15 flex flex-col items-center justify-center shadow-inner">
+              <!-- Spinning Gold Star Inside -->
+              <div
+                class="w-12 h-12 flex items-center justify-center origin-center opacity-0 scale-50 transition-all duration-700"
+                id="music-box-crown-container">
+                <svg viewBox="0 0 100 100" class="w-10 h-10 filter drop-shadow-[0_2px_5px_rgba(251,191,36,0.6)]">
+                  <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36"
+                    fill="url(#goldGradStarBox)" />
+                  <defs>
+                    <linearGradient id="goldGradStarBox" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FCF6BA" />
+                      <stop offset="50%" stop-color="#BF953F" />
+                      <stop offset="100%" stop-color="#AA771C" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Winding Key on the Side (Left side) -->
+            <div
+              class="absolute top-1/2 -translate-y-1/2 -left-8 w-8 h-10 origin-right cursor-pointer z-15 flex items-center justify-end"
+              id="music-box-key-wrapper" onclick="windMusicBox(event)">
+              <!-- The key handle -->
+              <svg viewBox="0 0 100 120"
+                class="w-7 h-8 text-amber-500 filter drop-shadow-md hover:scale-110 active:scale-95 transition-transform duration-200"
+                id="music-box-key" style="transform: rotate(0deg);">
+                <circle cx="50" cy="80" r="16" fill="url(#goldGradKey)" />
+                <circle cx="50" cy="40" r="24" fill="none" stroke="url(#goldGradKey)" stroke-width="12" />
+                <rect x="44" y="55" width="12" height="30" fill="url(#goldGradKey)" />
+                <defs>
+                  <linearGradient id="goldGradKey" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#BF953F" />
+                    <stop offset="50%" stop-color="#FCF6BA" />
+                    <stop offset="100%" stop-color="#AA771C" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- DESTINY BLESSING SPINNER -->
+      <section
+        class="glass-premium rounded-[3rem] p-8 md:p-10 text-center space-y-6 relative overflow-hidden flex flex-col items-center">
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
+        </div>
+        <h3 class="text-xl font-display font-bold text-white tracking-wider">Destiny Blessing Spinner 🎡</h3>
+        <p class="text-xs text-zinc-400 uppercase tracking-widest">Spin the golden wheel to reveal your celebration
+          blessing.</p>
+
+        <!-- The Spinner Wheel Container -->
+        <div class="relative w-64 h-64 flex items-center justify-center select-none overflow-visible">
+          <!-- Outer Gold Ring -->
+          <div
+            class="absolute inset-0 rounded-full border-[8px] border-amber-500/40 shadow-[0_0_30px_rgba(245,158,11,0.25)] pointer-events-none">
+          </div>
+
+          <!-- Inner Rotating Wheel -->
+          <div id="spinner-wheel"
+            class="w-[230px] h-[230px] rounded-full relative overflow-hidden bg-zinc-950 shadow-inner border border-amber-500/20"
+            style="transform: rotate(0deg);">
+            <!-- Segments SVG -->
+            <svg viewBox="0 0 100 100" class="w-full h-full">
+              <!-- 6 Segments -->
+              <path d="M50,50 L50,0 A50,50 0 0,1 93.3,25 Z" fill="#180e29" stroke="#BF953F" stroke-width="0.3"></path>
+              <path d="M50,50 L93.3,25 A50,50 0 0,1 93.3,75 Z" fill="#24143e" stroke="#BF953F" stroke-width="0.3">
+              </path>
+              <path d="M50,50 L93.3,75 A50,50 0 0,1 50,100 Z" fill="#180e29" stroke="#BF953F" stroke-width="0.3"></path>
+              <path d="M50,50 L50,100 A50,50 0 0,1 6.7,75 Z" fill="#24143e" stroke="#BF953F" stroke-width="0.3"></path>
+              <path d="M50,50 L6.7,75 A50,50 0 0,1 6.7,25 Z" fill="#180e29" stroke="#BF953F" stroke-width="0.3"></path>
+              <path d="M50,50 L6.7,25 A50,50 0 0,1 50,0 Z" fill="#24143e" stroke="#BF953F" stroke-width="0.3"></path>
+
+              <!-- Central gold badge -->
+              <circle cx="50" cy="50" r="14" fill="#09090b" stroke="#BF953F" stroke-width="1.5"></circle>
+
+              <!-- Rotated Text labels aligned in midpoint of segments -->
+              <g transform="translate(50,50)">
+                <text x="0" y="-32" transform="rotate(30)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">DREAM ✨</text>
+                <text x="0" y="-32" transform="rotate(90)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">MAGIC ✨</text>
+                <text x="0" y="-32" transform="rotate(150)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">JOY 🌟</text>
+                <text x="0" y="-32" transform="rotate(210)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">LOVE 💖</text>
+                <text x="0" y="-32" transform="rotate(270)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">BLISS 🌸</text>
+                <text x="0" y="-32" transform="rotate(330)" fill="#FCF6BA" font-size="4" font-weight="900"
+                  text-anchor="middle" letter-spacing="0.1em">SMILE 😊</text>
+              </g>
+            </svg>
+          </div>
+
+          <!-- Pointer Indicator on Top -->
+          <div
+            class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-8 z-30 filter drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)] pointer-events-none">
+            <svg viewBox="0 0 30 40" class="w-full h-full text-amber-400">
+              <polygon points="15,40 5,5 25,5" fill="currentColor" stroke="#BF953F" stroke-width="1"></polygon>
+              <circle cx="15" cy="5" r="4" fill="#ff4444"></circle>
+            </svg>
+          </div>
+
+          <!-- Spin Button in Center -->
+          <button id="spin-btn" onclick="spinWheel()"
+            class="absolute w-16 h-16 rounded-full gold-btn border-[3px] border-zinc-950 flex items-center justify-center font-black text-xs uppercase tracking-wider shadow-[0_4px_15px_rgba(0,0,0,0.5)] z-20 hover:scale-105 transition-transform duration-300">
+            Spin
+          </button>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE WISH JAR -->
+      <section
+        class="glass-premium rounded-[3rem] p-8 md:p-10 text-center space-y-6 relative overflow-hidden flex flex-col items-center">
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
+        </div>
+        <h3 class="text-xl font-display font-bold text-white tracking-wider">Jar of Sparking Wishes ✨</h3>
+        <p class="text-xs text-zinc-400 uppercase tracking-widest">Tap the jar to release a glowing wish.</p>
+
+        <div
+          class="relative w-28 h-36 border-[3px] border-amber-500/40 rounded-t-[30px] rounded-b-[20px] bg-zinc-950/60 shadow-[0_0_20px_rgba(245,158,11,0.15),inset_0_4px_10px_rgba(255,255,255,0.1)] flex items-center justify-center cursor-pointer overflow-visible group"
+          onclick="releaseJarStar(event)">
+          <!-- Lid -->
+          <div
+            class="absolute -top-3 w-16 h-3 bg-gradient-to-r from-amber-600 via-amber-300 to-amber-700 border border-amber-500/20 rounded-t-sm shadow">
+          </div>
+          <!-- Jar Neck -->
+          <div class="absolute -top-1 w-20 h-2 bg-gradient-to-r from-amber-600 to-amber-700"></div>
+
+          <!-- Glowing stars inside jar -->
+          <div class="absolute w-2 h-2 bg-yellow-200 rounded-full blur-[1px] animate-pulse"
+            style="left: 20%; top: 40%; animation-duration: 1.5s;"></div>
+          <div class="absolute w-3 h-3 bg-amber-300 rounded-full blur-[1.5px] animate-pulse"
+            style="left: 60%; top: 30%; animation-duration: 2.2s;"></div>
+          <div class="absolute w-1.5 h-1.5 bg-yellow-100 rounded-full blur-[0.5px] animate-pulse"
+            style="left: 40%; top: 70%; animation-duration: 1s;"></div>
+          <div class="absolute w-2.5 h-2.5 bg-amber-400 rounded-full blur-[1px] animate-pulse"
+            style="left: 70%; top: 60%; animation-duration: 1.8s;"></div>
+
+          <!-- Center Pulsing Star logo inside jar -->
+          <span class="text-amber-400 text-3xl animate-pulse select-none">✨</span>
+        </div>
+      </section>
+
+      <!-- Action Button 3 (hidden initially) -->
+      <div class="flex justify-center pt-2 opacity-0 h-0 overflow-hidden" id="action-btn-container-3">
+        <button onclick="revealScene(4)"
+          class="gold-btn px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 animate-bounce">
+          Unlock Cherished Memories! 📸 <i class="fas fa-arrow-down ml-1"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scene 4: Memory Gallery -->
+    <div id="scene-4" class="hidden opacity-0 space-y-10">
+      <!-- Photo Gallery (3D Rotating Circular Carousel) -->
+      {% if gallery_images %}
+      <section
+        class="glass-premium rounded-[3rem] p-8 md:p-12 space-y-8 relative overflow-hidden flex flex-col items-center">
+        <div
+          class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
+        </div>
+        <div class="text-center space-y-2">
+          <h3 class="text-3xl font-display font-bold text-white tracking-wider">Happy Birthday</h3>
+        </div>
+
+        <!-- 3D Carousel container -->
+        <div
+          class="w-full carousel-3d-container flex items-center justify-center py-12 relative select-none overflow-visible"
+          style="height: 380px; perspective: 1000px;">
+          <div class="carousel-3d relative w-[160px] h-[200px]" id="gallery-carousel-3d"
+            style="transform-style: preserve-3d; transform: rotateY(0deg); transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);">
+            {% for img_url in gallery_images %}
+            <!-- Gallery Item -->
+            <div
+              class="carousel-3d-item absolute left-0 top-0 w-[160px] h-[200px] bg-zinc-950 rounded-lg border border-amber-500/30 shadow-[0_10px_30px_rgba(0,0,0,0.6)] flex flex-col transition-all duration-300 hover:border-amber-400 hover:shadow-amber-500/20 overflow-hidden"
+              style="transform-style: preserve-3d; backface-visibility: visible; -webkit-box-reflect: below 2px linear-gradient(transparent, transparent, rgba(0,0,0,0.15));">
+              <!-- Gold clip on top -->
+              <div
+                class="absolute -top-2.5 left-1/2 -translate-x-1/2 w-6 h-3.5 bg-gradient-to-r from-amber-600 via-amber-300 to-amber-700 border border-amber-500/30 rounded shadow z-10">
+              </div>
+
+              <img src="{{ img_url }}" class="w-full h-full object-cover">
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Carousel navigation arrows -->
+        <div class="flex gap-6 justify-center items-center mt-4 z-20">
+          <button onclick="rotateCarousel3D(-1)"
+            class="w-10 h-10 rounded-full border border-amber-500/40 bg-zinc-950/80 text-amber-400 flex items-center justify-center hover:bg-amber-500/20 hover:border-amber-400 transition-all shadow-md active:scale-95">
+            <i class="fas fa-chevron-left text-xs"></i>
+          </button>
+          <button onclick="rotateCarousel3D(1)"
+            class="w-10 h-10 rounded-full border border-amber-500/40 bg-zinc-950/80 text-amber-400 flex items-center justify-center hover:bg-amber-500/20 hover:border-amber-400 transition-all shadow-md active:scale-95">
+            <i class="fas fa-chevron-right text-xs"></i>
+          </button>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- Premium CTA & Footer -->
+      <div class="flex flex-col items-center gap-6 pb-12">
+        {% if gallery_images %}
+        <a href="{{ gallery_link }}"
+          class="gold-btn px-10 py-5 rounded-full font-black text-sm tracking-[0.15em] hover:scale-105 transition-transform flex items-center gap-3">
+          <i class="fas fa-star text-base"></i>
+          VIEW FULL CELEBRATION GALLERY
+        </a>
+        {% endif %}
+
+        <div class="flex flex-col items-center gap-2 opacity-60 text-center">
+          <a href="https://wishcraft-pages.vercel.app/" target="_blank" class="text-[9px] uppercase tracking-[0.35em] font-black text-amber-300/80 hover:text-amber-200 transition-colors duration-300">
+            Exquisite Design by WishCraft Premium
+          </a>
+          <span class="flex items-center gap-1.5 font-semibold text-[10px] text-amber-400 normal-case tracking-normal mt-1">
+            <i class="fas fa-arrow-turn-up fa-rotate-90 text-[8px]"></i> a Yash Verma's product
+          </span>
+          <div class="flex gap-4 text-xs">
+            <i class="fas fa-star text-amber-500"></i>
+            <i class="fas fa-heart text-rose-500 animate-pulse"></i>
+            <i class="fas fa-magic text-yellow-500"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- LUXURY MUSIC VINYL CONTROLLER WIDGET -->
+  <div id="music-vinyl-widget"
+    class="fixed bottom-6 right-6 z-[100] flex items-center gap-3 bg-zinc-950/90 border border-amber-500/35 p-2.5 rounded-full shadow-2xl transition-all duration-500 transform translate-y-40 cursor-pointer"
+    onclick="togglePlayPause(event)">
+    <div
+      class="relative w-12 h-12 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center overflow-visible"
+      id="vinyl-disc-container">
+      <!-- Vinyl texture lines -->
+      <div class="absolute inset-1 rounded-full border border-zinc-800/80"></div>
+      <div class="absolute inset-2 rounded-full border border-zinc-800/80"></div>
+      <div class="absolute inset-3 rounded-full border border-zinc-800/80"></div>
+      <!-- Center Gold Label -->
+      <div class="w-4 h-4 rounded-full bg-[#BF953F] border-2 border-zinc-950 flex items-center justify-center">
+        <div class="w-1.5 h-1.5 rounded-full bg-zinc-950"></div>
+      </div>
+    </div>
+
+    <div class="flex flex-col pr-4 select-none leading-tight">
+      <span class="text-[8px] uppercase tracking-[0.2em] text-amber-500 font-bold" id="vinyl-status">Playing</span>
+      <span class="text-[10px] text-zinc-300 font-semibold truncate max-w-[85px]" id="vinyl-track-name">Cherished
+        wish</span>
+    </div>
+
+    <!-- Tone-arm needle (SVG) -->
+    <div
+      class="absolute bottom-[35px] right-[40px] w-8 h-8 pointer-events-none origin-top-right transition-transform duration-500"
+      id="vinyl-arm" style="transform: rotate(0deg);">
+      <svg viewBox="0 0 100 100" class="w-full h-full text-zinc-400">
+        <path d="M90,10 L70,10 L50,60 L52,70" fill="none" stroke="currentColor" stroke-width="6"
+          stroke-linecap="round" />
+        <rect x="44" y="65" width="14" height="18" rx="2" fill="#BF953F" />
+      </svg>
+    </div>
+  </div>
+
+  <!-- Audio Player (Hidden) -->
+  <div id="audio-container" class="hidden">
+    <audio id="bg-music" src="{{ music }}" loop></audio>
+  </div>
+
+  <!-- Server-side template messages data passed to JS safely without syntax diagnostics -->
+  <script id="messages-data" type="application/json">
+    {{ messages | tojson | safe }}
+  </script>
+
+  <script>
+    let envelopeOpened = false;
+    let candleLit = false;
+    let candleBlown = false;
+    let cakeSliced = false;
+    let isMusicPlaying = false;
+    const messages = JSON.parse(document.getElementById('messages-data').textContent);
+
+    // Wishes from the Star Wishes Jar
+    const JAR_WISHES = [
+      "May your heart be light, your smiles be bright, and your year be pure magic! ✨",
+      "To the girl who makes every day feel like a festival: Happy Birthday! 🌟",
+      "Wishing you endless laughs, beautiful adventures, and dreams fulfilled! 💖",
+      "May success guide every step you take, and love surround your life! ✨",
+      "Sending you oceans of joy, skies of blessings, and a world of peace! 🌊",
+      "May your sweet smile never fade, and your heart always remain pure! 😊",
+      "You are a masterpiece of beauty, intelligence, and grace. ✨",
+      "Your laughter is the most magical chimes in the universe. 🎵",
+      "Wishing you a year as radiant and lovely as your smile! 💖"
+    ];
+
+    // Web Audio Synthesizer
+    let audioCtx = null;
+    function initAudio() {
+      if (audioCtx) {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return;
+      }
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // Synth Sound: Wax Seal / Chime
+    function playChimeSound() {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 arpeggio
+      notes.forEach((freq, index) => {
+        let osc = audioCtx.createOscillator();
+        let gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now + index * 0.07);
+        gain.gain.setValueAtTime(0.08, now + index * 0.07);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.07 + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now + index * 0.07);
+        osc.stop(now + index * 0.07 + 0.5);
+      });
+    }
+
+    // Synth Sound: Balloon Pop
+    function playPopSound() {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+
+      // Pop tone (Low sweep)
+      let osc = audioCtx.createOscillator();
+      let gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.09);
+
+      // Pop white noise texture
+      let bufferSize = audioCtx.sampleRate * 0.04;
+      let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      let data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      let noiseSource = audioCtx.createBufferSource();
+      noiseSource.buffer = buffer;
+
+      let filter = audioCtx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.value = 1200;
+
+      let noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.12, now);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+
+      noiseSource.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+
+      noiseSource.start(now);
+      noiseSource.stop(now + 0.05);
+    }
+
+    // Synth Sound: Candle Ignition (Sparkle sizzle)
+    function playIgniteSound() {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      let osc = audioCtx.createOscillator();
+      let gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.linearRampToValueAtTime(1760, now + 0.15);
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.16);
+    }
+
+    // Synth Sound: Cake Slice (Clean sweep swoosh)
+    function playSliceSound() {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      let osc = audioCtx.createOscillator();
+      let gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(600, now);
+      osc.frequency.exponentialRampToValueAtTime(80, now + 0.35);
+
+      let filter = audioCtx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 700;
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.36);
+    }
+
+    // Open Wax-sealed Envelope Flow
+    function openEnvelope(e) {
+      if (envelopeOpened) return;
+      envelopeOpened = true;
+
+      if (e) e.stopPropagation();
+
+      const wrapper = document.getElementById('envelope-wrapper');
+      const envelope = document.getElementById('envelope');
+      const seal = document.getElementById('wax-seal');
+      const card = document.getElementById('envelope-card');
+      const ribV = document.getElementById('ribbon-vertical');
+      const ribH = document.getElementById('ribbon-horizontal');
+
+      // Break seal sound chime & unlock audio
+      playChimeSound();
+
+      // Set z-index of card immediately at the start of transition to prevent popping later
+      card.style.zIndex = 35;
+
+      // Ribbon opening animation timeline
+      const tl = gsap.timeline();
+      tl.to(seal, { scale: 0, rotation: 180, duration: 0.5, ease: "power2.in" })
+        .to(ribV, { x: -300, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.2")
+        .to(ribH, { y: 300, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.8")
+        .call(() => {
+          seal.style.display = 'none';
+
+          // Open Top Flap
+          envelope.classList.add('envelope-open');
+
+          // Slide Invitation Card out
+          setTimeout(() => {
+            // Card moves up
+            gsap.to(card, {
+              y: "-75%",
+              scale: 1.02,
+              duration: 1.2,
+              ease: "power3.out",
+              onComplete: () => {
+                // Trigger quick celebration spark
+                confetti({
+                  particleCount: 45,
+                  spread: 60,
+                  origin: { y: 0.35 },
+                  colors: ['#BF953F', '#FCF6BA', '#AA771C']
+                });
+
+                // Transition envelope wrapper out and load main content
+                setTimeout(() => {
+                  gsap.to(wrapper, {
+                    opacity: 0,
+                    scale: 0.95,
+                    duration: 0.8,
+                    ease: "power3.inOut",
+                    onComplete: () => {
+                      wrapper.style.display = 'none';
+                      const mainContent = document.getElementById('main-content');
+                      mainContent.classList.remove('hidden');
+
+                      // Slide in the floating step progress tracker
+                      const tracker = document.getElementById('progress-tracker');
+                      if (tracker) {
+                        tracker.classList.remove('translate-y-[-100px]');
+                      }
+                      window.scrollTo(0, 0);
+
+                      // Fade in main page
+                      gsap.to(mainContent, {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: "power3.out",
+                        onComplete: () => {
+                          playMusic();
+                          startTyping();
+                          startSkyLanterns();
+                          startBalloons();
+                          launchInitialConfetti();
+                          startFallingGoldDust();
+                          startFallingRosePetals();
+
+                          // Automatically reveal progress button after 5 seconds to guide the user
+                          setTimeout(revealScene1ActionButton, 5000);
+                        }
+                      });
+                    }
+                  });
+                }, 1000);
+              }
+            });
+          }, 600);
+        });
+    }
+
+    // Floating Sky Lanterns Generation
+    function startSkyLanterns() {
+      const container = document.getElementById('sky-lantern-container');
+
+      // Spawn initial lanterns
+      for (let i = 0; i < 6; i++) {
+        createLantern(container, Math.random() * 80 + 10, Math.random() * 80 + 10);
+      }
+
+      // Continuous spawning
+      setInterval(() => {
+        if (document.hidden) return;
+        createLantern(container, Math.random() * 90 + 5, 105);
+      }, 2500);
+    }
+
+    function createLantern(container, xPos, startYPercentage) {
+      const lantern = document.createElement('div');
+      lantern.className = 'lantern';
+
+      const size = Math.random() * 16 + 14; // 14px to 30px
+      lantern.style.width = `${size}px`;
+      lantern.style.height = `${size * 1.35}px`;
+      lantern.style.left = `${xPos}%`;
+
+      // Set vertical position
+      if (startYPercentage === 105) {
+        lantern.style.bottom = `-50px`;
+      } else {
+        lantern.style.top = `${startYPercentage}%`;
+      }
+
+      const duration = Math.random() * 12 + 18; // 18s to 30s
+      const swayDuration = Math.random() * 4 + 4; // 4s to 8s
+
+      // Inline CSS variables to animate custom heights
+      lantern.style.animation = `floatUpLantern ${duration}s linear forwards, swayLantern ${swayDuration}s ease-in-out infinite`;
+
+      container.appendChild(lantern);
+      setTimeout(() => lantern.remove(), duration * 1000);
+    }
+
+    // Dynamic Falling Gold Dust / Snow particles
+    function startFallingGoldDust() {
+      const container = document.getElementById('gold-dust-container');
+
+      // Initial particles
+      for (let i = 0; i < 25; i++) {
+        spawnGoldDustParticle(container, true);
+      }
+
+      // Continuous spawning
+      setInterval(() => {
+        if (document.hidden) return;
+        spawnGoldDustParticle(container, false);
+      }, 600);
+    }
+
+    function spawnGoldDustParticle(container, randomY = false) {
+      const particle = document.createElement('div');
+      particle.className = 'gold-dust';
+
+      const size = Math.random() * 3 + 1; // 1px to 4px
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}%`;
+
+      if (randomY) {
+        particle.style.top = `${Math.random() * 100}%`;
+      } else {
+        particle.style.top = `-10px`;
+      }
+
+      particle.style.opacity = Math.random() * 0.6 + 0.1;
+
+      container.appendChild(particle);
+
+      const duration = Math.random() * 10 + 8; // 8s to 18s
+      gsap.to(particle, {
+        y: window.innerHeight + 20,
+        x: (Math.random() - 0.5) * 80,
+        duration: duration,
+        ease: "none",
+        onComplete: () => particle.remove()
+      });
+    }
+
+    // Dynamic Falling Rose Petals (Flower Rain)
+    function startFallingRosePetals() {
+      const container = document.getElementById('gold-dust-container'); // Reuse container
+
+      // Spawn initial petals
+      for (let i = 0; i < 40; i++) {
+        spawnRosePetal(container, true);
+      }
+
+      // Continuous spawning
+      setInterval(() => {
+        if (document.hidden) return;
+        spawnRosePetal(container, false);
+      }, 220);
+    }
+
+    function spawnRosePetal(container, randomY = false) {
+      const petal = document.createElement('div');
+      petal.className = 'absolute pointer-events-none select-none';
+
+      const size = Math.random() * 10 + 8; // 8px to 18px
+      petal.style.width = `${size}px`;
+      petal.style.height = `${size * 0.95}px`;
+      petal.style.left = `${Math.random() * 100}%`;
+
+      if (randomY) {
+        petal.style.top = `${Math.random() * 100}%`;
+      } else {
+        petal.style.top = `-20px`;
+      }
+
+      // Soft rose petals styling (gradient leaf shape)
+      petal.style.background = 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)';
+      petal.style.borderRadius = '15px 2px 15px 2px';
+      petal.style.opacity = Math.random() * 0.55 + 0.25;
+
+      container.appendChild(petal);
+
+      const duration = Math.random() * 10 + 12; // 12s to 22s
+      gsap.to(petal, {
+        y: window.innerHeight + 30,
+        x: (Math.random() - 0.5) * 120,
+        rotation: Math.random() * 360,
+        rotationY: Math.random() * 360,
+        duration: duration,
+        ease: "none",
+        onComplete: () => petal.remove()
+      });
+    }
+
+    // Floating Interactive Balloons
+    function startBalloons() {
+      const container = document.getElementById('balloon-container');
+
+      // Spawn balloon every 3.5 seconds
+      setInterval(() => {
+        if (document.hidden) return;
+        createBalloon(container);
+      }, 3500);
+    }
+
+    const BALLOON_COLORS = [
+      'radial-gradient(circle at 35% 35%, #ffffff 0%, #ffc5d9 20%, #e57c9f 60%, #ab2650 100%)', // Rose gold metallic
+      'radial-gradient(circle at 35% 35%, #ffffff 0%, #ffe4be 20%, #e5a752 60%, #9c600c 100%)', // Gold metallic
+      'radial-gradient(circle at 35% 35%, #ffffff 0%, #cce0ff 20%, #6699ff 60%, #1a4db3 100%)', // Steel Blue
+      'radial-gradient(circle at 35% 35%, #ffffff 0%, #f1c5ff 20%, #cd70e5 60%, #83209c 100%)', // Royal Purple
+      'radial-gradient(circle at 35% 35%, #ffffff 0%, #ffd4d4 20%, #ef4444 60%, #991b1b 100%)'  // Crimson Gold
+    ];
+
+    function createBalloon(container) {
+      const bWrapper = document.createElement('div');
+      bWrapper.className = 'absolute cursor-pointer select-none pointer-events-auto';
+      bWrapper.style.pointerEvents = 'auto';
+
+      const bColor = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
+
+      bWrapper.innerHTML = `
+        <div class="relative flex flex-col items-center">
+          <div class="w-14 h-18 rounded-full shadow-[0_8px_16px_rgba(0,0,0,0.3)] transition-transform duration-300 hover:scale-105" style="background: ${bColor};"></div>
+          <div class="w-3 h-2 bg-amber-600/70 -mt-0.5 rounded-sm"></div>
+          <div class="w-0.5 h-16 bg-gradient-to-b from-slate-400/40 to-transparent"></div>
+        </div>
+      `;
+
+      bWrapper.style.left = `${Math.random() * 80 + 10}%`;
+      bWrapper.style.bottom = `-150px`;
+
+      const duration = Math.random() * 6 + 11; // 11s to 17s
+      const swaySec = Math.random() * 3 + 3;
+
+      bWrapper.style.animation = `floatUpB ${duration}s linear forwards, swayB ${swaySec}s ease-in-out infinite`;
+
+      bWrapper.addEventListener('click', (e) => {
+        popBalloon(bWrapper, e.clientX, e.clientY);
+      });
+
+      container.appendChild(bWrapper);
+      setTimeout(() => bWrapper.remove(), duration * 1000);
+    }
+
+    function popBalloon(bWrapper, clientX, clientY) {
+      // Pop synth sound
+      playPopSound();
+      tryResumeMusic();
+
+      // Balloon Pop particle blast
+      confetti({
+        particleCount: 18,
+        spread: 60,
+        origin: { x: clientX / window.innerWidth, y: clientY / window.innerHeight },
+        colors: ['#BF953F', '#FCF6BA', '#AA771C', '#fff']
+      });
+
+      // Spawn floating text wish
+      const wish = document.createElement('div');
+      wish.className = 'fixed font-display font-extrabold text-amber-300 tracking-wider text-xs pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] z-[150] select-none';
+      wish.innerText = WISHES[Math.floor(Math.random() * WISHES.length)];
+      wish.style.left = `${clientX - 40}px`;
+      wish.style.top = `${clientY - 15}px`;
+      document.body.appendChild(wish);
+
+      gsap.to(wish, {
+        y: -65,
+        opacity: 0,
+        scale: 1.1,
+        duration: 1.3,
+        ease: "power2.out",
+        onComplete: () => wish.remove()
+      });
+
+      bWrapper.remove();
+    }
+
+    // Typed Messages Logic
+    function startTyping() {
+      new Typed('#typed-text', {
+        strings: messages,
+        typeSpeed: 50,
+        backSpeed: 30,
+        backDelay: 2200,
+        loop: true,
+        showCursor: true,
+        cursorChar: '✨'
+      });
+    }
+
+    // Audio Integration with Spinning Vinyl record controller
+    let recordRotationTween = null;
+    function initVinylWidget() {
+      recordRotationTween = gsap.to("#vinyl-disc-container", {
+        rotation: 360,
+        duration: 8,
+        repeat: -1,
+        ease: "none",
+        paused: true
+      });
+    }
+
+    // BG Music Trigger
+    function playMusic() {
+      const bgMusic = document.getElementById('bg-music');
+      const widget = document.getElementById('music-vinyl-widget');
+
+      if (bgMusic) {
+        bgMusic.volume = 0.55;
+        bgMusic.play().then(() => {
+          isMusicPlaying = true;
+          // Animate record player widget entrance
+          widget.classList.remove('translate-y-40');
+          // Swing tone arm needle onto disc
+          gsap.to("#vinyl-arm", { rotation: 18, duration: 0.6, ease: "power1.out" });
+          // Spin the record disc
+          if (!recordRotationTween) initVinylWidget();
+          recordRotationTween.play();
+          gsap.to(recordRotationTween, { timeScale: 1, duration: 1 });
+          document.getElementById('vinyl-status').innerText = "Playing";
+        }).catch(() => {
+          console.log("Audio play blocked by browser policies. Vinyl record widget hidden.");
+        });
+      }
+    }
+
+    function togglePlayPause(e) {
+      if (e) e.stopPropagation();
+      const bgMusic = document.getElementById('bg-music');
+      if (!bgMusic) return;
+
+      if (isMusicPlaying) {
+        // Pause music
+        bgMusic.pause();
+        isMusicPlaying = false;
+        document.getElementById('vinyl-status').innerText = "Paused";
+        // Lift tone arm needle off disc
+        gsap.to("#vinyl-arm", { rotation: 0, duration: 0.5, ease: "power1.out" });
+        // Easing vinyl record speed down to a stop
+        gsap.to(recordRotationTween, {
+          timeScale: 0,
+          duration: 1.5,
+          ease: "power1.out",
+          onComplete: () => recordRotationTween.pause()
+        });
+      } else {
+        // Play music
+        initAudio();
+        bgMusic.play().then(() => {
+          isMusicPlaying = true;
+          document.getElementById('vinyl-status').innerText = "Playing";
+          // Swing tone arm back onto record
+          gsap.to("#vinyl-arm", { rotation: 18, duration: 0.5, ease: "power1.out" });
+          // Accelerate vinyl speed back to normal
+          recordRotationTween.play();
+          gsap.to(recordRotationTween, { timeScale: 1, duration: 1 });
+        }).catch(err => console.log(err));
+      }
+    }
+
+    function tryResumeMusic() {
+      const bgMusic = document.getElementById('bg-music');
+      if (bgMusic && bgMusic.paused && isMusicPlaying) {
+        bgMusic.play().catch(() => { });
+      }
+    }
+
+
+
+    // Interactive Royal Music Box
+    let musicBoxWound = false;
+    let musicBoxPlaying = false;
+    let musicBoxDone = false;
+    let musicBoxIntervals = [];
+
+    const boxFrequencies = {
+      'G5': 783.99, 'A5': 880.00, 'B5': 987.77, 'C6': 1046.50,
+      'D6': 1174.66, 'E6': 1318.51, 'F6': 1396.91, 'G6': 1567.98
+    };
+
+    function playMusicBoxChime(note, timeDelay) {
+      if (!audioCtx) return;
+      const freq = boxFrequencies[note];
+      if (!freq) return;
+
+      const now = audioCtx.currentTime + timeDelay;
+
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.setValueAtTime(0.06, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 2.5);
+      gainNode.connect(audioCtx.destination);
+
+      // Music Box Sound: Pure Sine Wave (crystal clean)
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now);
+      osc.connect(gainNode);
+
+      // Overtone (2nd harmonic) to give it chime brightness
+      const overtone = audioCtx.createOscillator();
+      overtone.type = 'sine';
+      overtone.frequency.setValueAtTime(freq * 2, now);
+
+      const overtoneGain = audioCtx.createGain();
+      overtoneGain.gain.setValueAtTime(0.02, now);
+      overtoneGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.2);
+
+      overtone.connect(overtoneGain);
+      overtoneGain.connect(audioCtx.destination);
+
+      osc.start(now);
+      overtone.start(now);
+
+      osc.stop(now + 2.6);
+      overtone.stop(now + 1.3);
+
+      // Spawn a floating musical note icon near the box at play time
+      setTimeout(() => {
+        if (!musicBoxPlaying) return;
+        spawnMusicBoxFloaty();
+      }, timeDelay * 1000);
+    }
+
+    function spawnMusicBoxFloaty() {
+      const box = document.getElementById('music-box');
+      if (!box) return;
+      const floaty = document.createElement('div');
+      floaty.className = 'absolute font-bold text-amber-300 text-lg pointer-events-none select-none z-30 filter drop-shadow-[0_0_8px_#f59e0b]';
+      floaty.innerText = ['🎵', '🎶', '✨', '♩', '♪'][Math.floor(Math.random() * 5)];
+
+      // Spawn in center and float up
+      floaty.style.left = `${Math.random() * 60 + 20}%`;
+      floaty.style.top = '20%';
+      box.appendChild(floaty);
+
+      gsap.to(floaty, {
+        y: -100 - Math.random() * 80,
+        x: (Math.random() - 0.5) * 80,
+        opacity: 0,
+        scale: 1.5,
+        rotation: Math.random() * 180 - 90,
+        duration: 2.5,
+        ease: "power1.out",
+        onComplete: () => floaty.remove()
+      });
+    }
+
+    // Play winding sound (series of clicking sounds)
+    function playWindingClicks() {
+      initAudio();
+      if (!audioCtx) return;
+      const now = audioCtx.currentTime;
+      for (let i = 0; i < 12; i++) {
+        const t = now + i * 0.15;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, t);
+        osc.frequency.exponentialRampToValueAtTime(20, t + 0.05);
+        gain.gain.setValueAtTime(0.08, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.06);
+      }
+    }
+
+    function windMusicBox(e) {
+      if (musicBoxPlaying || musicBoxWound) return;
+      musicBoxWound = true;
+      if (e) e.stopPropagation();
+
+      const key = document.getElementById('music-box-key');
+      const lid = document.getElementById('music-box-lid');
+      const crown = document.getElementById('music-box-crown-container');
+      const inst = document.getElementById('music-box-instruction');
+
+      inst.innerText = "🔧 Winding the music box spring...";
+      playWindingClicks();
+
+      // Spin winding key
+      gsap.to(key, {
+        rotation: 1080,
+        duration: 2.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          // Open Lid in 3D
+          inst.innerText = "✨ Music Box opened! Playing Symphony Tune...";
+          playChimeSound(); // Opening fanfare chime
+
+          gsap.timeline()
+            .to(lid, {
+              rotateX: -105,
+              duration: 1.5,
+              ease: "back.out(1.5)"
+            })
+            .to(crown, {
+              opacity: 1,
+              scale: 1,
+              duration: 0.6,
+              ease: "power2.out"
+            }, "-=0.8")
+            .call(() => {
+              // Spin internal crown
+              gsap.to(crown, {
+                rotation: 360,
+                duration: 5,
+                repeat: -1,
+                ease: "none"
+              });
+
+              // Start visualizer rings pulsing
+              const r1 = document.getElementById('visualizer-ring-1');
+              const r2 = document.getElementById('visualizer-ring-2');
+              r1.className = "absolute w-56 h-56 rounded-full border-2 border-amber-500/25 scale-75 opacity-100 z-0";
+              r2.className = "absolute w-64 h-64 rounded-full border border-amber-500/20 scale-75 opacity-100 z-0";
+
+              gsap.to(r1, { scale: 1.15, opacity: 0, duration: 1.8, repeat: -1, ease: "power1.out" });
+              gsap.to(r2, { scale: 1.3, opacity: 0, duration: 2.0, delay: 0.4, repeat: -1, ease: "power1.out" });
+
+              startMusicBoxMelody();
+            });
+        }
+      });
+    }
+
+    function startMusicBoxMelody() {
+      musicBoxPlaying = true;
+      initAudio();
+
+      const melody = [
+        { note: 'G5', delay: 0 },
+        { note: 'G5', delay: 0.3 },
+        { note: 'A5', delay: 0.6 },
+        { note: 'G5', delay: 1.2 },
+        { note: 'C6', delay: 1.8 },
+        { note: 'B5', delay: 2.4 },
+
+        { note: 'G5', delay: 3.6 },
+        { note: 'G5', delay: 3.9 },
+        { note: 'A5', delay: 4.2 },
+        { note: 'G5', delay: 4.8 },
+        { note: 'D6', delay: 5.4 },
+        { note: 'C6', delay: 6.0 },
+
+        { note: 'G5', delay: 7.2 },
+        { note: 'G5', delay: 7.5 },
+        { note: 'G6', delay: 7.8 },
+        { note: 'E6', delay: 8.4 },
+        { note: 'C6', delay: 9.0 },
+        { note: 'B5', delay: 9.6 },
+        { note: 'A5', delay: 10.2 },
+
+        { note: 'F6', delay: 11.4 },
+        { note: 'F6', delay: 11.7 },
+        { note: 'E6', delay: 12.0 },
+        { note: 'C6', delay: 12.6 },
+        { note: 'D6', delay: 13.2 },
+        { note: 'C6', delay: 13.8 }
+      ];
+
+      melody.forEach(item => {
+        playMusicBoxChime(item.note, item.delay);
+      });
+
+      // Complete activity after song ends
+      setTimeout(() => {
+        musicBoxPlaying = false;
+        if (!musicBoxDone) {
+          musicBoxDone = true;
+          const st = document.getElementById('status-musicbox');
+          if (st) st.className = "text-amber-400 flex items-center gap-1.5 transition-colors duration-500";
+          if (st) st.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Wind Music Box';
+
+          confetti({
+            particleCount: 40,
+            spread: 60,
+            origin: { y: 0.65 }
+          });
+          showToast("🎵 Music Box quest completed! ⭐");
+          checkScene3Completion();
+        }
+      }, 15000);
+    }
+
+    // Royal Blessing Spinner Logic
+    let wheelSpun = false;
+    let spinnerDone = false;
+
+    function spinWheel() {
+      if (wheelSpun) return;
+      wheelSpun = true;
+      initAudio();
+      tryResumeMusic();
+
+      const btn = document.getElementById('spin-btn');
+      btn.disabled = true;
+      btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+      playChimeSound();
+
+      const wheel = document.getElementById('spinner-wheel');
+
+      // Select random segment
+      const segmentIndex = Math.floor(Math.random() * 6);
+      const segmentMidpoints = [30, 90, 150, 210, 270, 330];
+      const targetMidpoint = segmentMidpoints[segmentIndex];
+
+      // Calculate target rotation (6 full spins + offset)
+      const extraSpins = 6 + Math.floor(Math.random() * 2);
+      const targetRotation = extraSpins * 360 + (360 - targetMidpoint);
+
+      // Play spin animation with GSAP
+      gsap.to(wheel, {
+        rotation: targetRotation,
+        duration: 4.5,
+        ease: "power4.out",
+        onComplete: () => {
+          const fortunes = [
+            { title: "Dream Chaser ✨", desc: "May all your high aspirations and wonderful dreams unfold beautifully in the coming year! ✨" },
+            { title: "Pure Magic ✨", desc: "A magical year lies ahead, filled with unexpected wonders and pure stardust moments! ✨" },
+            { title: "Infinite Joy 🌟", desc: "May your laughter chime like music, bringing sunshine and endless joy to everyone around you! 🌟" },
+            { title: "Oceans of Love 💖", desc: "Surrounded by warm hugs, deep connections, and oceans of love today and forever! 💖" },
+            { title: "Golden Bliss 🌸", desc: "Wishing you serene moments, perfect peace, and the sweet bliss of dreams come true! 🌸" },
+            { title: "Sweet Smile 😊", desc: "Keep sharing that gorgeous smile; it is the most beautiful spark in the entire universe! 😊" }
+          ];
+
+          const result = fortunes[segmentIndex];
+
+          confetti({
+            particleCount: 50,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+
+          showWheelResultOverlay(result.title, result.desc);
+        }
+      });
+    }
+
+    function showWheelResultOverlay(title, desc) {
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[200] bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-6 opacity-0 pointer-events-auto';
+      overlay.style.pointerEvents = 'auto';
+
+      overlay.innerHTML = `
+        <div class="glass-premium rounded-3xl p-8 max-w-sm w-full text-center space-y-6 border border-amber-500/40 relative shadow-[0_20px_50px_rgba(189,149,63,0.3)] transform scale-90">
+          <span class="text-4xl select-none">🎡</span>
+          <h4 class="font-display font-bold text-amber-400 text-lg uppercase tracking-wider select-none">${title}</h4>
+          <p class="font-serif text-lg leading-relaxed italic text-amber-100 select-none">${desc}</p>
+          <button onclick="closeWheelOverlay(this)" class="gold-btn px-6 py-2 rounded-xl font-bold text-xs uppercase tracking-wider w-full">Claim Blessing</button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
+      gsap.to(overlay.querySelector('div'), { scale: 1, duration: 0.5, ease: "back.out(1.5)" });
+    }
+
+    function closeWheelOverlay(button) {
+      playChimeSound();
+      const overlay = button.closest('.fixed');
+
+      gsap.to(overlay.querySelector('div'), { scale: 0.8, duration: 0.3, ease: "power2.in" });
+      gsap.to(overlay, {
+        opacity: 0,
+        duration: 0.3,
+        onComplete: () => {
+          overlay.remove();
+          if (!spinnerDone) {
+            spinnerDone = true;
+            const st = document.getElementById('status-spinner');
+            if (st) st.className = "text-amber-400 flex items-center gap-1.5 transition-colors duration-500";
+            if (st) st.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Destiny Spinner';
+          }
+          checkScene3Completion();
+        }
+      });
+    }
+
+    // Star wishes Jar release star interaction
+    function releaseJarStar(e) {
+      if (e) e.stopPropagation();
+      playChimeSound();
+      tryResumeMusic();
+
+      const jar = e.currentTarget;
+
+      // Spawn a floating star
+      const star = document.createElement('div');
+      star.className = 'fixed z-[150] pointer-events-none select-none text-4xl text-amber-300 filter drop-shadow-[0_0_15px_#f59e0b]';
+      star.innerHTML = '⭐';
+
+      const rect = jar.getBoundingClientRect();
+      star.style.left = `${rect.left + rect.width / 2 - 20}px`;
+      star.style.top = `${rect.top - 20}px`;
+      document.body.appendChild(star);
+
+      // Floating up and expanding timeline
+      gsap.timeline()
+        .to(star, {
+          y: -150,
+          x: (Math.random() - 0.5) * 100,
+          scale: 1.8,
+          rotation: 360,
+          duration: 1.5,
+          ease: "power2.out"
+        })
+        .call(() => {
+          // Explode and show overlay wish
+          confetti({
+            particleCount: 35,
+            spread: 80,
+            origin: { x: (rect.left + rect.width / 2) / window.innerWidth, y: (rect.top - 170) / window.innerHeight },
+            colors: ['#ffe082', '#BF953F', '#fff']
+          });
+
+          showJarWishOverlay();
+          star.remove();
+        });
+    }
+
+    function showJarWishOverlay() {
+      const overlay = document.createElement('div');
+      overlay.className = 'fixed inset-0 z-[200] bg-zinc-950/80 backdrop-blur-md flex items-center justify-center p-6 opacity-0 pointer-events-auto';
+      overlay.style.pointerEvents = 'auto';
+
+      const wish = JAR_WISHES[Math.floor(Math.random() * JAR_WISHES.length)];
+
+      overlay.innerHTML = `
+        <div class="glass-premium rounded-3xl p-8 max-w-sm w-full text-center space-y-6 border border-amber-500/40 relative shadow-[0_20px_50px_rgba(189,149,63,0.3)] transform scale-90">
+          <span class="text-4xl select-none">⭐</span>
+          <h4 class="font-display font-bold text-amber-400 text-lg uppercase tracking-wider select-none">A Blessing For You</h4>
+          <p class="font-serif text-lg md:text-xl leading-relaxed italic text-amber-100 select-none">${wish}</p>
+          <button onclick="closeJarOverlay(this)" class="gold-btn px-6 py-2 rounded-xl font-bold text-xs uppercase tracking-wider w-full">Receive Blessing</button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
+      gsap.to(overlay.querySelector('div'), { scale: 1, duration: 0.5, ease: "back.out(1.5)" });
+    }
+
+    let jarDone = false;
+
+    function closeJarOverlay(button) {
+      playChimeSound();
+      const overlay = button.closest('.fixed');
+
+      gsap.to(overlay.querySelector('div'), { scale: 0.8, duration: 0.3, ease: "power2.in" });
+      gsap.to(overlay, {
+        opacity: 0,
+        duration: 0.3,
+        onComplete: () => {
+          overlay.remove();
+          if (!jarDone) {
+            jarDone = true;
+            const st = document.getElementById('status-jar');
+            if (st) st.className = "text-amber-400 flex items-center gap-1.5 transition-colors duration-500";
+            if (st) st.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Wish Jar';
+          }
+          checkScene3Completion();
+        }
+      });
+    }
+
+    // Continuous Sparkler Particle Spawning
+    let sparklerInterval = null;
+    function startSparklerGenerator() {
+      const candle = document.getElementById('cake-candle');
+      sparklerInterval = setInterval(() => {
+        if (!candleLit) {
+          clearInterval(sparklerInterval);
+          return;
+        }
+        createSparklerSpark(candle);
+      }, 50);
+    }
+
+    function createSparklerSpark(parent) {
+      const spark = document.createElement('div');
+      spark.className = 'absolute w-1 h-1 bg-yellow-100 rounded-full pointer-events-none z-30 shadow-[0_0_4px_#f59e0b]';
+      spark.style.left = '50%';
+      spark.style.top = '-15px';
+      parent.appendChild(spark);
+
+      // Shoot outward and upward randomly
+      const angle = (Math.random() * 160 - 80) * (Math.PI / 180); // -80 to 80 deg
+      const speed = Math.random() * 50 + 20;
+      const vx = Math.cos(angle) * speed;
+      const vy = Math.sin(angle) * speed - 60; // Bias upward
+
+      gsap.to(spark, {
+        x: vx,
+        y: vy,
+        opacity: 0,
+        scale: 0.1,
+        duration: Math.random() * 0.4 + 0.3,
+        ease: "power1.out",
+        onComplete: () => spark.remove()
+      });
+    }
+
+    // Interactive Cake Cutting Mechanics
+    function handleCandle(e) {
+      if (candleBlown) {
+        sliceCake();
+        return;
+      }
+
+      if (e) e.stopPropagation();
+      tryResumeMusic();
+
+      const flame = document.getElementById('cake-flame');
+      const inst = document.getElementById('cake-instruction');
+      const candle = document.getElementById('cake-candle');
+
+      if (!candleLit && !candleBlown) {
+        // Light the Candle
+        playIgniteSound();
+        flame.classList.remove('hidden');
+        gsap.from(flame, { scale: 0, duration: 0.4, ease: "back.out" });
+        candleLit = true;
+        inst.innerText = "🌬️ Make a wish & tap the flame to blow it out!";
+        showToast("Candle lit! 🕯️ Sparkler sparkles activated!");
+
+        const pg = document.getElementById('plate-glow');
+        if (pg) {
+          pg.classList.remove('bg-amber-500/0');
+          pg.classList.add('bg-amber-500/35');
+        }
+
+        // Start continuous sparkler sparkles
+        startSparklerGenerator();
+      } else if (candleLit && !candleBlown) {
+        // Blow out the candle
+        playIgniteSound(); // Blow out hiss tone
+        flame.classList.add('hidden');
+        candleLit = false;
+        candleBlown = true;
+
+        const pg = document.getElementById('plate-glow');
+        if (pg) {
+          pg.classList.remove('bg-amber-500/35');
+          pg.classList.add('bg-amber-500/0');
+        }
+
+        // Minor confetti puff
+        confetti({
+          particleCount: 20,
+          spread: 40,
+          origin: { y: 0.7 }
+        });
+
+        inst.innerText = "🔪 Ready! Tap the cake to slice it!";
+        showToast("Wish sent to the stars! ✨ Now cut the cake!");
+
+        // Make knife float and cursor change
+        const knife = document.getElementById('cake-knife');
+        gsap.to(knife, { opacity: 1, y: 15, rotate: 0, duration: 0.8, ease: "back.out(1.2)" });
+
+        // Add click listener to container for slicing with a small delay to prevent immediate execution from bubbling
+        const container = document.getElementById('cake-container');
+        container.style.cursor = 'pointer';
+        setTimeout(() => {
+          container.addEventListener('click', sliceCake);
+        }, 100);
+      }
+    }
+
+    function sliceCake() {
+      if (!candleBlown || cakeSliced) return;
+      cakeSliced = true;
+      tryResumeMusic();
+
+      const container = document.getElementById('cake-container');
+      container.style.cursor = 'default';
+      const knife = document.getElementById('cake-knife');
+      const inst = document.getElementById('cake-instruction');
+
+      // Knife slicing animation
+      gsap.timeline()
+        .to(knife, {
+          x: -35,
+          y: 75,
+          rotation: -10,
+          duration: 0.5,
+          ease: "power2.in"
+        })
+        .call(() => {
+          // Play slice audio & split the cake
+          playSliceSound();
+          splitCakeSides();
+        })
+        .to(knife, {
+          x: -60,
+          y: 110,
+          rotation: -35,
+          opacity: 0,
+          duration: 0.35,
+          ease: "power2.out",
+          onComplete: () => {
+            knife.style.display = 'none';
+          }
+        });
+    }
+
+    function splitCakeSides() {
+      const left = document.querySelector('.cake-left');
+      const right = document.querySelector('.cake-right');
+      const candle = document.getElementById('cake-candle');
+      const slicePiece = document.getElementById('cake-slice-piece');
+      const slicePlate = document.getElementById('slice-plate');
+      const inst = document.getElementById('cake-instruction');
+
+      // Split the cake pieces
+      gsap.to(left, { x: -28, rotation: -2, duration: 1.2, ease: "power3.out" });
+      gsap.to(right, { x: 28, rotation: 2, duration: 1.2, ease: "power3.out" });
+      gsap.to(candle, { x: -10, y: 12, rotation: -15, duration: 1.0, ease: "power3.out" });
+
+      // Fade in slice plate smoothly
+      slicePlate.classList.remove('opacity-0');
+      gsap.fromTo(slicePlate, { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" });
+
+      // Physical Cake Slice Extraction
+      slicePiece.classList.remove('opacity-0');
+      gsap.timeline()
+        .to(slicePiece, { opacity: 1, scale: 1, duration: 0.4 })
+        // Pull the slice forward and place on the small side platter
+        .to(slicePiece, {
+          x: 75,
+          y: 15,
+          rotation: 8,
+          scale: 0.9,
+          duration: 1.2,
+          ease: "power2.out"
+        });
+
+      inst.innerText = "👑 Happy Birthday! Enjoy a slice of love! 🍰";
+      showToast("Happy Birthday! 🎉 Slice cut and served!");
+
+      // Launch full grand fireworks confetti
+      launchGrandFireworksConfetti();
+
+      // Trigger next scene transition button reveal
+      triggerCakeCompletion();
+    }
+
+    function makeAWish() {
+      playChimeSound();
+      tryResumeMusic();
+      revealScene1ActionButton();
+      launchConfetti(1.2);
+      gsap.to('#main-content', { scale: 1.015, duration: 0.1, yoyo: true, repeat: 1 });
+      showToast("Wish floating to the heavens... 💫");
+    }
+
+    function sendLove() {
+      playChimeSound();
+      tryResumeMusic();
+      revealScene1ActionButton();
+      for (let i = 0; i < 15; i++) {
+        setTimeout(createHeart, i * 90);
+      }
+      showToast("Sending love showers! ❤️");
+    }
+
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'fixed text-3xl pointer-events-none z-[120] select-none';
+      heart.innerHTML = ['❤️', '💖', '💝', '✨'][Math.floor(Math.random() * 4)];
+      heart.style.left = `${Math.random() * 80 + 10}%`;
+      heart.style.bottom = '-30px';
+      document.body.appendChild(heart);
+
+      const flightDuration = Math.random() * 1 + 1.2;
+      gsap.to(heart, {
+        y: -(window.innerHeight + 50),
+        x: (Math.random() - 0.5) * 150,
+        rotation: Math.random() * 360,
+        scale: Math.random() * 0.5 + 0.8,
+        duration: flightDuration,
+        ease: "power1.out",
+        onComplete: () => heart.remove()
+      });
+    }
+
+    function launchInitialConfetti() {
+      launchConfetti(1.5);
+    }
+
+    function launchConfetti(scale = 1) {
+      const dur = 2000 * scale;
+      const end = Date.now() + dur;
+
+      const timer = setInterval(() => {
+        if (Date.now() > end) return clearInterval(timer);
+        confetti({
+          particleCount: 15,
+          angle: 60,
+          spread: 50,
+          origin: { x: 0, y: 0.8 },
+          colors: ['#BF953F', '#FCF6BA', '#AA771C']
+        });
+        confetti({
+          particleCount: 15,
+          angle: 120,
+          spread: 50,
+          origin: { x: 1, y: 0.8 },
+          colors: ['#BF953F', '#FCF6BA', '#AA771C']
+        });
+      }, 200);
+    }
+
+    function launchGrandFireworksConfetti() {
+      const duration = 5 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 120 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        // random center explosions
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
+
+    function showToast(text) {
+      const t = document.createElement('div');
+      t.className = 'fixed bottom-24 left-1/2 -translate-x-1/2 glass-premium px-6 py-3 rounded-full text-amber-200 text-xs font-bold tracking-wider uppercase z-[300] transition-all duration-500 translate-y-10 opacity-0 border border-amber-500/30';
+      t.innerHTML = text;
+      document.body.appendChild(t);
+
+      setTimeout(() => {
+        t.classList.remove('translate-y-10', 'opacity-0');
+        setTimeout(() => {
+          t.classList.add('translate-y-10', 'opacity-0');
+          setTimeout(() => t.remove(), 500);
+        }, 2500);
+      }, 50);
+    }
+
+    // Scene Reveal & Navigation System
+    let currentScene = 1;
+    let scene3Completed = false;
+    let scene1ActionBtnRevealed = false;
+
+    function revealScene1ActionButton() {
+      if (scene1ActionBtnRevealed) return;
+      scene1ActionBtnRevealed = true;
+      const container = document.getElementById('action-btn-container-1');
+      if (container) {
+        container.classList.remove('opacity-0', 'pointer-events-none');
+        gsap.to(container, { opacity: 1, scale: 1, duration: 0.8, ease: "power2.out" });
+      }
+    }
+
+    function revealScene(sceneNum) {
+      if (sceneNum <= currentScene) return;
+
+      const nextScene = document.getElementById(`scene-${sceneNum}`);
+      if (!nextScene) return;
+
+      // 1. Reveal next scene DOM element
+      nextScene.classList.remove('hidden');
+
+      // 2. Hide previous transition button
+      const prevBtn = document.getElementById(`action-btn-container-${sceneNum - 1}`);
+      if (prevBtn) {
+        gsap.to(prevBtn, { opacity: 0, scale: 0.9, duration: 0.4, onComplete: () => prevBtn.style.display = 'none' });
+      }
+
+      // 3. Fade in next scene smoothly
+      gsap.fromTo(nextScene,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          onComplete: () => {
+            if (sceneNum === 4) {
+              initCarousel3D();
+            }
+          }
+        }
+      );
+
+      // 4. Update the fixed step progress bar
+      updateProgressTracker(sceneNum);
+      currentScene = sceneNum;
+
+      // 5. Scroll smoothly to the next scene with offset calculation
+      setTimeout(() => {
+        const offset = 95; // offset to clear the progress tracker bar
+        const bodyRect = document.body.getBoundingClientRect().top;
+        const elementRect = nextScene.getBoundingClientRect().top;
+        const elementPosition = elementRect - bodyRect;
+        const offsetPosition = elementPosition - offset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
+
+    function updateProgressTracker(step) {
+      for (let i = 1; i <= 4; i++) {
+        const stepEl = document.getElementById(`progress-step-${i}`);
+        if (!stepEl) continue;
+        const circle = stepEl.querySelector('span:first-child');
+        const text = stepEl.querySelector('span:last-child');
+        const line = document.getElementById(`progress-line-${i - 1}`);
+
+        if (i < step) {
+          // Completed
+          circle.className = "w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/50 text-amber-400 font-bold text-xs flex items-center justify-center transition-all";
+          circle.innerHTML = "✓";
+          text.className = "text-[10px] font-black uppercase tracking-wider text-amber-500/80 hidden sm:inline";
+          if (line) {
+            line.classList.remove('bg-zinc-800');
+            line.classList.add('bg-amber-500/60');
+          }
+        } else if (i === step) {
+          // Active
+          circle.className = "w-7 h-7 rounded-full bg-amber-500 text-zinc-950 font-bold text-xs flex items-center justify-center shadow-[0_0_15px_#f59e0b] transition-all";
+          circle.innerHTML = i;
+          text.className = "text-[10px] font-black uppercase tracking-wider text-amber-400 hidden sm:inline";
+          if (line) {
+            line.classList.remove('bg-amber-500/60');
+            line.classList.add('bg-zinc-800');
+          }
+        } else {
+          // Locked
+          circle.className = "w-7 h-7 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-400 font-bold text-xs flex items-center justify-center transition-all";
+          circle.innerHTML = i;
+          text.className = "text-[10px] font-black uppercase tracking-wider text-zinc-500 hidden sm:inline";
+          if (line) {
+            line.classList.remove('bg-amber-500/60');
+            line.classList.add('bg-zinc-800');
+          }
+        }
+      }
+    }
+
+    // Triggered when cake is sliced
+    function triggerCakeCompletion() {
+      const container = document.getElementById('action-btn-container-2');
+      if (container) {
+        container.classList.remove('h-0', 'overflow-hidden');
+        gsap.to(container, { opacity: 1, duration: 0.8, delay: 2.0, ease: "power2.out" });
+      }
+    }
+
+    // Triggered when all 3 activities in Scene 3 are completed
+    function checkScene3Completion() {
+      if (musicBoxDone && jarDone && spinnerDone) {
+        if (scene3Completed) return;
+        scene3Completed = true;
+        const container = document.getElementById('action-btn-container-3');
+        if (container) {
+          container.classList.remove('h-0', 'overflow-hidden');
+          gsap.to(container, { opacity: 1, duration: 0.8, ease: "power2.out" });
+        }
+        showToast("🌟 All Scene 3 quests unlocked! Ready for the Gallery! 📸");
+      }
+    }
+
+    // 3D Polaroid Circular Carousel Logic
+    let carouselAutoRotateTween = null;
+    let carouselItemsCount = 0;
+    let carouselActiveIndex = 0;
+    let isCarouselDragging = false;
+    let carouselRotateY = 0;
+    let carouselStartX = 0;
+    let carouselCurrentX = 0;
+
+    function initCarousel3D() {
+      const carousel = document.getElementById('gallery-carousel-3d');
+      const items = document.querySelectorAll('.carousel-3d-item');
+      carouselItemsCount = items.length;
+      if (carouselItemsCount === 0) return;
+
+      const radius = Math.min(240, window.innerWidth * 0.38); // Dynamic radius based on width
+      items.forEach((item, index) => {
+        const angle = index * (360 / carouselItemsCount);
+        // Position them in a circular 3D structure facing outwards
+        item.style.transform = `rotateY(${angle}deg) translateZ(${radius}px)`;
+
+        // Ensure webkit reflect styling is set
+        item.style.webkitBoxReflect = 'below 2px linear-gradient(transparent, transparent, rgba(0,0,0,0.15))';
+      });
+
+      // Mouse drag controls
+      carousel.addEventListener('mousedown', (e) => {
+        isCarouselDragging = true;
+        if (carouselAutoRotateTween) carouselAutoRotateTween.pause();
+        carouselStartX = e.pageX - carouselRotateY;
+        carousel.style.transition = 'none'; // Instant drag response
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!isCarouselDragging) return;
+        carouselCurrentX = e.pageX;
+        carouselRotateY = carouselCurrentX - carouselStartX;
+        carousel.style.transform = `rotateY(${carouselRotateY}deg)`;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isCarouselDragging) return;
+        isCarouselDragging = false;
+        carousel.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        snapCarouselToClosest();
+      });
+
+      // Touch drag controls for mobile
+      carousel.addEventListener('touchstart', (e) => {
+        isCarouselDragging = true;
+        if (carouselAutoRotateTween) carouselAutoRotateTween.pause();
+        carouselStartX = e.touches[0].pageX - carouselRotateY;
+        carousel.style.transition = 'none';
+      });
+
+      window.addEventListener('touchmove', (e) => {
+        if (!isCarouselDragging) return;
+        carouselCurrentX = e.touches[0].pageX;
+        carouselRotateY = carouselCurrentX - carouselStartX;
+        carousel.style.transform = `rotateY(${carouselRotateY}deg)`;
+      });
+
+      window.addEventListener('touchend', () => {
+        if (!isCarouselDragging) return;
+        isCarouselDragging = false;
+        carousel.style.transition = 'transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        snapCarouselToClosest();
+      });
+
+      startCarouselAutoRotate();
+    }
+
+    function snapCarouselToClosest() {
+      if (carouselItemsCount === 0) return;
+      const segmentAngle = 360 / carouselItemsCount;
+      // Calculate closest index
+      carouselActiveIndex = Math.round(-carouselRotateY / segmentAngle);
+      // Keep index within range
+      carouselActiveIndex = ((carouselActiveIndex % carouselItemsCount) + carouselItemsCount) % carouselItemsCount;
+
+      const targetAngle = -carouselActiveIndex * segmentAngle;
+      carouselRotateY = targetAngle;
+
+      gsap.to('#gallery-carousel-3d', {
+        rotationY: targetAngle,
+        duration: 0.8,
+        ease: "power2.out",
+        onComplete: () => {
+          gsap.set('#gallery-carousel-3d', { rotationY: targetAngle });
+          startCarouselAutoRotate();
+        }
+      });
+    }
+
+    function startCarouselAutoRotate() {
+      if (carouselAutoRotateTween) {
+        carouselAutoRotateTween.kill();
+      }
+
+      // Read current rotation
+      const currentY = gsap.getProperty('#gallery-carousel-3d', 'rotationY') || 0;
+
+      // Slow infinite auto-rotate drift (anticlockwise: currentY - 360)
+      carouselAutoRotateTween = gsap.to('#gallery-carousel-3d', {
+        rotationY: currentY - 360,
+        duration: 35,
+        ease: "none",
+        repeat: -1,
+        runBackwards: false
+      });
+    }
+
+    function rotateCarousel3D(direction) {
+      if (carouselItemsCount === 0) return;
+
+      if (carouselAutoRotateTween) {
+        carouselAutoRotateTween.pause();
+      }
+
+      carouselActiveIndex = (carouselActiveIndex + direction + carouselItemsCount) % carouselItemsCount;
+      const angle = -carouselActiveIndex * (360 / carouselItemsCount);
+      carouselRotateY = angle; // Stay in sync with swipe/drag
+
+      gsap.to('#gallery-carousel-3d', {
+        rotationY: angle,
+        duration: 0.85,
+        ease: "power2.out",
+        onComplete: () => {
+          gsap.set('#gallery-carousel-3d', { rotationY: angle });
+          startCarouselAutoRotate();
+        }
+      });
+    }
+
+    function initEnvelopeSparkles() {
+      const container = document.getElementById('envelope-bg-sparkles');
+      if (!container) return;
+      for (let i = 0; i < 20; i++) {
+        const spark = document.createElement('div');
+        spark.className = 'absolute bg-amber-400 rounded-full animate-pulse';
+        const size = Math.random() * 3 + 1.5;
+        spark.style.width = `${size}px`;
+        spark.style.height = `${size}px`;
+        spark.style.left = `${Math.random() * 100}%`;
+        spark.style.top = `${Math.random() * 100}%`;
+        spark.style.opacity = Math.random() * 0.6 + 0.2;
+        spark.style.animationDuration = `${Math.random() * 2 + 1.5}s`;
+        spark.style.animationDelay = `${Math.random() * 2}s`;
+        container.appendChild(spark);
+      }
+    }
+
+    // Initializations on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initEnvelopeSparkles();
+    });
+  </script>
+</body>
+
+</html>

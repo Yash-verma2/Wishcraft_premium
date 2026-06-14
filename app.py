@@ -412,6 +412,7 @@ def generate():
                 'birthday3.html': "🎊 Happy Birthday",
                 'birthday_v2.html': "✨ Happy Birthday",
                 'birthday_emotional.html': "✨ Happy Birthday",
+                'birthday_premium.html': "✨ Grand Premium Celebration",
                 'sorry_emotional.html': "✨ From the Heart",
                 'valentine.html': "💖 Happy Valentine's Day"
             }

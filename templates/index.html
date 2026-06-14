@@ -145,10 +145,21 @@
 
     /* ── Blob Animation ── */
     @keyframes blob {
-      0%   { transform: translate(0px, 0px) scale(1); }
-      33%  { transform: translate(30px, -50px) scale(1.1); }
-      66%  { transform: translate(-20px, 20px) scale(0.9); }
-      100% { transform: translate(0px, 0px) scale(1); }
+      0% {
+        transform: translate(0px, 0px) scale(1);
+      }
+
+      33% {
+        transform: translate(30px, -50px) scale(1.1);
+      }
+
+      66% {
+        transform: translate(-20px, 20px) scale(0.9);
+      }
+
+      100% {
+        transform: translate(0px, 0px) scale(1);
+      }
     }
 
     .animate-blob {
@@ -156,28 +167,43 @@
       will-change: transform;
     }
 
-    .animation-delay-2000 { animation-delay: 2s; }
-    .animation-delay-4000 { animation-delay: 4s; }
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
 
     /* ── Mobile: kill expensive always-on effects ── */
     @media (max-width: 768px) {
+
       /* Stop the heavy background blobs completely */
       .bg-blob {
         animation: none !important;
         opacity: 0.06 !important;
-        filter: blur(60px) !important; /* was 100-120px */
+        filter: blur(60px) !important;
+        /* was 100-120px */
       }
+
       /* Reduce glass blur to nearly nothing on mobile */
       .glass {
         backdrop-filter: blur(4px) !important;
         -webkit-backdrop-filter: blur(4px) !important;
       }
+
       /* Shimmer only when button is actively shown */
-      .shimmer::after { animation-play-state: paused; }
-      .shimmer:not(.hidden)::after { animation-play-state: running; }
+      .shimmer::after {
+        animation-play-state: paused;
+      }
+
+      .shimmer:not(.hidden)::after {
+        animation-play-state: running;
+      }
+
       /* Lighter step glow on mobile */
       .step-dot.active {
-        box-shadow: 0 0 10px rgba(244,63,94,0.4);
+        box-shadow: 0 0 10px rgba(244, 63, 94, 0.4);
       }
     }
 
@@ -287,13 +313,16 @@
   <!-- Background Blobs -->
   <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none" aria-hidden="true">
     <!-- Top-left pink blob -->
-    <div class="bg-blob absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/15 rounded-full blur-[120px] animate-pulse"
+    <div
+      class="bg-blob absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-500/15 rounded-full blur-[120px] animate-pulse"
       style="will-change:transform"></div>
     <!-- Bottom-right orange blob -->
-    <div class="bg-blob absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-orange-500/15 rounded-full blur-[100px] animate-pulse"
+    <div
+      class="bg-blob absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-orange-500/15 rounded-full blur-[100px] animate-pulse"
       style="animation-delay:1s;will-change:transform"></div>
     <!-- Mid indigo blob -->
-    <div class="bg-blob absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[35%] h-[35%] bg-indigo-500/10 rounded-full blur-[100px] animate-blob animation-delay-2000"
+    <div
+      class="bg-blob absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[35%] h-[35%] bg-indigo-500/10 rounded-full blur-[100px] animate-blob animation-delay-2000"
       style="will-change:transform"></div>
   </div>
 
@@ -417,343 +446,293 @@
             <h2 class="text-2xl font-black text-slate-900">Choose a Vibe</h2>
             <p class="text-slate-500 text-sm">Select the perfect template for your celebration</p>
           </div>
-
           <div class="space-y-6">
-            <div class="relative group">
+            <div
+              class="relative group aspect-[16/10] w-full rounded-3xl overflow-hidden shadow-lg border border-white/40 bg-slate-100">
               <div
-                class="absolute inset-0 bg-gradient-to-br from-brand-500 to-orange-500 rounded-3xl blur opacity-20 group-hover:opacity-30 transition-opacity">
+                class="absolute inset-0 bg-gradient-to-br from-brand-500 to-orange-500 blur opacity-10 group-hover:opacity-20 transition-opacity z-0">
               </div>
               <img id="templatePreview" src="/static/previews/hbd_privew.png"
-                class="relative w-full aspect-[16/10] object-cover rounded-3xl shadow-lg border border-white/40 transition-opacity duration-300"
-                alt="Preview">
+                class="w-full h-full object-cover transition-opacity duration-300 z-10" alt="Preview">
+              <video id="templateVideoPreview" autoplay loop muted playsinline
+                class="absolute inset-0 w-full h-full object-cover transition-opacity duration-300 z-20 hidden">
+              </video>
+            </div>
+
+            <!-- Dynamic Selected Template Description -->
+            <div id="templateDescContainer"
+              class="bg-slate-50 border border-slate-200/50 rounded-2xl p-4 mt-2 transition-all duration-300">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+                <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Selected Template
+                  Info</span>
+              </div>
+              <p id="templateDescText" class="text-xs text-slate-600 leading-relaxed font-semibold">
+                Select a template below to view features.
+              </p>
             </div>
 
             <div class="space-y-4">
               <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">Template
-                Style</label>
-
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="birthday.html" data-preview="/static/previews/hbd_privew.png" data-is-premium="false"
-                  data-price="0" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/hbd_privew.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-1.5 right-1.5 bg-emerald-500/90 backdrop-blur text-white text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      Free</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-slate-800/60 backdrop-blur text-white text-[8px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-md">
-                      Simple</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        A beautiful classic birthday template perfect for friends and family.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">🎉</span>
-                    <span class="truncate text-xs">Classic</span>
-                  </div>
+                Category</label>
+              <!-- Category Filter Tabs -->
+              <div class="flex flex-wrap p-1 bg-slate-100/80 rounded-xl gap-1 border border-slate-200/50 max-w-lg">
+                <button type="button" onclick="filterTemplates('all', this)"
+                  class="template-filter-btn flex-1 min-w-[65px] py-1.5 text-[11px] font-bold rounded-lg bg-white shadow-sm text-brand-600 transition-all focus:outline-none">
+                  🌟 All
                 </button>
-
-                <!-- New Modern Free Template -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="birthday_v2.html" data-preview="/static/previews/birthday_v2_preview.png" data-is-premium="false"
-                  data-price="0" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/birthday_v2_preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-1.5 right-1.5 bg-emerald-500/90 backdrop-blur text-white text-[9px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      Free</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-brand-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      ✨ New & Better</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        A premium glassmorphism design with smooth animations and floating decorations.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">✨</span>
-                    <span class="truncate text-xs">Modern Free</span>
-                  </div>
+                <button type="button" onclick="filterTemplates('birthday', this)"
+                  class="template-filter-btn flex-1 min-w-[75px] py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none">
+                  🎂 Birthday
                 </button>
-
-                <!-- 2 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="birthday2.html" data-preview="/static/previews/hbd2-preview.png" data-is-premium="true"
-                  data-price="9" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/hbd2-preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹9</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-blue-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      🔥 Trending</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        A sleek, modern aesthetic with smooth animations and a minimalist design.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">🎂</span>
-                    <span class="truncate text-xs">Modern</span>
-                  </div>
+                <button type="button" onclick="filterTemplates('love', this)"
+                  class="template-filter-btn flex-1 min-w-[65px] py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none">
+                  💖 Love
                 </button>
-
-                <!-- 3 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="birthday3.html" data-preview="/static/previews/hbd3_privew.png" data-is-premium="true"
-                  data-price="19" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/hbd3_privew.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹19</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-brand-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      ✨ Most Popular</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        Vibrant and energetic! Packed with bright colors and playful animations.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">🎈</span>
-                    <span class="truncate text-xs">Fun Vibe</span>
-                  </div>
+                <button type="button" onclick="filterTemplates('sorry', this)"
+                  class="template-filter-btn flex-1 min-w-[70px] py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none">
+                  🙏 Sorry
                 </button>
-
-                <!-- 4 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="birthday_emotional.html" data-preview="/static/previews/emotional_preview.png"
-                  data-is-premium="true" data-price="49" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/emotional_preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹49</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-rose-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      ❤️ Most Loved</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        Heartfelt and moving. Features soft music, fading memories, and a cinematic feel.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">✨</span>
-                    <span class="truncate text-xs">Emotional</span>
-                  </div>
+                <button type="button" onclick="filterTemplates('premium', this)"
+                  class="template-filter-btn flex-1 min-w-[80px] py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none">
+                  💎 Premium
                 </button>
-
-                <!-- 5 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="sorry_emotional.html" data-preview="/static/previews/sorry_preview.png"
-                  data-is-premium="true" data-price="9" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/sorry_preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹9</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-indigo-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      🤝 Best Choice</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        The ultimate sincere apology page. Express your feelings with grace and warmth.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">😔</span>
-                    <span class="truncate text-xs">Apology</span>
-                  </div>
-                </button>
-
-                <!-- 6 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none"
-                  data-value="anniversary.html" data-preview="/static/previews/anversary-preview.png"
-                  data-is-premium="true" data-price="19" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/anversary-preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹19</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-purple-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      💑 Couples' Top Pick</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full right-0 md:left-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        Celebrate your milestone! Romantic styling with floating hearts and elegant typography.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">💑</span>
-                    <span class="truncate text-xs">Anniversary</span>
-                  </div>
-                </button>
-
-                <!-- 7 -->
-                <button type="button"
-                  class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md hover:border-brand-300 transition-all duration-300 flex flex-col p-0 overflow-hidden group focus:outline-none md:col-span-3 lg:col-span-1"
-                  data-value="valentine.html" data-preview="/static/previews/valentine_preview.png"
-                  data-is-premium="true" data-price="49" onclick="selectTemplate(this)">
-                  <div class="w-full aspect-video bg-slate-200 relative shrink-0 overflow-hidden">
-                    <img src="/static/previews/valentine_preview.png"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div
-                      class="absolute top-0 right-0 bg-orange-600 text-white text-[10px] font-black px-3 py-1 rounded-bl-xl shadow-md z-10">
-                      ₹49</div>
-                    <div
-                      class="absolute bottom-1.5 left-1.5 bg-pink-600/90 backdrop-blur text-white text-[8px] uppercase tracking-widest font-black px-2 py-0.5 rounded-md">
-                      💘 Best for Love Birds</div>
-                    <div class="absolute top-1.5 left-1.5 group/info z-10">
-                      <div
-                        class="bg-brand-500/80 backdrop-blur hover:bg-brand-600 text-white rounded-full p-1 cursor-help transition-colors shadow-lg shadow-brand-500/20">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
-                          </path>
-                        </svg>
-                      </div>
-                      <div
-                        class="absolute top-full right-0 mt-2 w-48 p-3 bg-white/95 backdrop-blur-xl border border-brand-100 text-slate-700 text-[11px] rounded-xl opacity-0 invisible group-hover/info:opacity-100 group-hover/info:visible transition-all duration-300 shadow-2xl pointer-events-none text-left leading-relaxed font-medium z-50">
-                        <div class="flex items-center gap-2 mb-1.5">
-                          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
-                          <span class="uppercase tracking-widest text-[9px] font-black text-brand-600">Template
-                            Details</span>
-                        </div>
-                        A lovely Valentine's special dedicated to your significant other.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 px-3 py-2 w-full">
-                    <span class="text-lg leading-none">💘</span>
-                    <span class="truncate text-xs">Valentine</span>
-                  </div>
+                <button type="button" onclick="filterTemplates('free', this)"
+                  class="template-filter-btn flex-1 min-w-[65px] py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none">
+                  🆓 Free
                 </button>
               </div>
-              <input type="hidden" name="template" id="template_selector" value="birthday.html" data-is-premium="false">
             </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-4">
+              <!-- 1. Ultimate Premium (birthday_premium.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday_premium.html" data-preview="/static/previews/premium_cake_preview.png"
+                data-video="/static/previews/premium_cake_preview.mp4" data-is-premium="true" data-price="99"
+                data-category="birthday premium"
+                data-description="Our ultimate luxury template. Features a golden wax-sealed opening envelope, interactive popping balloons, sky lanterns, and real cake slicing."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/premium_cake_preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Ultimate VIP</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-md border border-yellow-200/50">👑
+                      VIP</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹99</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹499</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 2. Modern Free (birthday_v2.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday_v2.html" data-preview="/static/previews/birthday_v2_preview.png"
+                data-video="/static/previews/birthday_v2_preview.mp4" data-is-premium="false" data-price="0"
+                data-category="birthday free"
+                data-description="A premium glassmorphism design with smooth animations and floating decorations."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/birthday_v2_preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Modern Free</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/50">✨
+                      New</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold text-emerald-600">
+                    Free
+                  </div>
+                </div>
+              </button>
+
+              <!-- 3. Emotional HBD (birthday_emotional.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday_emotional.html" data-preview="/static/previews/emotional_preview.png"
+                data-video="/static/previews/emotional_preview.mp4" data-is-premium="true" data-price="49"
+                data-category="birthday premium"
+                data-description="Heartfelt and moving. Features soft music, fading memories, and a cinematic feel."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/emotional_preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Emotional</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200/50">❤️
+                      Loved</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹49</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹299</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 4. Valentine (valentine.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="valentine.html" data-preview="/static/previews/valentine_preview.png" data-is-premium="true"
+                data-video="/static/previews/valentine_preview.mp4" data-price="49" data-category="love premium"
+                data-description="A lovely Valentine's special dedicated to your significant other."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/valentine_preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Valentine</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-pink-600 bg-pink-50 px-1.5 py-0.5 rounded-md border border-pink-200/50">💖
+                      Love</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹49</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹299</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 5. Anniversary (anniversary.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="anniversary.html" data-preview="/static/previews/anversary-preview.png"
+                data-video="/static/previews/anversary-preview.mp4" data-is-premium="true" data-price="19"
+                data-category="love premium"
+                data-description="Celebrate your milestone! Romantic styling with floating hearts and elegant typography."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/anversary-preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Anniversary</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-md border border-purple-200/50">💑
+                      Couple</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹19</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹199</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 6. Fun Vibe (birthday3.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday3.html" data-preview="/static/previews/hbd3_privew.png" data-is-premium="true"
+                data-video="/static/previews/hbd3_preview.mp4" data-price="19" data-category="birthday premium"
+                data-description="Vibrant and energetic! Packed with bright colors and playful animations."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/hbd3_privew.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Fun Vibe</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-200/50">🎉
+                      Popular</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹19</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹149</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 7. Modern (birthday2.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday2.html" data-preview="/static/previews/hbd2-preview.png" data-is-premium="true"
+                data-video="/static/previews/hbd2_preview.mp4" data-price="9" data-category="birthday premium"
+                data-description="A sleek, modern aesthetic with smooth animations and a minimalist design."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/hbd2-preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Modern</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-200/50">🔥
+                      Trending</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹9</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹99</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 8. Apology (sorry_emotional.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="sorry_emotional.html" data-preview="/static/previews/sorry_preview.png"
+                data-video="/static/previews/sorry_preview.mp4" data-is-premium="true" data-price="9"
+                data-category="sorry premium"
+                data-description="The ultimate sincere apology page. Express your feelings with grace and warmth."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/sorry_preview.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Apology</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/50">🙏
+                      Sorry</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold">
+                    <span class="text-slate-900">₹9</span>
+                    <span class="line-through text-slate-400 text-[10px] font-normal ml-1.5">₹99</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- 9. Classic Free (birthday.html) -->
+              <button type="button"
+                class="template-chip relative w-full rounded-2xl border border-slate-200 bg-white p-2.5 transition-all duration-300 hover:shadow-md hover:border-brand-400 flex flex-col gap-2.5 overflow-hidden group focus:outline-none text-left"
+                data-value="birthday.html" data-preview="/static/previews/hbd_privew.png" data-is-premium="false"
+                data-video="/static/previews/hbd_preview.mp4" data-price="0" data-category="birthday free"
+                data-description="A beautiful classic birthday template perfect for friends and family."
+                onclick="selectTemplate(this)">
+                <div class="w-full aspect-[16/10] bg-slate-50 rounded-xl overflow-hidden shrink-0 relative">
+                  <img src="/static/previews/hbd_privew.png"
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                </div>
+                <div class="flex flex-col gap-1 w-full px-1">
+                  <div class="flex items-center justify-between gap-1.5">
+                    <span class="truncate text-xs font-bold text-slate-800">Classic</span>
+                    <span
+                      class="shrink-0 text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200">Classic</span>
+                  </div>
+                  <div class="text-[11px] mt-0.5 font-bold text-emerald-600">
+                    Free
+                  </div>
+                </div>
+              </button>
+            </div>
+            <input type="hidden" name="template" id="template_selector" value="birthday.html" data-is-premium="false">
           </div>
         </div>
 
@@ -880,7 +859,8 @@
                       class="absolute inset-y-1.5 right-1.5 p-2 bg-slate-900 text-white rounded-lg hover:bg-brand-600 transition-all shadow-md flex items-center justify-center">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                          d="M14 5l7 7m0 0l-7 7m7-7H3">
+                        </path>
                       </svg>
                     </button>
                   </div>
@@ -1075,11 +1055,9 @@
           </div>
 
           <!-- Decorative Elements behind ticket -->
-          <div
-            class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full filter blur-xl opacity-40">
+          <div class="absolute -top-4 -right-4 w-24 h-24 bg-yellow-300 rounded-full filter blur-xl opacity-40">
           </div>
-          <div
-            class="absolute -bottom-4 -left-4 w-24 h-24 bg-purple-300 rounded-full filter blur-xl opacity-40">
+          <div class="absolute -bottom-4 -left-4 w-24 h-24 bg-purple-300 rounded-full filter blur-xl opacity-40">
           </div>
         </div>
 
@@ -1148,9 +1126,7 @@
           © 2025 WishCraft. Crafted with ❤️ by <a href="https://github.com/Yash-verma2"
             class="hover:text-brand-500">Yash Verma</a>.
         </p>
-        <p class="text-gray-400 text-[10px] uppercase tracking-widest font-bold">
-          Part of ToolNest Family
-        </p>
+
       </div>
     </div>
   </footer>
@@ -1621,17 +1597,76 @@
         }
       }
 
-      // Update Preview with subtle fade
+      // Update Preview with dynamic video support & image fallback
       const previewSrc = btn.getAttribute('data-preview');
-      if (previewSrc) {
-        templatePreview.style.opacity = '0';
+      const videoSrc = btn.getAttribute('data-video');
+      const videoEl = document.getElementById('templateVideoPreview');
+      const imgEl = document.getElementById('templatePreview');
+
+      if (videoEl && imgEl) {
+        // Reset states
+        videoEl.classList.add('hidden');
+        try {
+          videoEl.pause();
+        } catch (e) { }
+        videoEl.src = '';
+        imgEl.classList.remove('hidden');
+
+        if (videoSrc) {
+          // Attempt to load video
+          videoEl.src = videoSrc;
+          videoEl.load();
+
+          // When video metadata loads, display the video and hide the image
+          videoEl.onloadedmetadata = function () {
+            imgEl.classList.add('hidden');
+            videoEl.classList.remove('hidden');
+            videoEl.play().catch(err => console.log("Video auto-play prevented:", err));
+          };
+
+          // Fallback to image if video loading fails (404, format issues, etc.)
+          videoEl.onerror = function () {
+            videoEl.classList.add('hidden');
+            imgEl.classList.remove('hidden');
+          };
+        }
+      }
+
+      if (previewSrc && imgEl) {
+        imgEl.style.opacity = '0';
         setTimeout(() => {
-          templatePreview.src = previewSrc;
-          templatePreview.style.opacity = '1';
+          imgEl.src = previewSrc;
+          imgEl.style.opacity = '1';
         }, 200);
       }
 
+      // Update description text dynamically
+      const descText = btn.getAttribute('data-description');
+      const descPara = document.getElementById('templateDescText');
+      if (descText && descPara) {
+        descPara.innerText = descText;
+      }
+
       updateSubmitButton();
+    }
+
+    // Template Category Filter
+    function filterTemplates(category, btn) {
+      // Update active tab style
+      document.querySelectorAll('.template-filter-btn').forEach(b => {
+        b.className = "template-filter-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg text-slate-500 hover:text-slate-700 transition-all focus:outline-none";
+      });
+      btn.className = "template-filter-btn flex-1 py-1.5 text-[11px] font-bold rounded-lg bg-white shadow-sm text-brand-600 transition-all focus:outline-none";
+
+      // Show/hide template chips based on category
+      document.querySelectorAll('.template-chip').forEach(chip => {
+        const chipCategory = chip.getAttribute('data-category') || '';
+        if (category === 'all' || chipCategory.includes(category)) {
+          chip.style.display = '';
+        } else {
+          chip.style.display = 'none';
+        }
+      });
     }
 
     // Default Gift & Stepper Init
@@ -1823,7 +1858,7 @@
         }
 
         const img = new Image();
-        img.onload = function() {
+        img.onload = function () {
           URL.revokeObjectURL(img.src);
           let width = img.width;
           let height = img.height;
@@ -1864,7 +1899,7 @@
           );
         };
 
-        img.onerror = function() {
+        img.onerror = function () {
           URL.revokeObjectURL(img.src);
           resolve(file);
         };
