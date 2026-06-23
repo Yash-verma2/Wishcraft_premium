@@ -599,7 +599,104 @@ def generate():
         logger.error(f"[{request_id}] Generation failed: {str(e)}", exc_info=True)
         return jsonify({"error": "An error occurred while generating your page."}), 500
 
+# ---------------- PREVIEW ROUTES ----------------
+
+@app.route('/preview/<template_name>')
+def preview_template(template_name):
+    # Ensure template_name is safe
+    allowed_templates = {
+        'birthday.html', 'birthday2.html', 'birthday3.html',
+        'birthday_emotional.html', 'birthday_premium.html',
+        'birthday_v2.html', 'sorry_emotional.html', 'valentine.html', 'anniversary.html'
+    }
+    if template_name not in allowed_templates:
+        abort(404)
+        
+    mock_context = {
+        "title": "🎉 Happy Birthday!",
+        "name": "Jane Doe",
+        "messages": [
+            "Wishing you a day filled with love and laughter! 🎉",
+            "May all your dreams and wishes come true! ✨",
+            "You are an amazing friend! Cheers to another great year! 🥂",
+            "Hope this year brings you success and happiness! ❤️"
+        ],
+        "main_image": "/static/previews/anime/hbd_privew.png",
+        "gift_image": "/static/previews/hbd-gift4.png",
+        "music": "/static/music/hb1.mp3",
+        "gallery_link": "/preview/gallery",
+        "gallery_images": [
+            "/static/previews/anime/hbd_privew.png",
+            "/static/previews/anime/hbd2-preview.png",
+            "/static/previews/anime/hbd3_privew.png",
+            "/static/previews/anime/emotional_preview.png"
+        ]
+    }
+    
+    if template_name == 'sorry_emotional.html':
+        mock_context["title"] = "🙏 Sincere Apology"
+        mock_context["name"] = "Alex"
+        mock_context["messages"] = [
+            "I'm truly sorry for what happened. 🙏",
+            "Our bond means the world to me.",
+            "Please accept my sincere apology. ❤️",
+            "Hoping we can start fresh. 🌸"
+        ]
+        mock_context["main_image"] = "/static/previews/anime/sorry_preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift3.png"
+        mock_context["music"] = "/static/music/hb2.mp3"
+    elif template_name == 'valentine.html':
+        mock_context["title"] = "💖 Happy Valentine's Day!"
+        mock_context["name"] = "My Love"
+        mock_context["messages"] = [
+            "You make my heart skip a beat. 💓",
+            "Every day is valentine's day when I am with you.",
+            "To the most beautiful person in the world! 💕",
+            "I love you to the moon and back! 🌙❤️"
+        ]
+        mock_context["main_image"] = "/static/previews/anime/valentine_preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift2.png"
+        mock_context["music"] = "/static/music/hb3.mp3"
+    elif template_name == 'anniversary.html':
+        mock_context["title"] = "💑 Happy Anniversary!"
+        mock_context["name"] = "Sweetheart"
+        mock_context["messages"] = [
+            "Happy Anniversary to my better half! 💑",
+            "Thank you for another year of beautiful memories.",
+            "Looking forward to an eternity with you. ❤️",
+            "Happy Anniversary! 🥂✨"
+        ]
+        mock_context["main_image"] = "/static/previews/anime/anversary-preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift1.png"
+        mock_context["music"] = "/static/music/hb4.mp3"
+    elif template_name == 'birthday_premium.html':
+        mock_context["main_image"] = "/static/previews/anime/premium_cake_preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift1.png"
+    elif template_name == 'birthday_v2.html':
+        mock_context["main_image"] = "/static/previews/anime/birthday_v2_preview.png"
+    elif template_name == 'birthday_emotional.html':
+        mock_context["main_image"] = "/static/previews/anime/emotional_preview.png"
+
+    return render_template(template_name, **mock_context)
+
+@app.route('/preview/gallery')
+def preview_gallery():
+    mock_images = [
+        "/static/previews/anime/hbd_privew.png",
+        "/static/previews/anime/hbd2-preview.png",
+        "/static/previews/anime/hbd3_privew.png",
+        "/static/previews/anime/emotional_preview.png"
+    ]
+    return render_template(
+        "gallery.html",
+        name="Gallery Preview",
+        title="Sample Memories",
+        images=mock_images,
+        music="/static/music/hb1.mp3"
+    )
+
 # ---------------- PAGE SERVING ----------------
+
 
 @app.route('/generated/<uid>/')
 def generated_page(uid):
