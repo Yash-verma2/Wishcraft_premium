@@ -134,6 +134,14 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.035);
     }
 
+    @media (max-w: 767px) {
+      .glass-premium {
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        background: rgba(8, 2, 5, 0.92) !important;
+      }
+    }
+
     /* ── HUD corner bracket overlay ── */
     .hud-card {
       position: relative;
@@ -344,14 +352,24 @@
       }
     }
 
-    90% {
-      opacity: 1;
-    }
+    @keyframes floatUpB {
+      0% {
+        transform: translateY(0);
+        opacity: 0;
+      }
 
-    100% {
-      transform: translateY(-125vh);
-      opacity: 0;
-    }
+      10% {
+        opacity: 1;
+      }
+
+      90% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-125vh);
+        opacity: 0;
+      }
     }
 
     @keyframes swayB {
@@ -492,20 +510,17 @@
       animation: spin-clockwise 12s linear infinite;
     }
 
-    /* Lock Flash Snap Effect */
+    /* Lock Flash Snap Effect (Optimized without filter to prevent rendering lag on mobile) */
     @keyframes lock-flash {
       0% {
-        filter: brightness(2.5);
         box-shadow: 0 0 40px #fbbf24;
       }
 
       50% {
-        filter: brightness(1.5);
         box-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
       }
 
       100% {
-        filter: brightness(1.0);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
       }
     }
@@ -569,16 +584,34 @@
 
     <div class="relative flex flex-col items-center gap-8">
       <div class="relative flex items-center justify-center w-24 h-24">
-        <div class="absolute inset-0 bg-rose-500/20 rounded-full animate-ping opacity-35"></div>
-        <div class="absolute inset-4 bg-amber-400/30 rounded-full animate-pulse opacity-40 blur-md"></div>
-        <div class="text-5xl animate-[pulse_1.5s_ease-in-out_infinite] transform">💖</div>
+        <div class="absolute inset-0 bg-amber-500/10 rounded-full animate-ping opacity-35"></div>
+        <div class="absolute inset-4 bg-amber-400/20 rounded-full animate-pulse opacity-40 blur-md"></div>
+        <!-- Luxury spinning star icon -->
+        <svg class="w-16 h-16 text-amber-400 animate-[spin_10s_linear_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="45" stroke="currentColor" stroke-width="1.5" stroke-dasharray="6 6" class="opacity-60" />
+          <path d="M50 15 L59 38 L83 38 L64 53 L71 77 L50 62 L29 77 L36 53 L17 38 L41 38 Z" fill="url(#gold-gradient)" filter="url(#glow)" />
+          <defs>
+            <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFE082" />
+              <stop offset="50%" stop-color="#FFB300" />
+              <stop offset="100%" stop-color="#FF6F00" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+        </svg>
       </div>
 
       <div class="flex flex-col items-center gap-2">
-        <div class="text-xs font-semibold tracking-[0.25em] text-rose-400/90 uppercase font-sans">Preparing your moment
+        <!-- Transitioning phrase text container -->
+        <div id="loader-phrase" class="text-xs font-semibold tracking-[0.25em] text-rose-400/90 uppercase font-sans text-center h-4">
+          Preparing your moment
         </div>
         <div
-          class="text-4xl font-light text-amber-400 tabular-nums tracking-wide flex items-baseline justify-center font-sans">
+          class="text-4xl font-light text-amber-400 tabular-nums tracking-wide flex items-baseline justify-center font-sans font-bold"
+          style="text-shadow: 0 0 15px rgba(251, 191, 36, 0.35);">
           <span id="load-percentage" style="font-family: inherit;">0</span><span
             class="text-xl text-rose-400/80 ml-1">%</span>
         </div>
@@ -591,13 +624,17 @@
       </div>
 
       <!-- Branding footer -->
-      <div class="text-sm text-rose-400/80 italic font-sans animate-pulse">
+      <div class="flex flex-col items-center gap-1 mt-4 opacity-75 font-sans">
         <a href="https://wishcraft-pages.vercel.app/" target="_blank"
-          style="font-size:0.5rem;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;color:rgba(191,149,63,0.8);text-decoration:none;">Exquisite
-          Design by WishCraft Premium</a>
-        <span style="font-size:0.5rem;font-weight:600;color:rgba(244,63,94,0.7);">↑ a Yash Verma's product</span>
+          style="font-size:0.55rem;font-weight:900;letter-spacing:0.4em;text-transform:uppercase;color:#BF953F;text-decoration:none;text-shadow: 0 0 8px rgba(191, 149, 99, 0.3);">
+          WISHCRAFT PREMIUM
+        </a>
+        <div class="flex items-center gap-2">
+          <span style="height:1px; width:20px; background:linear-gradient(to right, transparent, rgba(244,63,94,0.4))"></span>
+          <span style="font-size:0.5rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(244,63,94,0.85);">A YASH VERMA PRODUCT</span>
+          <span style="height:1px; width:20px; background:linear-gradient(to left, transparent, rgba(244,63,94,0.4))"></span>
+        </div>
       </div>
-    </div>
   </div>
   </div>
 
@@ -632,8 +669,17 @@
         const progressText = document.getElementById('load-percentage');
         const progressBar = document.getElementById('load-progress-bar');
         const preloader = document.getElementById('premium-preloader');
+        const phraseElement = document.getElementById('loader-phrase');
 
         if (!preloader) return;
+
+        const loaderPhrases = [
+          { threshold: 25, text: "Igniting the cosmic candles..." },
+          { threshold: 55, text: "Gathering starlight & wishes..." },
+          { threshold: 78, text: "Weaving the musical tapestry..." },
+          { threshold: 95, text: "Polishing the final stars..." },
+          { threshold: 100, text: "Unfolding your universe..." }
+        ];
 
         const interval = setInterval(() => {
           progress += Math.floor(Math.random() * 2) + 1;
@@ -643,6 +689,7 @@
 
             if (progressBar) progressBar.style.width = '100%';
             if (progressText) progressText.innerText = '100';
+            if (phraseElement) phraseElement.innerText = "Your moment is ready ✨";
 
             setTimeout(() => {
               preloader.classList.add('opacity-0');
@@ -656,6 +703,22 @@
           } else {
             if (progressBar) progressBar.style.width = progress + '%';
             if (progressText) progressText.innerText = progress;
+
+            // Transition phrases smoothly using GSAP
+            if (phraseElement) {
+              const currentPhrase = loaderPhrases.find(p => progress <= p.threshold) || loaderPhrases[loaderPhrases.length - 1];
+              if (phraseElement.innerText !== currentPhrase.text) {
+                gsap.to(phraseElement, {
+                  opacity: 0,
+                  y: -5,
+                  duration: 0.15,
+                  onComplete: () => {
+                    phraseElement.innerText = currentPhrase.text;
+                    gsap.to(phraseElement, { opacity: 1, y: 0, duration: 0.15 });
+                  }
+                });
+              }
+            }
           }
         }, 45);
       })();
@@ -671,6 +734,9 @@
     <!-- Outer vignette glow -->
     <div class="absolute inset-0 pointer-events-none"
       style="background: radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(4,1,3,0.7) 100%);"></div>
+
+    <!-- Petal container for the 3D globe scene -->
+    <div id="globe-petal-container" class="absolute inset-0 overflow-hidden pointer-events-none z-[158]"></div>
 
     <!-- Intro Screen Contents -->
     <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -745,700 +811,743 @@
     </div>
   </div>
 
+  <!-- Server-side template name and images data passed to JS safely without syntax diagnostics -->
+  <script id="name-data" type="application/json">
+    {{ name | tojson | safe }}
+  </script>
+  <script id="images-data" type="application/json">
+    {
+      "main_image": {{ main_image | tojson | safe }},
+      "gallery_images": {{ gallery_images | tojson | safe }}
+    }
+  </script>
+
   <script>
     (function () {
-      const name = {{ name| tojson
-    }};
-    const steps = [
-      { text: "", phase: "intro", hue: 280, duration: 4000 },
-      { text: "3", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffb3c6,#ff6b9d)", glow: "rgba(255,100,150,0.55)" },
-      { text: "2", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffc3e0,#ff85c8)", glow: "rgba(255,100,200,0.55)" },
-      { text: "1", phase: "spark", hue: 44, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffe066,#ffaa00)", glow: "rgba(255,180,0,0.65)" },
-      { text: "HAPPY", phase: "space", hue: 340, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "340" },
-      { text: "BIRTHDAY", phase: "space", hue: 38, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "38" },
-      { text: "TO", phase: "space", hue: 280, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "280" },
-      { text: name, phase: "space", hue: 330, duration: 2500, size: "clamp(2.8rem, 13vw, 7.5rem)", accent: "330", isName: true },
-      { text: "", phase: "bridge", hue: 280, duration: 1500 }
-    ];
-
-    const sphereImages = [
-      "{{ main_image }}"
-        {% for img in gallery_images %}
-          , "{{ img }}"
-    {% endfor %}
-      ].filter(url => url && url.trim() !== "" && !url.includes("placeholder"));
-
-    if (sphereImages.length === 0) {
-      sphereImages.push("/static/previews/anime/premium_cake_preview.png");
-      sphereImages.push("/static/previews/anime/hbd_privew.png");
-      sphereImages.push("/static/previews/anime/hbd2-preview.png");
-      sphereImages.push("/static/previews/anime/hbd3_privew.png");
-    }
-
-    let currentStepIdx = 0;
-    let stepTimeout = null;
-
-    function drawTechGrid(ctx, w, h, hueVal) {
-      ctx.save();
-      ctx.strokeStyle = `hsla(${hueVal}, 70%, 50%, 0.035)`;
-      ctx.lineWidth = 1;
-      const gridSize = 45;
-      for (let x = 0; x < w; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (let y = 0; y < h; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-
-    function initIntroCanvas() {
-      const canvas = document.getElementById('intro-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      let animationFrameId;
-      let width = (canvas.width = window.innerWidth);
-      let height = (canvas.height = window.innerHeight);
-
-      const onResize = () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-      };
-      window.addEventListener('resize', onResize);
-
-      const burstParticles = [];
-      const floatingStars = [];
-      const rings = [
-        { hue: 330, rFrac: 0.13, speed: 1.2, angle: 0, dashFrac: 0.55 },
-        { hue: 280, rFrac: 0.20, speed: -0.7, angle: Math.PI / 5, dashFrac: 0.45 },
-        { hue: 44, rFrac: 0.28, speed: 0.45, angle: 0.7 * Math.PI, dashFrac: 0.35 }
+      const name = JSON.parse(document.getElementById('name-data').textContent);
+      const steps = [
+        { text: "", phase: "intro", hue: 280, duration: 4000 },
+        { text: "3", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffb3c6,#ff6b9d)", glow: "rgba(255,100,150,0.55)" },
+        { text: "2", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffc3e0,#ff85c8)", glow: "rgba(255,100,200,0.55)" },
+        { text: "1", phase: "spark", hue: 44, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffe066,#ffaa00)", glow: "rgba(255,180,0,0.65)" },
+        { text: "HAPPY", phase: "space", hue: 340, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "340" },
+        { text: "BIRTHDAY", phase: "space", hue: 38, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "38" },
+        { text: "TO", phase: "space", hue: 280, duration: 1500, size: "clamp(3.8rem, 18vw, 10rem)", accent: "280" },
+        { text: name, phase: "space", hue: 330, duration: 2500, size: "clamp(2.8rem, 13vw, 7.5rem)", accent: "330", isName: true },
+        { text: "", phase: "bridge", hue: 280, duration: 1500 }
       ];
 
-      for (let i = 0; i < 100; i++) {
-        floatingStars.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          r: 0.5 + Math.random() * 2,
-          alpha: 0.15 + Math.random() * 0.6,
-          vy: 0.3 + Math.random() * 0.8,
-          phase: Math.random() * Math.PI * 2,
-          hue: [44, 330, 220, 280][Math.floor(Math.random() * 4)]
-        });
+      const imagesData = JSON.parse(document.getElementById('images-data').textContent);
+      const sphereImages = [
+        imagesData.main_image,
+        ...imagesData.gallery_images
+      ].filter(url => url && url.trim() !== "" && !url.includes("placeholder"));
+
+      if (sphereImages.length === 0) {
+        sphereImages.push("/static/previews/anime/premium_cake_preview.png");
+        sphereImages.push("/static/previews/anime/hbd_privew.png");
+        sphereImages.push("/static/previews/anime/hbd2-preview.png");
+        sphereImages.push("/static/previews/anime/hbd3_privew.png");
       }
 
-      let currentPhase = 'intro';
-      let activeHue = 330;
+      let currentStepIdx = 0;
+      let stepTimeout = null;
 
-      window.triggerSparkBurst = function (hueVal) {
-        currentPhase = 'spark';
-        activeHue = hueVal || 330;
-        burstParticles.length = 0;
-        const count = window.innerWidth < 768 ? 60 : 120;
-        for (let i = 0; i < count; i++) {
-          const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-          burstParticles.push({
-            angle: angle,
-            dist: 0.01 + 0.05 * Math.random(),
-            speed: 0.005 + 0.015 * Math.random(),
-            hue: Math.random() < 0.6 ? activeHue : activeHue + 30,
-            size: 1.5 + Math.random() * 2.5
-          });
-        }
-      };
-
-      window.setIntroCanvasPhase = function (phase, hueVal) {
-        currentPhase = phase;
-        if (hueVal) activeHue = hueVal;
-      };
-
-      function animate() {
-        const cx = width / 2;
-        const cy = height / 2;
-        const maxDist = Math.sqrt(cx * cx + cy * cy);
-
-        if (currentPhase === 'intro') {
-          ctx.fillStyle = 'rgba(10, 3, 6, 0.28)';
-          ctx.fillRect(0, 0, width, height);
-
-          drawTechGrid(ctx, width, height, activeHue);
-
-          floatingStars.forEach(star => {
-            star.phase += 0.01;
-            const alpha = star.alpha * (0.45 + 0.55 * Math.sin(star.phase));
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${star.hue}, 75%, 90%, ${alpha})`;
-            ctx.fill();
-          });
-
-          const sizeMin = Math.min(width, height);
-          const ringCount = 10;
-          rings.forEach(ring => {
-            ring.angle += 0.009 * ring.speed;
-            const radius = ring.rFrac * sizeMin;
-            const arcLen = (Math.PI * 2 * ring.dashFrac) / ringCount;
-            const gapLen = (Math.PI * 2 * (1 - ring.dashFrac)) / ringCount;
-
-            ctx.lineWidth = 1.5;
-            let startAngle = ring.angle;
-            for (let i = 0; i < ringCount; i++) {
-              ctx.strokeStyle = `hsla(${ring.hue}, 100%, 80%, 0.85)`;
-              ctx.beginPath();
-              ctx.arc(cx, cy, radius, startAngle, startAngle + arcLen);
-              ctx.stroke();
-              startAngle += arcLen + gapLen;
-            }
-          });
-        }
-        else if (currentPhase === 'spark') {
-          ctx.fillStyle = 'rgba(10, 3, 6, 0.18)';
-          ctx.fillRect(0, 0, width, height);
-
-          drawTechGrid(ctx, width, height, activeHue);
-
-          const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 180);
-          grad.addColorStop(0, `hsla(${activeHue}, 100%, 70%, 0.1)`);
-          grad.addColorStop(1, 'transparent');
-          ctx.fillStyle = grad;
+      function drawTechGrid(ctx, w, h, hueVal) {
+        ctx.save();
+        ctx.strokeStyle = `hsla(${hueVal}, 70%, 50%, 0.035)`;
+        ctx.lineWidth = 1;
+        const gridSize = 45;
+        for (let x = 0; x < w; x += gridSize) {
           ctx.beginPath();
-          ctx.arc(cx, cy, 180, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, h);
+          ctx.stroke();
+        }
+        for (let y = 0; y < h; y += gridSize) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(w, y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
 
-          let allDone = true;
-          burstParticles.forEach(p => {
-            p.dist += p.speed * 2.2;
-            if (p.dist < 1.0) allDone = false;
+      function initIntroCanvas() {
+        const canvas = document.getElementById('intro-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-            const px = cx + Math.cos(p.angle) * p.dist * maxDist;
-            const py = cy + Math.sin(p.angle) * p.dist * maxDist;
-            const prevDist = Math.max(0, p.dist - 0.06);
-            const prevX = cx + Math.cos(p.angle) * prevDist * maxDist;
-            const prevY = cy + Math.sin(p.angle) * prevDist * maxDist;
+        let animationFrameId;
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
 
-            const alpha = Math.max(0, 1 - p.dist * 1.1);
-            ctx.strokeStyle = `hsla(${p.hue}, 100%, 80%, ${alpha})`;
-            ctx.lineWidth = p.size * (0.3 + (1 - p.dist) * 0.7);
-            ctx.beginPath();
-            ctx.moveTo(prevX, prevY);
-            ctx.lineTo(px, py);
-            ctx.stroke();
+        const onResize = () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', onResize);
+
+        const burstParticles = [];
+        const floatingStars = [];
+        const rings = [
+          { hue: 330, rFrac: 0.13, speed: 1.2, angle: 0, dashFrac: 0.55 },
+          { hue: 280, rFrac: 0.20, speed: -0.7, angle: Math.PI / 5, dashFrac: 0.45 },
+          { hue: 44, rFrac: 0.28, speed: 0.45, angle: 0.7 * Math.PI, dashFrac: 0.35 }
+        ];
+
+        const starCount = window.innerWidth < 768 ? 45 : 100;
+        for (let i = 0; i < starCount; i++) {
+          floatingStars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: 0.5 + Math.random() * 2,
+            alpha: 0.15 + Math.random() * 0.6,
+            vy: 0.3 + Math.random() * 0.8,
+            phase: Math.random() * Math.PI * 2,
+            hue: [44, 330, 220, 280][Math.floor(Math.random() * 4)]
           });
+        }
 
-          if (allDone) {
-            currentPhase = 'space';
+        let currentPhase = 'intro';
+        let activeHue = 330;
+
+        window.triggerSparkBurst = function (hueVal) {
+          currentPhase = 'spark';
+          activeHue = hueVal || 330;
+          burstParticles.length = 0;
+          const count = window.innerWidth < 768 ? 60 : 120;
+          for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
+            burstParticles.push({
+              angle: angle,
+              dist: 0.01 + 0.05 * Math.random(),
+              speed: 0.005 + 0.015 * Math.random(),
+              hue: Math.random() < 0.6 ? activeHue : activeHue + 30,
+              size: 1.5 + Math.random() * 2.5
+            });
+          }
+        };
+
+        window.setIntroCanvasPhase = function (phase, hueVal) {
+          currentPhase = phase;
+          if (hueVal) activeHue = hueVal;
+        };
+
+        function animate() {
+          const cx = width / 2;
+          const cy = height / 2;
+          const maxDist = Math.sqrt(cx * cx + cy * cy);
+
+          if (currentPhase === 'intro') {
+            ctx.fillStyle = 'rgba(10, 3, 6, 0.28)';
+            ctx.fillRect(0, 0, width, height);
+
+            drawTechGrid(ctx, width, height, activeHue);
+
+            floatingStars.forEach(star => {
+              star.phase += 0.01;
+              const alpha = star.alpha * (0.45 + 0.55 * Math.sin(star.phase));
+              ctx.beginPath();
+              ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+              ctx.fillStyle = `hsla(${star.hue}, 75%, 90%, ${alpha})`;
+              ctx.fill();
+            });
+
+            const sizeMin = Math.min(width, height);
+            const ringCount = 10;
+            rings.forEach(ring => {
+              ring.angle += 0.009 * ring.speed;
+              const radius = ring.rFrac * sizeMin;
+              const arcLen = (Math.PI * 2 * ring.dashFrac) / ringCount;
+              const gapLen = (Math.PI * 2 * (1 - ring.dashFrac)) / ringCount;
+
+              ctx.lineWidth = 1.5;
+              let startAngle = ring.angle;
+              for (let i = 0; i < ringCount; i++) {
+                ctx.strokeStyle = `hsla(${ring.hue}, 100%, 80%, 0.85)`;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, startAngle, startAngle + arcLen);
+                ctx.stroke();
+                startAngle += arcLen + gapLen;
+              }
+            });
+          }
+          else if (currentPhase === 'spark') {
+            ctx.fillStyle = 'rgba(10, 3, 6, 0.18)';
+            ctx.fillRect(0, 0, width, height);
+
+            drawTechGrid(ctx, width, height, activeHue);
+
+            const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 180);
+            grad.addColorStop(0, `hsla(${activeHue}, 100%, 70%, 0.1)`);
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 180, 0, Math.PI * 2);
+            ctx.fill();
+
+            let allDone = true;
+            burstParticles.forEach(p => {
+              p.dist += p.speed * 2.2;
+              if (p.dist < 1.0) allDone = false;
+
+              const px = cx + Math.cos(p.angle) * p.dist * maxDist;
+              const py = cy + Math.sin(p.angle) * p.dist * maxDist;
+              const prevDist = Math.max(0, p.dist - 0.06);
+              const prevX = cx + Math.cos(p.angle) * prevDist * maxDist;
+              const prevY = cy + Math.sin(p.angle) * prevDist * maxDist;
+
+              const alpha = Math.max(0, 1 - p.dist * 1.1);
+              ctx.strokeStyle = `hsla(${p.hue}, 100%, 80%, ${alpha})`;
+              ctx.lineWidth = p.size * (0.3 + (1 - p.dist) * 0.7);
+              ctx.beginPath();
+              ctx.moveTo(prevX, prevY);
+              ctx.lineTo(px, py);
+              ctx.stroke();
+            });
+
+            if (allDone) {
+              currentPhase = 'space';
+            }
+          }
+          else if (currentPhase === 'space') {
+            ctx.fillStyle = '#020818';
+            ctx.fillRect(0, 0, width, height);
+
+            drawTechGrid(ctx, width, height, activeHue);
+
+            floatingStars.forEach(star => {
+              star.y += star.vy;
+              if (star.y > height) {
+                star.y = -10;
+                star.x = Math.random() * width;
+              }
+              star.phase += 0.015;
+              const alpha = star.alpha * (0.4 + 0.6 * Math.sin(star.phase));
+
+              ctx.beginPath();
+              ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+              ctx.fillStyle = `hsla(${activeHue}, 96%, 92%, ${alpha})`;
+              ctx.fill();
+            });
+          }
+
+          animationFrameId = requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        return () => {
+          cancelAnimationFrame(animationFrameId);
+          window.removeEventListener('resize', onResize);
+        };
+      }
+
+      function runStep() {
+        if (currentStepIdx >= steps.length) {
+          return;
+        }
+
+        const step = steps[currentStepIdx];
+        const mainText = document.getElementById('intro-main-text');
+        const textWrapper = document.getElementById('intro-text-wrapper');
+        const tagline = document.getElementById('intro-tagline-container');
+        const lineTop = document.getElementById('intro-line-top');
+        const lineBottom = document.getElementById('intro-line-bottom');
+
+        if (step.phase === 'intro') {
+          if (window.setIntroCanvasPhase) {
+            window.setIntroCanvasPhase('intro', step.hue);
+          }
+          if (tagline) {
+            tagline.style.opacity = '0.75';
+          }
+          if (textWrapper) {
+            textWrapper.style.opacity = '0';
           }
         }
-        else if (currentPhase === 'space') {
-          ctx.fillStyle = '#020818';
-          ctx.fillRect(0, 0, width, height);
+        else if (step.phase === 'spark') {
+          if (tagline) {
+            tagline.style.opacity = '0';
+          }
 
-          drawTechGrid(ctx, width, height, activeHue);
+          if (mainText) {
+            mainText.innerText = step.text;
+            mainText.style.fontSize = step.size || 'clamp(9rem, 44vw, 22rem)';
+            mainText.style.background = step.gradient || 'none';
+            mainText.style.webkitBackgroundClip = 'text';
+            mainText.style.webkitTextFillColor = 'transparent';
+            mainText.style.backgroundClip = 'text';
+            mainText.style.filter = `drop-shadow(0 0 30px ${step.glow || 'rgba(0,0,0,0)'}) drop-shadow(0 2px 8px rgba(0,0,0,0.95))`;
+          }
 
-          floatingStars.forEach(star => {
-            star.y += star.vy;
-            if (star.y > height) {
-              star.y = -10;
-              star.x = Math.random() * width;
+          if (lineTop) lineTop.style.display = 'none';
+          if (lineBottom) lineBottom.style.display = 'none';
+
+          if (window.triggerSparkBurst) {
+            window.triggerSparkBurst(step.hue);
+          }
+
+          if (textWrapper) {
+            textWrapper.classList.remove('mw-video-count-pop');
+            void textWrapper.offsetWidth;
+            textWrapper.classList.add('mw-video-count-pop');
+            textWrapper.style.opacity = '1';
+          }
+        }
+        else if (step.phase === 'space') {
+          if (window.setIntroCanvasPhase) {
+            window.setIntroCanvasPhase('space', step.hue);
+          }
+
+          if (mainText) {
+            mainText.innerText = step.text;
+            mainText.style.fontSize = step.size || 'clamp(3.8rem, 18vw, 10rem)';
+            mainText.style.background = 'none';
+            mainText.style.webkitTextFillColor = '#ffffff';
+            mainText.style.filter = 'none';
+
+            const textShadowGlow = `0 0 20px hsla(${step.accent},100%,88%,0.7), 0 0 50px hsla(${step.accent},100%,70%,0.4), 0 3px 16px rgba(0, 0, 0, 0.85)`;
+            mainText.style.textShadow = textShadowGlow;
+          }
+
+          if (lineTop) {
+            lineTop.style.display = 'block';
+            lineTop.style.background = `hsla(${step.accent},96%,85%,0.7)`;
+            lineTop.style.boxShadow = `0 0 10px hsla(${step.accent},100%,80%,0.8)`;
+            lineTop.classList.remove('scale-x-100');
+            lineTop.classList.add('scale-x-0');
+            void lineTop.offsetWidth;
+            lineTop.classList.remove('scale-x-0');
+            lineTop.classList.add('scale-x-100');
+          }
+          if (lineBottom) {
+            lineBottom.style.display = 'block';
+            lineBottom.style.background = `hsla(${step.accent},96%,85%,0.7)`;
+            lineBottom.style.boxShadow = `0 0 10px hsla(${step.accent},100%,80%,0.8)`;
+            lineBottom.classList.remove('scale-x-100');
+            lineBottom.classList.add('scale-x-0');
+            void lineBottom.offsetWidth;
+            lineBottom.classList.remove('scale-x-0');
+            lineBottom.classList.add('scale-x-100');
+          }
+
+          if (textWrapper) {
+            textWrapper.classList.remove('mw-video-count-pop');
+            textWrapper.style.opacity = '1';
+            textWrapper.style.transform = 'scale(1)';
+          }
+        }
+        else if (step.phase === 'bridge') {
+          if (textWrapper) {
+            textWrapper.style.opacity = '0';
+          }
+          if (window.setIntroCanvasPhase) {
+            window.setIntroCanvasPhase('space', step.hue);
+          }
+          launchGlobeScene();
+        }
+
+        stepTimeout = setTimeout(() => {
+          currentStepIdx++;
+          runStep();
+        }, step.duration);
+      }
+
+      function generateSphereCoords(radius, imageCount, isMobile) {
+        let coords = [];
+        if (imageCount === 0) return coords;
+
+        const rows = isMobile
+          ? [{ lat: -45, span: 40 }, { lat: 0, span: 40 }, { lat: 45, span: 40 }]
+          : [{ lat: -68, span: 22 }, { lat: -46, span: 22 }, { lat: -24, span: 22 }, { lat: 0, span: 22 }, { lat: 24, span: 22 }, { lat: 46, span: 22 }, { lat: 68, span: 22 }];
+
+        let imgIdx = 0;
+        rows.forEach(row => {
+          let latRad = (row.lat * Math.PI) / 180;
+          let spanRad = radius * (row.span * Math.PI / 180);
+          let rowCircumference = 2 * Math.PI * radius * Math.cos(latRad);
+          let countInRow = Math.max(3, Math.round(rowCircumference / (0.85 * spanRad)));
+          let colWidth = rowCircumference / countInRow;
+          let degStep = 360 / countInRow;
+
+          for (let e = 0; e < countInRow; e++) {
+            coords.push({
+              rotX: -row.lat,
+              rotY: e * degStep,
+              w: colWidth + 4,
+              h: spanRad + 4,
+              imgIdx: imgIdx
+            });
+            imgIdx++;
+          }
+        });
+        return coords;
+      }
+
+      let currentRotationY = 0;
+      let currentRotationX = -8;
+      let isDragging = false;
+      let startPointerX = 0;
+      let startPointerY = 0;
+      let startRotY = 0;
+      let startRotX = 0;
+      let autoRotateSpeed = 0.12;
+      let autoRotateId = null;
+      let introPetalInterval = null;
+
+      function startIntroRosePetals() {
+        const container = document.getElementById('globe-petal-container');
+        if (!container) return;
+        const initialPetals = window.innerWidth < 768 ? 10 : 25;
+        for (let i = 0; i < initialPetals; i++) {
+          if (typeof spawnRosePetal === 'function') {
+            spawnRosePetal(container, true);
+          }
+        }
+        const spawnInterval = window.innerWidth < 768 ? 450 : 220;
+        introPetalInterval = setInterval(() => {
+          if (document.hidden) return;
+          if (typeof spawnRosePetal === 'function') {
+            spawnRosePetal(container, false);
+          }
+        }, spawnInterval);
+      }
+
+      function launchGlobeScene() {
+        const globeScene = document.getElementById('globe-scene');
+        if (!globeScene) return;
+
+        globeScene.style.display = 'flex';
+        void globeScene.offsetWidth;
+        globeScene.style.opacity = '1';
+
+        const sphereWrapper = document.getElementById('sphere-wrapper');
+        if (sphereWrapper) {
+          sphereWrapper.innerHTML = '';
+
+          const isMobile = window.innerWidth < 768;
+          const radius = Math.round((isMobile ? 0.36 : 0.38) * Math.min(window.innerWidth, window.innerHeight));
+          const coords = generateSphereCoords(radius, sphereImages.length, isMobile);
+          window.activeCoords = coords;
+
+          coords.forEach((coord, idx) => {
+            const plate = document.createElement('div');
+            plate.className = 'photo-plate';
+
+            // Mathematically derive individual plate size to prevent clutter and overlap
+            const rawSize = Math.min(coord.w, coord.h);
+            const size = Math.round(rawSize * (isMobile ? 1.05 : 1.08));
+            plate.style.width = `${size}px`;
+            plate.style.height = `${size}px`;
+            plate.style.marginLeft = `${-size / 2}px`;
+            plate.style.marginTop = `${-size / 2}px`;
+
+            const imgUrl = sphereImages[coord.imgIdx % sphereImages.length];
+            const img = document.createElement('img');
+            img.src = imgUrl;
+            img.className = 'w-full h-full object-cover select-none pointer-events-none';
+            plate.appendChild(img);
+
+            // Set initial spread-out state
+            const randRotateZ = (Math.random() - 0.5) * 60; // Random tilt in flight
+            plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(600px) rotateZ(${randRotateZ}deg) scale(0.1)`;
+            plate.style.opacity = '0';
+            if (!isMobile) {
+              plate.style.filter = 'brightness(3.5) contrast(1.5) drop-shadow(0 0 25px rgba(251, 191, 36, 0.9))';
+            } else {
+              plate.style.boxShadow = '0 0 20px rgba(251, 191, 36, 0.8)';
             }
-            star.phase += 0.015;
-            const alpha = star.alpha * (0.4 + 0.6 * Math.sin(star.phase));
 
-            ctx.beginPath();
-            ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-            ctx.fillStyle = `hsla(${activeHue}, 96%, 92%, ${alpha})`;
-            ctx.fill();
-          });
-        }
+            // Staggered assembly delay for the "Iron Man suit-up snapping" effect
+            const snapDelay = idx * 65;
+            plate.style.transitionDelay = `${snapDelay}ms`;
 
-        animationFrameId = requestAnimationFrame(animate);
-      }
+            sphereWrapper.appendChild(plate);
 
-      animate();
-
-      return () => {
-        cancelAnimationFrame(animationFrameId);
-        window.removeEventListener('resize', onResize);
-      };
-    }
-
-    function runStep() {
-      if (currentStepIdx >= steps.length) {
-        return;
-      }
-
-      const step = steps[currentStepIdx];
-      const mainText = document.getElementById('intro-main-text');
-      const textWrapper = document.getElementById('intro-text-wrapper');
-      const tagline = document.getElementById('intro-tagline-container');
-      const lineTop = document.getElementById('intro-line-top');
-      const lineBottom = document.getElementById('intro-line-bottom');
-
-      if (step.phase === 'intro') {
-        if (window.setIntroCanvasPhase) {
-          window.setIntroCanvasPhase('intro', step.hue);
-        }
-        if (tagline) {
-          tagline.style.opacity = '0.75';
-        }
-        if (textWrapper) {
-          textWrapper.style.opacity = '0';
-        }
-      }
-      else if (step.phase === 'spark') {
-        if (tagline) {
-          tagline.style.opacity = '0';
-        }
-
-        if (mainText) {
-          mainText.innerText = step.text;
-          mainText.style.fontSize = step.size || 'clamp(9rem, 44vw, 22rem)';
-          mainText.style.background = step.gradient || 'none';
-          mainText.style.webkitBackgroundClip = 'text';
-          mainText.style.webkitTextFillColor = 'transparent';
-          mainText.style.backgroundClip = 'text';
-          mainText.style.filter = `drop-shadow(0 0 30px ${step.glow || 'rgba(0,0,0,0)'}) drop-shadow(0 2px 8px rgba(0,0,0,0.95))`;
-        }
-
-        if (lineTop) lineTop.style.display = 'none';
-        if (lineBottom) lineBottom.style.display = 'none';
-
-        if (window.triggerSparkBurst) {
-          window.triggerSparkBurst(step.hue);
-        }
-
-        if (textWrapper) {
-          textWrapper.classList.remove('mw-video-count-pop');
-          void textWrapper.offsetWidth;
-          textWrapper.classList.add('mw-video-count-pop');
-          textWrapper.style.opacity = '1';
-        }
-      }
-      else if (step.phase === 'space') {
-        if (window.setIntroCanvasPhase) {
-          window.setIntroCanvasPhase('space', step.hue);
-        }
-
-        if (mainText) {
-          mainText.innerText = step.text;
-          mainText.style.fontSize = step.size || 'clamp(3.8rem, 18vw, 10rem)';
-          mainText.style.background = 'none';
-          mainText.style.webkitTextFillColor = '#ffffff';
-          mainText.style.filter = 'none';
-
-          const textShadowGlow = `0 0 20px hsla(${step.accent},100%,88%,0.7), 0 0 50px hsla(${step.accent},100%,70%,0.4), 0 3px 16px rgba(0, 0, 0, 0.85)`;
-          mainText.style.textShadow = textShadowGlow;
-        }
-
-        if (lineTop) {
-          lineTop.style.display = 'block';
-          lineTop.style.background = `hsla(${step.accent},96%,85%,0.7)`;
-          lineTop.style.boxShadow = `0 0 10px hsla(${step.accent},100%,80%,0.8)`;
-          lineTop.classList.remove('scale-x-100');
-          lineTop.classList.add('scale-x-0');
-          void lineTop.offsetWidth;
-          lineTop.classList.remove('scale-x-0');
-          lineTop.classList.add('scale-x-100');
-        }
-        if (lineBottom) {
-          lineBottom.style.display = 'block';
-          lineBottom.style.background = `hsla(${step.accent},96%,85%,0.7)`;
-          lineBottom.style.boxShadow = `0 0 10px hsla(${step.accent},100%,80%,0.8)`;
-          lineBottom.classList.remove('scale-x-100');
-          lineBottom.classList.add('scale-x-0');
-          void lineBottom.offsetWidth;
-          lineBottom.classList.remove('scale-x-0');
-          lineBottom.classList.add('scale-x-100');
-        }
-
-        if (textWrapper) {
-          textWrapper.classList.remove('mw-video-count-pop');
-          textWrapper.style.opacity = '1';
-          textWrapper.style.transform = 'scale(1)';
-        }
-      }
-      else if (step.phase === 'bridge') {
-        if (textWrapper) {
-          textWrapper.style.opacity = '0';
-        }
-        if (window.setIntroCanvasPhase) {
-          window.setIntroCanvasPhase('space', step.hue);
-        }
-        launchGlobeScene();
-      }
-
-      stepTimeout = setTimeout(() => {
-        currentStepIdx++;
-        runStep();
-      }, step.duration);
-    }
-
-    function generateSphereCoords(radius, imageCount, isMobile) {
-      let coords = [];
-      if (imageCount === 0) return coords;
-
-      const rows = isMobile
-        ? [{ lat: -56, span: 28 }, { lat: -28, span: 28 }, { lat: 0, span: 28 }, { lat: 28, span: 28 }, { lat: 56, span: 28 }]
-        : [{ lat: -68, span: 22 }, { lat: -46, span: 22 }, { lat: -24, span: 22 }, { lat: 0, span: 22 }, { lat: 24, span: 22 }, { lat: 46, span: 22 }, { lat: 68, span: 22 }];
-
-      let imgIdx = 0;
-      rows.forEach(row => {
-        let latRad = (row.lat * Math.PI) / 180;
-        let spanRad = radius * (row.span * Math.PI / 180);
-        let rowCircumference = 2 * Math.PI * radius * Math.cos(latRad);
-        let countInRow = Math.max(3, Math.round(rowCircumference / (0.85 * spanRad)));
-        let colWidth = rowCircumference / countInRow;
-        let degStep = 360 / countInRow;
-
-        for (let e = 0; e < countInRow; e++) {
-          coords.push({
-            rotX: -row.lat,
-            rotY: e * degStep,
-            w: colWidth + 4,
-            h: spanRad + 4,
-            imgIdx: imgIdx
-          });
-          imgIdx++;
-        }
-      });
-      return coords;
-    }
-
-    let currentRotationY = 0;
-    let currentRotationX = -8;
-    let isDragging = false;
-    let startPointerX = 0;
-    let startPointerY = 0;
-    let startRotY = 0;
-    let startRotX = 0;
-    let autoRotateSpeed = 0.12;
-    let autoRotateId = null;
-
-    function launchGlobeScene() {
-      const globeScene = document.getElementById('globe-scene');
-      if (!globeScene) return;
-
-      globeScene.style.display = 'flex';
-      void globeScene.offsetWidth;
-      globeScene.style.opacity = '1';
-
-      const sphereWrapper = document.getElementById('sphere-wrapper');
-      if (sphereWrapper) {
-        sphereWrapper.innerHTML = '';
-
-        const isMobile = window.innerWidth < 768;
-        const radius = Math.round((isMobile ? 0.36 : 0.38) * Math.min(window.innerWidth, window.innerHeight));
-        const coords = generateSphereCoords(radius, sphereImages.length, isMobile);
-        window.activeCoords = coords;
-
-        coords.forEach((coord, idx) => {
-          const plate = document.createElement('div');
-          plate.className = 'photo-plate';
-
-          // Mathematically derive individual plate size to prevent clutter and overlap
-          const rawSize = Math.min(coord.w, coord.h);
-          const size = Math.round(rawSize * (isMobile ? 1.05 : 1.08));
-          plate.style.width = `${size}px`;
-          plate.style.height = `${size}px`;
-          plate.style.marginLeft = `${-size / 2}px`;
-          plate.style.marginTop = `${-size / 2}px`;
-
-          const imgUrl = sphereImages[coord.imgIdx % sphereImages.length];
-          const img = document.createElement('img');
-          img.src = imgUrl;
-          img.className = 'w-full h-full object-cover select-none pointer-events-none';
-          plate.appendChild(img);
-
-          // Set initial spread-out state
-          const randRotateZ = (Math.random() - 0.5) * 60; // Random tilt in flight
-          plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(600px) rotateZ(${randRotateZ}deg) scale(0.1)`;
-          plate.style.opacity = '0';
-          plate.style.filter = 'brightness(3.5) contrast(1.5) drop-shadow(0 0 25px rgba(251, 191, 36, 0.9))';
-
-          // Staggered assembly delay for the "Iron Man suit-up snapping" effect
-          const snapDelay = idx * 65;
-          plate.style.transitionDelay = `${snapDelay}ms`;
-
-          sphereWrapper.appendChild(plate);
-
-          // Trigger assembly animation
-          setTimeout(() => {
-            plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(${radius}px) rotateZ(0deg) scale(1)`;
-            plate.style.opacity = '1';
-            plate.style.filter = 'brightness(1) contrast(1) drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
-
-            // Trigger locking flash effect exactly when it lands
+            // Trigger assembly animation
             setTimeout(() => {
-              plate.classList.add('locked');
-              playTechLockSound(0);
-            }, 1200 + snapDelay);
-          }, 100);
+              plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(${radius}px) rotateZ(0deg) scale(1)`;
+              plate.style.opacity = '1';
+              if (!isMobile) {
+                plate.style.filter = 'brightness(1) contrast(1) drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
+              } else {
+                plate.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
+              }
+
+              // Trigger locking flash effect exactly when it lands
+              setTimeout(() => {
+                plate.classList.add('locked');
+                playTechLockSound(0);
+              }, 1200 + snapDelay);
+            }, 100);
+          });
+
+          setupGlobeInteraction(sphereWrapper);
+        }
+
+        startIntroRosePetals();
+
+        // Show enter button (Arc Reactor)
+        setTimeout(() => {
+          const btn = document.getElementById('globe-enter-btn-container');
+          if (btn) {
+            btn.style.opacity = '1';
+            // Position vertically below the sphere: center Y (50%) + radius + offset
+            const offset = isMobile ? 65 : 85;
+            btn.style.top = `calc(50% + ${radius + offset}px)`;
+            btn.style.transform = 'translate(-50%, -50%) scale(1)';
+          }
+        }, 1500);
+      }
+
+      function playTechLockSound(timeDelay) {
+        if (!window.audioCtx) {
+          try {
+            window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch (e) {
+            return;
+          }
+        }
+        const ctx = window.audioCtx;
+        if (!ctx) return;
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+
+        const now = ctx.currentTime + timeDelay;
+
+        const osc = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.connect(filter);
+        osc2.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1400, now);
+        osc.frequency.exponentialRampToValueAtTime(500, now + 0.07);
+
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(2200, now);
+        osc2.frequency.exponentialRampToValueAtTime(200, now + 0.07);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1100, now);
+        filter.Q.setValueAtTime(4, now);
+
+        gainNode.gain.setValueAtTime(0.04, now); // Soft cybernetic lock click
+        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+
+        osc.start(now);
+        osc2.start(now);
+        osc.stop(now + 0.08);
+        osc2.stop(now + 0.08);
+      }
+
+      function setupGlobeInteraction(wrapper) {
+        const globeScene = document.getElementById('globe-scene');
+        const onPointerDown = (e) => {
+          if (e.target.closest('button')) return;
+          isDragging = true;
+          if (globeScene) globeScene.style.cursor = 'grabbing';
+          startPointerX = e.clientX || (e.touches && e.touches[0].clientX);
+          startPointerY = e.clientY || (e.touches && e.touches[0].clientY);
+          startRotY = currentRotationY;
+          startRotX = currentRotationX;
+        };
+
+        const onPointerMove = (e) => {
+          if (!isDragging) return;
+          const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+          const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+          if (!clientX || !clientY) return;
+
+          const deltaX = clientX - startPointerX;
+          const deltaY = clientY - startPointerY;
+
+          currentRotationY = startRotY + deltaX * 0.35;
+          currentRotationX = Math.max(-70, Math.min(70, startRotX - deltaY * 0.35));
+
+          wrapper.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+        };
+
+        const onPointerUp = () => {
+          if (isDragging) {
+            isDragging = false;
+            if (globeScene) globeScene.style.cursor = 'grab';
+          }
+        };
+
+        if (globeScene) {
+          globeScene.addEventListener('pointerdown', onPointerDown);
+          globeScene.style.cursor = 'grab';
+        }
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+
+        // Auto-rotation loop
+        const rotateLoop = () => {
+          if (!isDragging) {
+            currentRotationY += autoRotateSpeed;
+            wrapper.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+          }
+          autoRotateId = requestAnimationFrame(rotateLoop);
+        };
+        autoRotateId = requestAnimationFrame(rotateLoop);
+
+        window.cleanupGlobeHandlers = () => {
+          cancelAnimationFrame(autoRotateId);
+          if (globeScene) {
+            globeScene.removeEventListener('pointerdown', onPointerDown);
+          }
+          window.removeEventListener('pointermove', onPointerMove);
+          window.removeEventListener('pointerup', onPointerUp);
+        };
+      }
+
+      function playBlastSound() {
+        if (!window.audioCtx) {
+          try {
+            window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch (e) {
+            return;
+          }
+        }
+        const ctx = window.audioCtx;
+        if (!ctx) return;
+        if (ctx.state === 'suspended') {
+          ctx.resume();
+        }
+
+        const now = ctx.currentTime;
+
+        // 1. Bass Rumble (Sine sweep)
+        const osc = ctx.createOscillator();
+        const bassGain = ctx.createGain();
+        osc.connect(bassGain);
+        bassGain.connect(ctx.destination);
+
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 1.0);
+
+        bassGain.gain.setValueAtTime(0.25, now);
+        bassGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
+
+        osc.start(now);
+        osc.stop(now + 1.1);
+
+        // 2. White Noise Blast (Treble decay + Filter sweep)
+        const bufferSize = ctx.sampleRate * 1.2; // 1.2 seconds of noise
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1800, now);
+        filter.frequency.exponentialRampToValueAtTime(80, now + 0.8);
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.18, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
+
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+
+        noise.start(now);
+        noise.stop(now + 1.0);
+      }
+
+      window.enterTemplate = function () {
+        // 1. Play synthesized energy blast sound
+        playBlastSound();
+
+        // 2. Trigger blinding supernova flash
+        const flash = document.getElementById('blast-flash');
+        if (flash) {
+          flash.style.transition = 'none';
+          flash.style.opacity = '1';
+          void flash.offsetWidth; // Reflow
+          flash.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
+          flash.style.opacity = '0';
+        }
+
+        // 3. Disassemble / fly out (supernova explosion scatter)
+        const plates = document.querySelectorAll('.photo-plate');
+        plates.forEach((plate, idx) => {
+          const coord = window.activeCoords && window.activeCoords[idx];
+          if (coord) {
+            // Explosive scatter: fast velocity, random tumbling, past the camera
+            const randRotX = coord.rotX + (Math.random() - 0.5) * 160;
+            const randRotY = coord.rotY + (Math.random() - 0.5) * 160;
+            const randRotZ = (Math.random() - 0.5) * 360;
+
+            plate.style.transitionTimingFunction = 'cubic-bezier(0.1, 0.8, 0.1, 1)'; // Explosive easing
+            plate.style.transitionDuration = '0.9s';
+            plate.style.transitionDelay = '0ms';
+            plate.style.transform = `rotateY(${randRotY}deg) rotateX(${randRotX}deg) rotateZ(${randRotZ}deg) translateZ(2200px) scale(2.8)`;
+            plate.style.opacity = '0';
+            plate.style.filter = 'brightness(3.5) contrast(1.5) blur(2px)';
+          }
         });
 
-        setupGlobeInteraction(sphereWrapper);
-      }
-
-      // Show enter button (Arc Reactor)
-      setTimeout(() => {
+        // 4. Shrink and dissolve the button core
         const btn = document.getElementById('globe-enter-btn-container');
         if (btn) {
-          btn.style.opacity = '1';
-          // Position vertically below the sphere: center Y (50%) + radius + offset
-          const offset = isMobile ? 65 : 85;
-          btn.style.top = `calc(50% + ${radius + offset}px)`;
-          btn.style.transform = 'translate(-50%, -50%) scale(1)';
+          btn.style.transitionDuration = '0.4s';
+          btn.style.opacity = '0';
+          btn.style.transform = 'translate(-50%, -50%) scale(0.6)';
         }
-      }, 1500);
-    }
 
-    function playTechLockSound(timeDelay) {
-      if (!window.audioCtx) {
-        try {
-          window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {
-          return;
-        }
-      }
-      const ctx = window.audioCtx;
-      if (!ctx) return;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      const now = ctx.currentTime + timeDelay;
-
-      const osc = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      const filter = ctx.createBiquadFilter();
-
-      osc.connect(filter);
-      osc2.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(ctx.destination);
-
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(1400, now);
-      osc.frequency.exponentialRampToValueAtTime(500, now + 0.07);
-
-      osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(2200, now);
-      osc2.frequency.exponentialRampToValueAtTime(200, now + 0.07);
-
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(1100, now);
-      filter.Q.setValueAtTime(4, now);
-
-      gainNode.gain.setValueAtTime(0.04, now); // Soft cybernetic lock click
-      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
-
-      osc.start(now);
-      osc2.start(now);
-      osc.stop(now + 0.08);
-      osc2.stop(now + 0.08);
-    }
-
-    function setupGlobeInteraction(wrapper) {
-      const globeScene = document.getElementById('globe-scene');
-      const onPointerDown = (e) => {
-        if (e.target.closest('button')) return;
-        isDragging = true;
-        if (globeScene) globeScene.style.cursor = 'grabbing';
-        startPointerX = e.clientX || (e.touches && e.touches[0].clientX);
-        startPointerY = e.clientY || (e.touches && e.touches[0].clientY);
-        startRotY = currentRotationY;
-        startRotX = currentRotationX;
+        // 5. Hide the intro scene
+        setTimeout(() => {
+          endCinematicIntro();
+        }, 900);
       };
 
-      const onPointerMove = (e) => {
-        if (!isDragging) return;
-        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-        if (!clientX || !clientY) return;
+      window.startCinematicIntro = function () {
+        const introContainer = document.getElementById('cinematic-intro');
+        if (!introContainer) return;
 
-        const deltaX = clientX - startPointerX;
-        const deltaY = clientY - startPointerY;
+        introContainer.style.display = 'block';
+        introContainer.style.opacity = '1';
 
-        currentRotationY = startRotY + deltaX * 0.35;
-        currentRotationX = Math.max(-70, Math.min(70, startRotX - deltaY * 0.35));
+        window.destroyCanvas = initIntroCanvas();
 
-        wrapper.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
+        currentStepIdx = 0;
+        runStep();
       };
 
-      const onPointerUp = () => {
-        if (isDragging) {
-          isDragging = false;
-          if (globeScene) globeScene.style.cursor = 'grab';
+      window.endCinematicIntro = function () {
+        const introContainer = document.getElementById('cinematic-intro');
+        if (!introContainer) return;
+
+        if (stepTimeout) clearTimeout(stepTimeout);
+        if (window.cleanupGlobeHandlers) window.cleanupGlobeHandlers();
+        if (introPetalInterval) {
+          clearInterval(introPetalInterval);
+          introPetalInterval = null;
         }
+
+        introContainer.style.opacity = '0';
+        setTimeout(() => {
+          introContainer.style.display = 'none';
+          if (window.destroyCanvas) window.destroyCanvas();
+        }, 1000);
       };
-
-      if (globeScene) {
-        globeScene.addEventListener('pointerdown', onPointerDown);
-        globeScene.style.cursor = 'grab';
-      }
-      window.addEventListener('pointermove', onPointerMove);
-      window.addEventListener('pointerup', onPointerUp);
-
-      // Auto-rotation loop
-      const rotateLoop = () => {
-        if (!isDragging) {
-          currentRotationY += autoRotateSpeed;
-          wrapper.style.transform = `rotateX(${currentRotationX}deg) rotateY(${currentRotationY}deg)`;
-        }
-        autoRotateId = requestAnimationFrame(rotateLoop);
-      };
-      autoRotateId = requestAnimationFrame(rotateLoop);
-
-      window.cleanupGlobeHandlers = () => {
-        cancelAnimationFrame(autoRotateId);
-        if (globeScene) {
-          globeScene.removeEventListener('pointerdown', onPointerDown);
-        }
-        window.removeEventListener('pointermove', onPointerMove);
-        window.removeEventListener('pointerup', onPointerUp);
-      };
-    }
-
-    function playBlastSound() {
-      if (!window.audioCtx) {
-        try {
-          window.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {
-          return;
-        }
-      }
-      const ctx = window.audioCtx;
-      if (!ctx) return;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
-
-      const now = ctx.currentTime;
-
-      // 1. Bass Rumble (Sine sweep)
-      const osc = ctx.createOscillator();
-      const bassGain = ctx.createGain();
-      osc.connect(bassGain);
-      bassGain.connect(ctx.destination);
-
-      osc.frequency.setValueAtTime(180, now);
-      osc.frequency.exponentialRampToValueAtTime(30, now + 1.0);
-
-      bassGain.gain.setValueAtTime(0.25, now);
-      bassGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.0);
-
-      osc.start(now);
-      osc.stop(now + 1.1);
-
-      // 2. White Noise Blast (Treble decay + Filter sweep)
-      const bufferSize = ctx.sampleRate * 1.2; // 1.2 seconds of noise
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1800, now);
-      filter.frequency.exponentialRampToValueAtTime(80, now + 0.8);
-
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.18, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.9);
-
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(ctx.destination);
-
-      noise.start(now);
-      noise.stop(now + 1.0);
-    }
-
-    window.enterTemplate = function () {
-      // 1. Play synthesized energy blast sound
-      playBlastSound();
-
-      // 2. Trigger blinding supernova flash
-      const flash = document.getElementById('blast-flash');
-      if (flash) {
-        flash.style.transition = 'none';
-        flash.style.opacity = '1';
-        void flash.offsetWidth; // Reflow
-        flash.style.transition = 'opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1)';
-        flash.style.opacity = '0';
-      }
-
-      // 3. Disassemble / fly out (supernova explosion scatter)
-      const plates = document.querySelectorAll('.photo-plate');
-      plates.forEach((plate, idx) => {
-        const coord = window.activeCoords && window.activeCoords[idx];
-        if (coord) {
-          // Explosive scatter: fast velocity, random tumbling, past the camera
-          const randRotX = coord.rotX + (Math.random() - 0.5) * 160;
-          const randRotY = coord.rotY + (Math.random() - 0.5) * 160;
-          const randRotZ = (Math.random() - 0.5) * 360;
-
-          plate.style.transitionTimingFunction = 'cubic-bezier(0.1, 0.8, 0.1, 1)'; // Explosive easing
-          plate.style.transitionDuration = '0.9s';
-          plate.style.transitionDelay = '0ms';
-          plate.style.transform = `rotateY(${randRotY}deg) rotateX(${randRotX}deg) rotateZ(${randRotZ}deg) translateZ(2200px) scale(2.8)`;
-          plate.style.opacity = '0';
-          plate.style.filter = 'brightness(3.5) contrast(1.5) blur(2px)';
-        }
-      });
-
-      // 4. Shrink and dissolve the button core
-      const btn = document.getElementById('globe-enter-btn-container');
-      if (btn) {
-        btn.style.transitionDuration = '0.4s';
-        btn.style.opacity = '0';
-        btn.style.transform = 'translate(-50%, -50%) scale(0.6)';
-      }
-
-      // 5. Hide the intro scene
-      setTimeout(() => {
-        endCinematicIntro();
-      }, 900);
-    };
-
-    window.startCinematicIntro = function () {
-      const introContainer = document.getElementById('cinematic-intro');
-      if (!introContainer) return;
-
-      introContainer.style.display = 'block';
-      introContainer.style.opacity = '1';
-
-      window.destroyCanvas = initIntroCanvas();
-
-      currentStepIdx = 0;
-      runStep();
-    };
-
-    window.endCinematicIntro = function () {
-      const introContainer = document.getElementById('cinematic-intro');
-      if (!introContainer) return;
-
-      if (stepTimeout) clearTimeout(stepTimeout);
-      if (window.cleanupGlobeHandlers) window.cleanupGlobeHandlers();
-
-      introContainer.style.opacity = '0';
-      setTimeout(() => {
-        introContainer.style.display = 'none';
-        if (window.destroyCanvas) window.destroyCanvas();
-      }, 1000);
-    };
-    }) ();
+    })();
   </script>
 
   <!-- Ambient Luxury Backgrounds -->
@@ -1739,11 +1848,16 @@
     </div>
 
     <!-- Branding footer -->
-    <div class="absolute bottom-4 flex flex-col items-center gap-0.5 opacity-40">
+    <div class="absolute bottom-6 flex flex-col items-center gap-1 opacity-50 font-sans">
       <a href="https://wishcraft-pages.vercel.app/" target="_blank"
-        style="font-size:0.5rem;font-weight:900;letter-spacing:0.3em;text-transform:uppercase;color:rgba(191,149,63,0.8);text-decoration:none;">Exquisite
-        Design by WishCraft Premium</a>
-      <span style="font-size:0.5rem;font-weight:600;color:rgba(244,63,94,0.7);">↑ a Yash Verma's product</span>
+        style="font-size:0.55rem;font-weight:900;letter-spacing:0.4em;text-transform:uppercase;color:#BF953F;text-decoration:none;">
+        WISHCRAFT PREMIUM
+      </a>
+      <div class="flex items-center gap-2">
+        <span style="height:1px; width:15px; background:linear-gradient(to right, transparent, rgba(244,63,94,0.3))"></span>
+        <span style="font-size:0.5rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(244,63,94,0.75);">A YASH VERMA PRODUCT</span>
+        <span style="height:1px; width:15px; background:linear-gradient(to left, transparent, rgba(244,63,94,0.3))"></span>
+      </div>
     </div>
   </div><!-- /#envelope-wrapper -->
 
@@ -1798,7 +1912,8 @@
         resize();
         window.addEventListener('resize', resize);
 
-        const particles = Array.from({ length: 55 }, () => ({
+        const particleCount = window.innerWidth < 768 ? 22 : 55;
+        const particles = Array.from({ length: particleCount }, () => ({
           x: Math.random() * window.innerWidth,
           y: Math.random() * window.innerHeight,
           size: 1 + Math.random() * 2.5,
@@ -2446,16 +2561,17 @@
         </a>
         {% endif %}
 
-        <div class="flex flex-col items-center gap-2 opacity-60 text-center">
+        <div class="flex flex-col items-center gap-2 opacity-70 text-center font-sans">
           <a href="https://wishcraft-pages.vercel.app/" target="_blank"
-            class="text-[9px] uppercase tracking-[0.35em] font-black text-amber-300/80 hover:text-amber-200 transition-colors duration-300">
-            Exquisite Design by WishCraft Premium
+            style="font-size:0.55rem;font-weight:900;letter-spacing:0.4em;text-transform:uppercase;color:#BF953F;text-decoration:none;">
+            WISHCRAFT PREMIUM
           </a>
-          <span
-            class="flex items-center gap-1.5 font-semibold text-[10px] text-amber-400 normal-case tracking-normal mt-1">
-            <i class="fas fa-arrow-turn-up fa-rotate-90 text-[8px]"></i> a Yash Verma's product
-          </span>
-          <div class="flex gap-4 text-xs">
+          <div class="flex items-center gap-2">
+            <span style="height:1px; width:20px; background:linear-gradient(to right, transparent, rgba(244,63,94,0.3))"></span>
+            <span style="font-size:0.5rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(244,63,94,0.8);">A YASH VERMA PRODUCT</span>
+            <span style="height:1px; width:20px; background:linear-gradient(to left, transparent, rgba(244,63,94,0.3))"></span>
+          </div>
+          <div class="flex gap-4 text-xs mt-1.5 opacity-60">
             <i class="fas fa-star text-amber-500"></i>
             <i class="fas fa-heart text-rose-500 animate-pulse"></i>
             <i class="fas fa-magic text-yellow-500"></i>
@@ -2465,40 +2581,7 @@
     </div>
   </main>
 
-  <!-- LUXURY MUSIC VINYL CONTROLLER WIDGET -->
-  <div id="music-vinyl-widget"
-    class="fixed bottom-6 right-6 z-[100] flex items-center gap-3 bg-zinc-950/90 border border-amber-500/35 p-2.5 rounded-full shadow-2xl transition-all duration-500 transform translate-y-40 cursor-pointer"
-    onclick="togglePlayPause(event)">
-    <div
-      class="relative w-12 h-12 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center overflow-visible"
-      id="vinyl-disc-container">
-      <!-- Vinyl texture lines -->
-      <div class="absolute inset-1 rounded-full border border-zinc-800/80"></div>
-      <div class="absolute inset-2 rounded-full border border-zinc-800/80"></div>
-      <div class="absolute inset-3 rounded-full border border-zinc-800/80"></div>
-      <!-- Center Gold Label -->
-      <div class="w-4 h-4 rounded-full bg-[#BF953F] border-2 border-zinc-950 flex items-center justify-center">
-        <div class="w-1.5 h-1.5 rounded-full bg-zinc-950"></div>
-      </div>
-    </div>
 
-    <div class="flex flex-col pr-4 select-none leading-tight">
-      <span class="text-[8px] uppercase tracking-[0.2em] text-amber-500 font-bold" id="vinyl-status">Playing</span>
-      <span class="text-[10px] text-zinc-300 font-semibold truncate max-w-[85px]" id="vinyl-track-name">Cherished
-        wish</span>
-    </div>
-
-    <!-- Tone-arm needle (SVG) -->
-    <div
-      class="absolute bottom-[35px] right-[40px] w-8 h-8 pointer-events-none origin-top-right transition-transform duration-500"
-      id="vinyl-arm" style="transform: rotate(0deg);">
-      <svg viewBox="0 0 100 100" class="w-full h-full text-zinc-400">
-        <path d="M90,10 L70,10 L50,60 L52,70" fill="none" stroke="currentColor" stroke-width="6"
-          stroke-linecap="round" />
-        <rect x="44" y="65" width="14" height="18" rx="2" fill="#BF953F" />
-      </svg>
-    </div>
-  </div>
 
   <!-- Server-side template messages data passed to JS safely without syntax diagnostics -->
   <script id="messages-data" type="application/json">
@@ -2650,7 +2733,7 @@
       osc.stop(now + 0.36);
     }
 
-    // Open Wax-sealed Envelope Flow
+    // Open Wax-sealed Envelope Flow (Updated for Balloon Bouquet layout)
     function openEnvelope(e) {
       if (envelopeOpened) return;
       envelopeOpened = true;
@@ -2658,91 +2741,68 @@
       if (e) e.stopPropagation();
 
       const wrapper = document.getElementById('envelope-wrapper');
-      const envelope = document.getElementById('envelope');
-      const seal = document.getElementById('wax-seal');
-      const card = document.getElementById('envelope-card');
-      const ribV = document.getElementById('ribbon-vertical');
-      const ribH = document.getElementById('ribbon-horizontal');
+      const balloonCluster = document.getElementById('balloon-cluster');
+      const openBtn = document.getElementById('open-balloon-btn');
 
       // Break seal sound chime & unlock audio
       playChimeSound();
 
-      // Set z-index of card immediately at the start of transition to prevent popping later
-      card.style.zIndex = 35;
+      // Trigger quick celebration spark
+      confetti({
+        particleCount: 45,
+        spread: 60,
+        origin: { y: 0.35 },
+        colors: ['#BF953F', '#FCF6BA', '#AA771C']
+      });
 
-      // Ribbon opening animation timeline
+      // Animate the button and balloon bouquet flying up / fading out
       const tl = gsap.timeline();
-      tl.to(seal, { scale: 0, rotation: 180, duration: 0.5, ease: "power2.in" })
-        .to(ribV, { x: -300, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.2")
-        .to(ribH, { y: 300, opacity: 0, duration: 0.8, ease: "power2.out" }, "-=0.8")
-        .call(() => {
-          seal.style.display = 'none';
+      tl.to(openBtn, { scale: 0, opacity: 0, duration: 0.4, ease: "power2.in" })
+        .to(balloonCluster, {
+          y: -150,
+          scale: 1.1,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power2.inOut"
+        }, "-=0.2")
+        .to(wrapper, {
+          opacity: 0,
+          scale: 0.95,
+          duration: 0.8,
+          ease: "power3.inOut",
+          onComplete: () => {
+            wrapper.style.display = 'none';
+            const mainContent = document.getElementById('main-content');
+            mainContent.classList.remove('hidden');
 
-          // Open Top Flap
-          envelope.classList.add('envelope-open');
+            // Slide in the floating step progress tracker
+            const tracker = document.getElementById('progress-tracker');
+            if (tracker) {
+              tracker.classList.remove('translate-y-[-100px]');
+            }
+            window.scrollTo(0, 0);
 
-          // Slide Invitation Card out
-          setTimeout(() => {
-            // Card moves up
-            gsap.to(card, {
-              y: "-75%",
-              scale: 1.02,
-              duration: 1.2,
+            // Fade in main page
+            gsap.to(mainContent, {
+              opacity: 1,
+              y: 0,
+              duration: 1,
               ease: "power3.out",
               onComplete: () => {
-                // Trigger quick celebration spark
-                confetti({
-                  particleCount: 45,
-                  spread: 60,
-                  origin: { y: 0.35 },
-                  colors: ['#BF953F', '#FCF6BA', '#AA771C']
-                });
+                playMusic();
+                startTyping();
+                startSkyLanterns();
+                startBalloons();
+                launchInitialConfetti();
+                startFallingGoldDust();
+                startFallingRosePetals();
 
-                // Transition envelope wrapper out and load main content
-                setTimeout(() => {
-                  gsap.to(wrapper, {
-                    opacity: 0,
-                    scale: 0.95,
-                    duration: 0.8,
-                    ease: "power3.inOut",
-                    onComplete: () => {
-                      wrapper.style.display = 'none';
-                      const mainContent = document.getElementById('main-content');
-                      mainContent.classList.remove('hidden');
-
-                      // Slide in the floating step progress tracker
-                      const tracker = document.getElementById('progress-tracker');
-                      if (tracker) {
-                        tracker.classList.remove('translate-y-[-100px]');
-                      }
-                      window.scrollTo(0, 0);
-
-                      // Fade in main page
-                      gsap.to(mainContent, {
-                        opacity: 1,
-                        y: 0,
-                        duration: 1,
-                        ease: "power3.out",
-                        onComplete: () => {
-                          playMusic();
-                          startTyping();
-                          startSkyLanterns();
-                          startBalloons();
-                          launchInitialConfetti();
-                          startFallingGoldDust();
-                          startFallingRosePetals();
-
-                          // Automatically reveal progress button after 5 seconds to guide the user
-                          setTimeout(revealScene1ActionButton, 5000);
-                        }
-                      });
-                    }
-                  });
-                }, 1000);
+                // Automatically reveal progress button after 5 seconds to guide the user
+                setTimeout(revealScene1ActionButton, 5000);
               }
             });
-          }, 600);
-        });
+          }
+        }, "-=0.6");
     }
 
     // Floating Sky Lanterns Generation
@@ -2750,20 +2810,23 @@
       const container = document.getElementById('sky-lantern-container');
 
       // Spawn initial lanterns
-      for (let i = 0; i < 6; i++) {
+      const initialLanterns = window.innerWidth < 768 ? 3 : 6;
+      for (let i = 0; i < initialLanterns; i++) {
         createLantern(container, Math.random() * 80 + 10, Math.random() * 80 + 10);
       }
 
       // Continuous spawning
+      const lanternInterval = window.innerWidth < 768 ? 5000 : 2500;
       setInterval(() => {
         if (document.hidden) return;
         createLantern(container, Math.random() * 90 + 5, 105);
-      }, 2500);
+      }, lanternInterval);
     }
 
     function createLantern(container, xPos, startYPercentage) {
       const lantern = document.createElement('div');
       lantern.className = 'lantern';
+      lantern.style.willChange = 'transform, opacity';
 
       const size = Math.random() * 16 + 14; // 14px to 30px
       lantern.style.width = `${size}px`;
@@ -2792,20 +2855,23 @@
       const container = document.getElementById('gold-dust-container');
 
       // Initial particles
-      for (let i = 0; i < 25; i++) {
+      const initialParticles = window.innerWidth < 768 ? 10 : 25;
+      for (let i = 0; i < initialParticles; i++) {
         spawnGoldDustParticle(container, true);
       }
 
       // Continuous spawning
+      const spawnInterval = window.innerWidth < 768 ? 1200 : 600;
       setInterval(() => {
         if (document.hidden) return;
         spawnGoldDustParticle(container, false);
-      }, 600);
+      }, spawnInterval);
     }
 
     function spawnGoldDustParticle(container, randomY = false) {
       const particle = document.createElement('div');
       particle.className = 'gold-dust';
+      particle.style.willChange = 'transform, opacity';
 
       const size = Math.random() * 3 + 1; // 1px to 4px
       particle.style.width = `${size}px`;
@@ -2837,24 +2903,27 @@
       const container = document.getElementById('gold-dust-container'); // Reuse container
 
       // Spawn initial petals
-      for (let i = 0; i < 40; i++) {
+      const initialPetals = window.innerWidth < 768 ? 15 : 40;
+      for (let i = 0; i < initialPetals; i++) {
         spawnRosePetal(container, true);
       }
 
       // Continuous spawning
+      const spawnInterval = window.innerWidth < 768 ? 450 : 220;
       setInterval(() => {
         if (document.hidden) return;
         spawnRosePetal(container, false);
-      }, 220);
+      }, spawnInterval);
     }
 
     function spawnRosePetal(container, randomY = false) {
       const petal = document.createElement('div');
       petal.className = 'absolute pointer-events-none select-none';
+      petal.style.willChange = 'transform, opacity';
 
-      const size = Math.random() * 10 + 8; // 8px to 18px
+      const size = Math.random() * 12 + 8; // 8px to 20px
       petal.style.width = `${size}px`;
-      petal.style.height = `${size * 0.95}px`;
+      petal.style.height = `${size * 1.1}px`;
       petal.style.left = `${Math.random() * 100}%`;
 
       if (randomY) {
@@ -2863,22 +2932,43 @@
         petal.style.top = `-20px`;
       }
 
-      // Soft rose petals styling (gradient leaf shape)
-      petal.style.background = 'linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)';
-      petal.style.borderRadius = '15px 2px 15px 2px';
-      petal.style.opacity = Math.random() * 0.55 + 0.25;
+      // Asymmetric organic curve for a realistic petal shape
+      petal.style.borderRadius = '60% 40% 70% 30% / 50% 50% 60% 40%';
+      // Organic deep-rose gradient with slight depth shadow
+      petal.style.background = 'linear-gradient(135deg, #ff3366 0%, #ff6688 60%, #ff99bb 100%)';
+      petal.style.boxShadow = '1px 1px 3px rgba(0,0,0,0.12)';
+      petal.style.opacity = Math.random() * 0.65 + 0.3;
 
       container.appendChild(petal);
 
-      const duration = Math.random() * 10 + 12; // 12s to 22s
+      const duration = Math.random() * 8 + 10; // 10s to 18s (slightly faster for natural feel)
+
+      // 1. Natural linear fall on Y-axis
       gsap.to(petal, {
         y: window.innerHeight + 30,
-        x: (Math.random() - 0.5) * 120,
-        rotation: Math.random() * 360,
-        rotationY: Math.random() * 360,
         duration: duration,
         ease: "none",
         onComplete: () => petal.remove()
+      });
+
+      // 2. Sinusoidal air drift on X-axis (repeating yoyo)
+      const swayAmount = Math.random() * 60 + 40; // 40px to 100px sway
+      gsap.to(petal, {
+        x: "+=" + (Math.random() > 0.5 ? swayAmount : -swayAmount),
+        duration: Math.random() * 2.5 + 2.5, // 2.5s to 5s sway cycle
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut"
+      });
+
+      // 3. 3D organic tumbling rotation
+      gsap.to(petal, {
+        rotation: (Math.random() > 0.5 ? 360 : -360) * (Math.random() * 1.5 + 1),
+        rotationY: (Math.random() > 0.5 ? 360 : -360) * (Math.random() * 1.5 + 1),
+        rotationX: (Math.random() > 0.5 ? 180 : -180),
+        duration: Math.random() * 4 + 4,
+        repeat: -1,
+        ease: "none"
       });
     }
 
@@ -2886,11 +2976,12 @@
     function startBalloons() {
       const container = document.getElementById('balloon-container');
 
-      // Spawn balloon every 3.5 seconds
+      // Spawn balloon dynamically
+      const balloonInterval = window.innerWidth < 768 ? 7000 : 3500;
       setInterval(() => {
         if (document.hidden) return;
         createBalloon(container);
-      }, 3500);
+      }, balloonInterval);
     }
 
     const BALLOON_COLORS = [
@@ -2905,6 +2996,7 @@
       const bWrapper = document.createElement('div');
       bWrapper.className = 'absolute cursor-pointer select-none pointer-events-auto';
       bWrapper.style.pointerEvents = 'auto';
+      bWrapper.style.willChange = 'transform, opacity';
 
       const bColor = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
 
@@ -2948,7 +3040,7 @@
       // Spawn floating text wish
       const wish = document.createElement('div');
       wish.className = 'fixed font-display font-extrabold text-amber-300 tracking-wider text-xs pointer-events-none drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)] z-[150] select-none';
-      wish.innerText = WISHES[Math.floor(Math.random() * WISHES.length)];
+      wish.innerText = JAR_WISHES[Math.floor(Math.random() * JAR_WISHES.length)];
       wish.style.left = `${clientX - 40}px`;
       wish.style.top = `${clientY - 15}px`;
       document.body.appendChild(wish);
@@ -2978,73 +3070,17 @@
       });
     }
 
-    // Audio Integration with Spinning Vinyl record controller
-    let recordRotationTween = null;
-    function initVinylWidget() {
-      recordRotationTween = gsap.to("#vinyl-disc-container", {
-        rotation: 360,
-        duration: 8,
-        repeat: -1,
-        ease: "none",
-        paused: true
-      });
-    }
-
     // BG Music Trigger
     function playMusic() {
       const bgMusic = document.getElementById('bg-music');
-      const widget = document.getElementById('music-vinyl-widget');
 
       if (bgMusic) {
         bgMusic.volume = 0.55;
         bgMusic.play().then(() => {
           isMusicPlaying = true;
-          // Animate record player widget entrance
-          widget.classList.remove('translate-y-40');
-          // Swing tone arm needle onto disc
-          gsap.to("#vinyl-arm", { rotation: 18, duration: 0.6, ease: "power1.out" });
-          // Spin the record disc
-          if (!recordRotationTween) initVinylWidget();
-          recordRotationTween.play();
-          gsap.to(recordRotationTween, { timeScale: 1, duration: 1 });
-          document.getElementById('vinyl-status').innerText = "Playing";
-        }).catch(() => {
-          console.log("Audio play blocked by browser policies. Vinyl record widget hidden.");
+        }).catch((err) => {
+          console.log("Audio play blocked by browser policies. Interaction required to start music.");
         });
-      }
-    }
-
-    function togglePlayPause(e) {
-      if (e) e.stopPropagation();
-      const bgMusic = document.getElementById('bg-music');
-      if (!bgMusic) return;
-
-      if (isMusicPlaying) {
-        // Pause music
-        bgMusic.pause();
-        isMusicPlaying = false;
-        document.getElementById('vinyl-status').innerText = "Paused";
-        // Lift tone arm needle off disc
-        gsap.to("#vinyl-arm", { rotation: 0, duration: 0.5, ease: "power1.out" });
-        // Easing vinyl record speed down to a stop
-        gsap.to(recordRotationTween, {
-          timeScale: 0,
-          duration: 1.5,
-          ease: "power1.out",
-          onComplete: () => recordRotationTween.pause()
-        });
-      } else {
-        // Play music
-        initAudio();
-        bgMusic.play().then(() => {
-          isMusicPlaying = true;
-          document.getElementById('vinyl-status').innerText = "Playing";
-          // Swing tone arm back onto record
-          gsap.to("#vinyl-arm", { rotation: 18, duration: 0.5, ease: "power1.out" });
-          // Accelerate vinyl speed back to normal
-          recordRotationTween.play();
-          gsap.to(recordRotationTween, { timeScale: 1, duration: 1 });
-        }).catch(err => console.log(err));
       }
     }
 
@@ -3461,13 +3497,14 @@
     let sparklerInterval = null;
     function startSparklerGenerator() {
       const candle = document.getElementById('cake-candle');
+      const interval = window.innerWidth < 768 ? 120 : 50;
       sparklerInterval = setInterval(() => {
         if (!candleLit) {
           clearInterval(sparklerInterval);
           return;
         }
         createSparklerSpark(candle);
-      }, 50);
+      }, interval);
     }
 
     function createSparklerSpark(parent) {
@@ -3475,6 +3512,7 @@
       spark.className = 'absolute w-1 h-1 bg-yellow-100 rounded-full pointer-events-none z-30 shadow-[0_0_4px_#f59e0b]';
       spark.style.left = '50%';
       spark.style.top = '-15px';
+      spark.style.willChange = 'transform, opacity';
       parent.appendChild(spark);
 
       // Shoot outward and upward randomly
