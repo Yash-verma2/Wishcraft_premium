@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        love: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                        'playfair': ['"Playfair Display"', 'serif'],
+                        'outfit': ['Outfit', 'sans-serif'],
+                        'great-vibes': ['"Great Vibes"', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'heartbeat': 'heartbeat 1.2s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(3deg)' },
+                        },
+                        heartbeat: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.15)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Outfit:wght@300;400;600;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 10px 40px -10px rgba(244, 63, 94, 0.2);
+        }
+
+        .floating-heart {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUp 5s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-love-50 text-slate-800 min-h-screen relative flex flex-col items-center justify-center p-4">
+
+    <!-- Ambient Floating Hearts -->
+    <div id="heartsContainer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- MUSIC LOGIC -->
+    {% if music %}
+    {% if 'spotify.com' in music %}
+    <div id="spotifyPlayer" class="fixed bottom-6 right-6 z-50 transition-transform transform translate-y-full opacity-0 duration-500">
+        <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    </div>
+    <script>window.isSpotify = true;</script>
+    {% else %}
+    <audio id="bgMusic" loop>
+        <source src="{{ music }}" type="audio/mpeg">
+    </audio>
+    <script>window.isSpotify = false;</script>
+    {% endif %}
+    {% endif %}
+
+    <!-- MUSIC CONTROLLER FLOATER -->
+    {% if music %}
+    <button id="musicToggleBtn" onclick="toggleMusic()" class="fixed top-6 right-6 z-50 p-3 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-love-100 hover:scale-105 transition-all text-xl">
+        🎵
+    </button>
+    {% endif %}
+
+    <!-- INTRO SCENE: Envelope wrapper -->
+    <div id="introScene" class="fixed inset-0 z-[100] bg-love-900 flex flex-col items-center justify-center transition-all duration-1000">
+        <div id="heartbeatText" class="text-center px-4 mb-10">
+            <div class="text-7xl text-love-400 animate-heartbeat mb-6">💖</div>
+            <h1 class="text-white font-dancing text-3xl sm:text-5xl tracking-wide drop-shadow-md">
+                Hey {{ name }}, I have a question for you...
+            </h1>
+            <p class="text-love-200 mt-3 text-sm sm:text-base tracking-wider uppercase font-semibold">Open the envelope to find out</p>
+        </div>
+
+        <div id="envelopeWrapper" class="transform scale-95 transition-transform duration-500">
+            <div class="relative w-80 h-52 cursor-pointer group" onclick="startExperience()">
+                <!-- Front cover flap shadows -->
+                <div class="absolute inset-0 bg-love-600 rounded-b-2xl shadow-[0_15px_35px_rgba(136,19,55,0.4)] z-10"></div>
+                <!-- Flap -->
+                <div id="introFlap" class="absolute top-0 left-0 w-full h-full bg-love-700 rounded-t-2xl origin-top transition-all duration-700 z-20 group-hover:brightness-110"
+                    style="clip-path: polygon(0 0, 50% 50%, 100% 0);"></div>
+                <!-- Letter preview sliding up slightly -->
+                <div class="absolute inset-x-4 bottom-2 top-6 bg-white rounded-xl shadow-inner transform translate-y-3 z-0 flex flex-col items-center justify-center p-4">
+                    <span class="text-3xl font-great-vibes text-love-600">Will You?</span>
+                    <span class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Click to open</span>
+                </div>
+                <!-- Seal -->
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-14 h-14 bg-gold-500 rounded-full border-4 border-gold-400 shadow-xl z-30 flex items-center justify-center animate-pulse-slow">
+                    <span class="text-white text-2xl">💍</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE BOARD -->
+    <div id="mainScene" class="hidden w-full max-w-lg z-10 animate-fade-in relative">
+        <!-- PROPOSAL STATE CARD -->
+        <div id="proposalCard" class="glass-card rounded-[2.5rem] p-6 sm:p-10 text-center flex flex-col items-center gap-6 relative overflow-hidden">
+            <!-- Decorative corner hearts -->
+            <span class="absolute top-4 left-4 text-love-200 text-2xl">💖</span>
+            <span class="absolute bottom-4 right-4 text-love-200 text-2xl">💝</span>
+
+            <!-- Celebrant Image -->
+            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-4 border-love-300 shadow-xl transform animate-float relative z-10">
+                <img src="{{ main_image }}" class="w-full h-full object-cover" alt="{{ name }}">
+            </div>
+
+            <!-- Header text -->
+            <div class="space-y-2 relative z-10">
+                <span class="text-love-500 font-extrabold text-xs uppercase tracking-widest bg-love-100/50 px-3.5 py-1.5 rounded-full border border-love-200/40">The Big Question</span>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-rose-950 mt-2 font-outfit leading-tight">
+                    Will you make me the happiest person and be my partner in crime? 🥺
+                </h2>
+            </div>
+
+            <!-- Interactivity buttons container -->
+            <div class="flex flex-wrap items-center justify-center gap-4 w-full mt-4 min-h-[140px] relative" id="buttonContainer">
+                <button id="yesBtn" onclick="celebrateProposal()" class="px-8 py-4 bg-love-500 hover:bg-love-600 active:scale-95 text-white font-extrabold text-lg rounded-2xl shadow-lg shadow-love-500/20 border border-love-400 hover:shadow-love-500/40 transition-all z-10 flex items-center gap-2">
+                    <span>YES! ❤️</span>
+                </button>
+                <button id="noBtn" class="px-6 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-base rounded-2xl border border-slate-200 transition-all z-10">
+                    No
+                </button>
+            </div>
+        </div>
+
+        <!-- SUCCESS STATE CARD (Initially Hidden) -->
+        <div id="successCard" class="hidden glass-card rounded-[2.5rem] p-6 sm:p-10 text-center flex flex-col items-center gap-8 relative overflow-hidden">
+            <span class="absolute top-4 left-4 text-love-300 text-2xl">🎉</span>
+            <span class="absolute bottom-4 right-4 text-love-300 text-2xl">🥂</span>
+
+            <!-- Big sparkling emoji / celebration header -->
+            <div class="w-24 h-24 rounded-full bg-emerald-50 border-4 border-emerald-100 flex items-center justify-center text-5xl animate-bounce shadow-md">
+                💍
+            </div>
+
+            <div class="space-y-1">
+                <span class="text-emerald-600 font-extrabold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 shadow-sm">Officially Locked In!</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-rose-950 font-dancing tracking-wide pt-2">
+                    She/He Said YES! ❤️
+                </h2>
+            </div>
+
+            <!-- Envelope Gift Card -->
+            {% if gift_image %}
+            <div class="w-full max-w-sm p-4 bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 rounded-2xl flex items-center gap-4">
+                <div class="w-14 h-14 rounded-xl bg-white border border-rose-100 shrink-0 overflow-hidden shadow-sm">
+                    <img src="{{ gift_image }}" class="w-full h-full object-cover" alt="Virtual Gift">
+                </div>
+                <div class="text-left">
+                    <h4 class="text-xs font-black uppercase text-rose-500 tracking-wider">A Special Gift For You</h4>
+                    <p class="text-xs text-slate-500 font-medium leading-normal mt-0.5">Click the gift icon to unlock a surprise from your favorite person!</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Message sliders (Wishes/Messages) -->
+            <div class="w-full space-y-4">
+                <div class="text-left border-b border-rose-100/50 pb-2 flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Love Notes</h3>
+                    <span class="text-[10px] bg-rose-50 text-rose-500 font-bold px-2 py-0.5 rounded-full border border-rose-100">Swipe or read below</span>
+                </div>
+                
+                <div class="flex flex-col gap-3.5 max-h-[220px] overflow-y-auto pr-1">
+                    {% for msg in messages %}
+                    <div class="p-4 rounded-2xl bg-white border border-rose-100/50 shadow-sm text-left relative overflow-hidden group hover:border-love-200 transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-love-500"></div>
+                        <p class="text-sm font-semibold text-rose-950 leading-relaxed font-outfit">{{ msg }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="text-[11px] text-love-400 font-extrabold uppercase tracking-widest mt-2 animate-pulse">
+                Made with Love ❤️
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        // Start experience: open envelope, show proposal scene, play music
+        function startExperience() {
+            // Flap Animation
+            const flap = document.getElementById('introFlap');
+            if (flap) {
+                flap.style.transform = 'rotateX(180deg)';
+                flap.style.zIndex = '0';
+            }
+            
+            // Envelope slide down and scale
+            setTimeout(() => {
+                const intro = document.getElementById('introScene');
+                if (intro) {
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.classList.add('hidden');
+                        
+                        // Show Main Scene
+                        const main = document.getElementById('mainScene');
+                        if (main) main.classList.remove('hidden');
+                        
+                        // Music triggers
+                        playMusicAuto();
+                        showSpotify();
+                        
+                        // Start generating background elements
+                        initHeartsAnimation();
+                    }, 1000);
+                }
+            }, 600);
+        }
+
+        // Music toggling
+        let isPlaying = false;
+        function playMusicAuto() {
+            const m = document.getElementById('bgMusic');
+            if (m) {
+                m.play().then(() => {
+                    isPlaying = true;
+                    document.getElementById('musicToggleBtn').innerText = "🎵";
+                }).catch(() => {
+                    isPlaying = false;
+                    document.getElementById('musicToggleBtn').innerText = "🔇";
+                });
+            }
+        }
+
+        function toggleMusic() {
+            if (window.isSpotify) {
+                const p = document.getElementById('spotifyPlayer');
+                if (p) {
+                    if (p.classList.contains('translate-y-full')) {
+                        p.classList.remove('translate-y-full', 'opacity-0');
+                    } else {
+                        p.classList.add('translate-y-full', 'opacity-0');
+                    }
+                }
+            } else {
+                const m = document.getElementById('bgMusic');
+                const btn = document.getElementById('musicToggleBtn');
+                if (m) {
+                    if (m.paused) {
+                        m.play();
+                        isPlaying = true;
+                        if (btn) btn.innerText = "🎵";
+                    } else {
+                        m.pause();
+                        isPlaying = false;
+                        if (btn) btn.innerText = "🔇";
+                    }
+                }
+            }
+        }
+
+        function showSpotify() {
+            if (window.isSpotify) {
+                setTimeout(() => {
+                    const p = document.getElementById('spotifyPlayer');
+                    if (p) p.classList.remove('translate-y-full', 'opacity-0');
+                }, 1000);
+            }
+        }
+
+        // --- INTERACTIVE RUNNING AWAY BUTTON ---
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const container = document.getElementById('buttonContainer');
+        
+        let clickCount = 0;
+        const funnyBribes = [
+            "Are you sure? 🥺",
+            "Think about the unlimited momos! 🥟",
+            "And custom-baked pizzas! 🍕",
+            "I will wash the dishes & do laundry! 🧺",
+            "Okay, fine... click YES already! 😂",
+            "I give up... Click YES!"
+        ];
+
+        function moveButtonRandomly() {
+            clickCount++;
+            
+            // Text progression
+            if (clickCount <= funnyBribes.length) {
+                noBtn.innerText = funnyBribes[clickCount - 1];
+            }
+
+            // Move the button around inside the container/card bounds
+            const card = document.getElementById('proposalCard');
+            if (card && noBtn) {
+                const cardRect = card.getBoundingClientRect();
+                const btnRect = noBtn.getBoundingClientRect();
+                
+                // Limit bounds to avoid running off screen
+                const maxX = cardRect.width - btnRect.width - 32;
+                const maxY = cardRect.height - btnRect.height - 32;
+                
+                const randomX = Math.max(16, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(16, Math.floor(Math.random() * (maxY > 100 ? maxY : 200)));
+                
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = randomX + 'px';
+                noBtn.style.top = randomY + 'px';
+            }
+
+            // Increase Yes button size slightly as a bribe help
+            if (yesBtn) {
+                const scale = 1 + (clickCount * 0.12);
+                yesBtn.style.transform = `scale(${scale})`;
+            }
+            
+            // If they reach max attempts, swap button or hide No
+            if (clickCount >= 6) {
+                if (noBtn) noBtn.style.display = 'none'; // hide No button so they must click Yes
+            }
+        }
+
+        if (noBtn) {
+            noBtn.addEventListener('mouseenter', moveButtonRandomly);
+            noBtn.addEventListener('click', moveButtonRandomly);
+        }
+
+        // --- SUCCESS TRIGGER ---
+        function celebrateProposal() {
+            // Hide proposal card, show success
+            document.getElementById('proposalCard').classList.add('hidden');
+            document.getElementById('successCard').classList.remove('hidden');
+
+            // Trigger Fireworks / Confetti
+            const duration = 5 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Burst hearts
+            for (let i = 0; i < 40; i++) {
+                setTimeout(createHeartParticle, i * 80);
+            }
+        }
+
+        // --- FLOATING HEARTS ANIMATION ---
+        function initHeartsAnimation() {
+            setInterval(createHeartParticle, 600);
+        }
+
+        function createHeartParticle() {
+            const container = document.getElementById('heartsContainer');
+            if (!container) return;
+
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            
+            const heartEmojis = ['❤️', '💖', '💗', '💓', '💍', '🌸', '✨'];
+            heart.innerText = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+            
+            // Random attributes
+            const startX = Math.random() * 100; // %
+            const size = Math.random() * 20 + 15; // px
+            const duration = Math.random() * 4 + 4; // seconds
+            
+            heart.style.left = startX + 'vw';
+            heart.style.fontSize = size + 'px';
+            heart.style.animationDuration = duration + 's';
+            
+            container.appendChild(heart);
+
+            // Cleanup
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sorry: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            900: '#14532d',
+                        },
+                        amber: {
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        },
+                        rose: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            950: '#4c0519',
+                        }
+                    },
+                    fontFamily: {
+                        'outfit': ['Outfit', 'sans-serif'],
+                        'dancing': ['"Dancing Script"', 'cursive'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2.5s infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'stamp': 'stampAnim 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-12px) rotate(2deg)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        stampAnim: {
+                            '0%': { transform: 'scale(3) rotate(-20deg)', opacity: '0' },
+                            '80%': { transform: 'scale(0.95) rotate(-8deg)', opacity: '0.9' },
+                            '100%': { transform: 'scale(1) rotate(-10deg)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .retro-console {
+            background: linear-gradient(135deg, #1e1e2f 0%, #11111b 100%);
+            border: 2px solid #31314d;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(244, 63, 94, 0.05);
+        }
+
+        .screen-glow {
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+        }
+
+        .floating-emoji {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUpEmoji 4s ease-out forwards;
+        }
+
+        @keyframes floatUpEmoji {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-150px) translateX(var(--x-shift)) scale(1.3) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+
+        /* Paper scroll treaty styles */
+        .paper-scroll {
+            background-color: #fbf8eb;
+            background-image: radial-gradient(circle at 100% 150%, #fbf8eb 24%, #eedfa5 25%, #eedfa5 28%, #fbf8eb 29%, #fbf8eb 36%, #eedfa5 36%, #eedfa5 40%, transparent 40%, transparent);
+            background-size: 8px 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+
+<body class="bg-rose-50 text-slate-100 min-h-screen relative flex flex-col items-center justify-center p-4">
+
+    <!-- Emojis rain container -->
+    <div id="rainContainer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- MUSIC LOGIC -->
+    {% if music %}
+    {% if 'spotify.com' in music %}
+    <div id="spotifyPlayer" class="fixed bottom-6 right-6 z-50 transition-transform transform translate-y-full opacity-0 duration-500">
+        <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    </div>
+    <script>window.isSpotify = true;</script>
+    {% else %}
+    <audio id="bgMusic" loop>
+        <source src="{{ music }}" type="audio/mpeg">
+    </audio>
+    <script>window.isSpotify = false;</script>
+    {% endif %}
+    {% endif %}
+
+    <!-- MUSIC CONTROLLER FLOATER -->
+    {% if music %}
+    <button id="musicToggleBtn" onclick="toggleMusic()" class="fixed top-6 right-6 z-50 p-3 bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-rose-100 hover:scale-105 transition-all text-xl text-slate-900">
+        🎵
+    </button>
+    {% endif %}
+
+    <!-- INTRO SCENE: Envelope wrapper -->
+    <div id="introScene" class="fixed inset-0 z-[100] bg-rose-950 flex flex-col items-center justify-center transition-all duration-1000">
+        <div id="heartbeatText" class="text-center px-4 mb-10">
+            <div class="text-7xl animate-bounce-slow mb-6">🥺</div>
+            <h1 class="text-white font-outfit text-3xl sm:text-5xl font-extrabold tracking-tight drop-shadow-md leading-tight">
+                Emergency Alert for {{ name }}!
+            </h1>
+            <p class="text-rose-200 mt-3 text-sm sm:text-base tracking-wider uppercase font-semibold">Someone wants to apologize. Open details.</p>
+        </div>
+
+        <div id="envelopeWrapper" class="transform scale-95 transition-transform duration-500">
+            <div class="relative w-80 h-52 cursor-pointer group" onclick="startExperience()">
+                <div class="absolute inset-0 bg-rose-600 rounded-b-2xl shadow-[0_15px_35px_rgba(76,5,25,0.4)] z-10"></div>
+                <div id="introFlap" class="absolute top-0 left-0 w-full h-full bg-rose-700 rounded-t-2xl origin-top transition-all duration-700 z-20 group-hover:brightness-110"
+                    style="clip-path: polygon(0 0, 50% 50%, 100% 0);"></div>
+                <div class="absolute inset-x-4 bottom-2 top-6 bg-white rounded-xl shadow-inner transform translate-y-3 z-0 flex flex-col items-center justify-center p-4 text-slate-800">
+                    <span class="text-xl font-extrabold text-rose-600">Peace Proposal</span>
+                    <span class="text-xs text-slate-400 mt-1 font-semibold uppercase tracking-wider">Click to open console</span>
+                </div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-14 h-14 bg-amber-500 rounded-full border-4 border-amber-400 shadow-xl z-30 flex items-center justify-center animate-pulse-slow">
+                    <span class="text-white text-2xl">🙏</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONSOLE INTERFACE -->
+    <div id="mainScene" class="hidden w-full max-w-lg z-10 animate-fade-in relative">
+        
+        <!-- Retro Mission Console Box -->
+        <div id="consoleCard" class="retro-console rounded-[2.5rem] p-6 sm:p-10 text-center flex flex-col gap-6 relative overflow-hidden border border-slate-700 shadow-2xl">
+            <!-- Led glow indicator -->
+            <div class="absolute top-4 right-4 flex items-center gap-1.5 bg-slate-900/60 px-3 py-1 rounded-full border border-slate-700">
+                <span id="ledDot" class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                <span class="text-[9px] uppercase tracking-widest font-black text-rose-400" id="statusGlowText">Anger Maximum</span>
+            </div>
+
+            <!-- Cute crying meme sticker -->
+            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-700 mx-auto shadow-inner bg-slate-950/80 flex items-center justify-center text-6xl relative z-10">
+                <span id="cuteSticker" class="animate-bounce">🥺</span>
+            </div>
+
+            <!-- Title and Status -->
+            <div class="space-y-1 mt-2">
+                <h3 class="text-xs font-black uppercase tracking-widest text-slate-400">Forgiveness Protocol</h3>
+                <h2 class="text-2xl font-black text-white" id="consoleTitle">Operation: Forgive Me, {{ name }}</h2>
+                <p class="text-xs text-rose-300 font-semibold" id="consoleStatusText">Warning: Anger core is currently unstable (100%)</p>
+            </div>
+
+            <!-- Anger Progress bar -->
+            <div class="w-full bg-slate-950 rounded-full h-7.5 p-1 border border-slate-700 flex items-center relative screen-glow overflow-hidden">
+                <div id="angerBar" class="bg-gradient-to-r from-amber-500 to-rose-600 h-full rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(244,63,94,0.4)]" style="width: 100%"></div>
+                <span id="angerPercentage" class="absolute inset-0 flex items-center justify-center text-xs font-black text-white text-shadow-sm">ANGER LEVEL: 100%</span>
+            </div>
+
+            <!-- Action panel buttons -->
+            <div class="grid grid-cols-1 gap-3.5 mt-4" id="actionPanel">
+                <!-- Action 1 -->
+                <button id="hugBribeBtn" onclick="sendHugBribe()" class="w-full py-4 px-5 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-love-500/50 rounded-2xl flex items-center justify-between text-left transition-all group active:scale-[0.98]">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🤗</span>
+                        <div>
+                            <h4 class="text-sm font-bold text-white group-hover:text-love-400 transition-colors">Send Virtual Hugs & Headpats</h4>
+                            <p class="text-[11px] text-slate-400 leading-normal">Reduce anger core by 30%</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-rose-400 bg-rose-950/60 px-2.5 py-1 rounded-full border border-rose-900/30 shrink-0 group-hover:bg-rose-900">-30%</span>
+                </button>
+
+                <!-- Action 2 -->
+                <button id="foodBribeBtn" onclick="openFoodBribeModal()" class="w-full py-4 px-5 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/50 rounded-2xl flex items-center justify-between text-left transition-all group active:scale-[0.98]">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🍕</span>
+                        <div>
+                            <h4 class="text-sm font-bold text-white group-hover:text-amber-400 transition-colors">Offer High-Value Food Bribe</h4>
+                            <p class="text-[11px] text-slate-400 leading-normal">Send virtual momo/pizza payloads (-35%)</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded-full border border-amber-900/30 shrink-0 group-hover:bg-amber-900">-35%</span>
+                </button>
+
+                <!-- Action 3 -->
+                <button id="treatyBribeBtn" onclick="openTreatyModal()" class="w-full py-4 px-5 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-sorry-500/50 rounded-2xl flex items-center justify-between text-left transition-all group active:scale-[0.98]">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">📜</span>
+                        <div>
+                            <h4 class="text-sm font-bold text-white group-hover:text-sorry-400 transition-colors">Sign Ultimate Peace Treaty</h4>
+                            <p class="text-[11px] text-slate-400 leading-normal">Agree to all conditions (-35%)</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-sorry-400 bg-sorry-950/60 px-2.5 py-1 rounded-full border border-sorry-900/30 shrink-0 group-hover:bg-sorry-900">-35%</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- STAMP POPUP ELEMENT (Initially hidden, animated on 0%) -->
+        <div id="forgivenStamp" class="hidden absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
+            <div class="px-8 py-4 border-8 border-dashed border-emerald-500 rounded-3xl bg-emerald-950/95 text-emerald-400 font-extrabold text-4xl uppercase tracking-widest rotate-[-12deg] shadow-[0_0_50px_rgba(16,185,129,0.4)] animate-stamp flex flex-col items-center gap-1.5">
+                <span>FORGIVEN! 🎉</span>
+                <span class="text-xs tracking-normal font-semibold normal-case text-emerald-300">Treaty signed successfully</span>
+            </div>
+        </div>
+
+        <!-- SUCCESS STATE PANEL (Initially Hidden) -->
+        <div id="successCard" class="hidden w-full bg-white rounded-[2.5rem] p-6 sm:p-10 text-center flex flex-col items-center gap-6 relative overflow-hidden border border-rose-100 shadow-2xl text-slate-800">
+            <span class="absolute top-4 left-4 text-sorry-500 text-2xl">💖</span>
+            <span class="absolute bottom-4 right-4 text-sorry-500 text-2xl">💖</span>
+
+            <!-- Pulsing heart custom frame containing main photo -->
+            <div class="w-40 h-40 sm:w-48 sm:h-48 rounded-full overflow-hidden border-4 border-sorry-500 shadow-xl transform animate-float relative z-10">
+                <img src="{{ main_image }}" class="w-full h-full object-cover" alt="Apology image">
+            </div>
+
+            <div class="space-y-1">
+                <span class="text-sorry-600 font-extrabold text-xs uppercase tracking-widest bg-sorry-100 px-3 py-1 rounded-full border border-sorry-200 shadow-sm">Mission Accomplished</span>
+                <h2 class="text-3xl font-black text-rose-950 font-dancing tracking-wide pt-2">
+                    Thank You for Forgiving Me! ❤️
+                </h2>
+            </div>
+
+            <!-- Envelope Gift Card -->
+            {% if gift_image %}
+            <div class="w-full max-w-sm p-4 bg-gradient-to-r from-emerald-50 to-sorry-100/30 border border-emerald-100 rounded-2xl flex items-center gap-4 text-left">
+                <div class="w-14 h-14 rounded-xl bg-white border border-emerald-100 shrink-0 overflow-hidden shadow-sm">
+                    <img src="{{ gift_image }}" class="w-full h-full object-cover" alt="Virtual Gift">
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase text-sorry-600 tracking-wider">A Forgiveness Gift For You</h4>
+                    <p class="text-xs text-slate-500 font-medium leading-normal mt-0.5">Accept this sweet virtual gesture as a token of peace!</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Message sliders (Wishes/Messages) -->
+            <div class="w-full space-y-4">
+                <div class="text-left border-b border-slate-100 pb-2 flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">My Message to You</h3>
+                    <span class="text-[10px] bg-sorry-50 text-sorry-600 font-bold px-2 py-0.5 rounded-full border border-sorry-100">Read below</span>
+                </div>
+                
+                <div class="flex flex-col gap-3.5 max-h-[220px] overflow-y-auto pr-1">
+                    {% for msg in messages %}
+                    <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 shadow-sm text-left relative overflow-hidden group hover:border-sorry-300 transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-sorry-600"></div>
+                        <p class="text-sm font-semibold text-slate-700 leading-relaxed">{{ msg }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="text-[11px] text-sorry-600 font-extrabold uppercase tracking-widest mt-2 animate-pulse">
+                Peace Restored ❤️
+            </div>
+        </div>
+    </div>
+
+    <!-- WIDGET MODAL 1: Food bribe selections -->
+    <div id="foodModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 text-slate-800 w-full max-w-sm text-center shadow-2xl border border-slate-100 scale-95 transition-all">
+            <h3 class="text-lg font-black text-slate-900">Select Food Bribe Payload 🍕</h3>
+            <p class="text-xs text-slate-500 mt-1">Deploy the weapon of mass deliciousness</p>
+            
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <button onclick="dispatchFoodBribe('🥟 Momo')" class="p-4 bg-slate-50 hover:bg-amber-50 rounded-2xl border border-slate-200 hover:border-amber-300 transition-all flex flex-col items-center gap-2">
+                    <span class="text-4xl">🥟</span>
+                    <span class="text-xs font-black text-slate-700">Momo Bribe</span>
+                </button>
+                <button onclick="dispatchFoodBribe('🍕 Pizza')" class="p-4 bg-slate-50 hover:bg-amber-50 rounded-2xl border border-slate-200 hover:border-amber-300 transition-all flex flex-col items-center gap-2">
+                    <span class="text-4xl">🍕</span>
+                    <span class="text-xs font-black text-slate-700">Pizza Bomb</span>
+                </button>
+                <button onclick="dispatchFoodBribe('🍔 Burger')" class="p-4 bg-slate-50 hover:bg-amber-50 rounded-2xl border border-slate-200 hover:border-amber-300 transition-all flex flex-col items-center gap-2">
+                    <span class="text-4xl">🍔</span>
+                    <span class="text-xs font-black text-slate-700">Cheesy Burger</span>
+                </button>
+                <button onclick="dispatchFoodBribe('🍫 Chocolate')" class="p-4 bg-slate-50 hover:bg-amber-50 rounded-2xl border border-slate-200 hover:border-amber-300 transition-all flex flex-col items-center gap-2">
+                    <span class="text-4xl">🍫</span>
+                    <span class="text-xs font-black text-slate-700">Choco Hug</span>
+                </button>
+            </div>
+            
+            <button onclick="closeFoodBribeModal()" class="w-full mt-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold text-xs rounded-xl uppercase tracking-wider transition-colors">Cancel</button>
+        </div>
+    </div>
+
+    <!-- WIDGET MODAL 2: Peace Treaty scroll -->
+    <div id="treatyModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="paper-scroll text-slate-800 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl border border-[#eedfa5] relative overflow-hidden">
+            <h3 class="text-center font-dancing text-3xl font-extrabold text-amber-900 border-b border-amber-900/20 pb-3">Peace Treaty of Wishcraft</h3>
+            
+            <div class="space-y-4 my-6 text-sm font-semibold leading-relaxed text-amber-950 font-serif">
+                <p>Whereas the Sender has made mistakes and created general confusion, it is hereby declared:</p>
+                <ol class="list-decimal list-inside space-y-2.5">
+                    <li>I, the Sender, accept that I am 100% wrong.</li>
+                    <li>You, {{ name }}, are always right and look extremely cute when angry.</li>
+                    <li>In case of future arguments, refer to Rule #2.</li>
+                </ol>
+            </div>
+            
+            <div class="flex gap-3">
+                <button onclick="signTreaty()" class="flex-1 py-4 bg-amber-800 hover:bg-amber-900 text-white font-extrabold text-sm rounded-xl uppercase tracking-wider transition-colors shadow-lg shadow-amber-800/20 border border-amber-700">Sign & Agree 📝</button>
+                <button onclick="closeTreatyModal()" class="py-4 px-5 bg-white/60 hover:bg-white/80 text-amber-900 font-bold text-xs rounded-xl uppercase tracking-wider transition-colors">Refuse</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        let angerLevel = 100;
+        let hugCompleted = false;
+        let foodCompleted = false;
+        let treatyCompleted = false;
+
+        // Start experience: open envelope, show console, play music
+        function startExperience() {
+            const flap = document.getElementById('introFlap');
+            if (flap) {
+                flap.style.transform = 'rotateX(180deg)';
+                flap.style.zIndex = '0';
+            }
+            
+            setTimeout(() => {
+                const intro = document.getElementById('introScene');
+                if (intro) {
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.classList.add('hidden');
+                        
+                        // Show Main Scene
+                        const main = document.getElementById('mainScene');
+                        if (main) main.classList.remove('hidden');
+                        
+                        playMusicAuto();
+                        showSpotify();
+                    }, 1000);
+                }
+            }, 600);
+        }
+
+        // Music toggling
+        let isPlaying = false;
+        function playMusicAuto() {
+            const m = document.getElementById('bgMusic');
+            if (m) {
+                m.play().then(() => {
+                    isPlaying = true;
+                    document.getElementById('musicToggleBtn').innerText = "🎵";
+                }).catch(() => {
+                    isPlaying = false;
+                    document.getElementById('musicToggleBtn').innerText = "🔇";
+                });
+            }
+        }
+
+        function toggleMusic() {
+            if (window.isSpotify) {
+                const p = document.getElementById('spotifyPlayer');
+                if (p) {
+                    if (p.classList.contains('translate-y-full')) {
+                        p.classList.remove('translate-y-full', 'opacity-0');
+                    } else {
+                        p.classList.add('translate-y-full', 'opacity-0');
+                    }
+                }
+            } else {
+                const m = document.getElementById('bgMusic');
+                const btn = document.getElementById('musicToggleBtn');
+                if (m) {
+                    if (m.paused) {
+                        m.play();
+                        isPlaying = true;
+                        if (btn) btn.innerText = "🎵";
+                    } else {
+                        m.pause();
+                        isPlaying = false;
+                        if (btn) btn.innerText = "🔇";
+                    }
+                }
+            }
+        }
+
+        function showSpotify() {
+            if (window.isSpotify) {
+                setTimeout(() => {
+                    const p = document.getElementById('spotifyPlayer');
+                    if (p) p.classList.remove('translate-y-full', 'opacity-0');
+                }, 1000);
+            }
+        }
+
+        // --- CONSOLE INTERACTIONS ---
+        
+        function updateProgress(reduction) {
+            angerLevel = Math.max(0, angerLevel - reduction);
+            
+            const bar = document.getElementById('angerBar');
+            const percentLabel = document.getElementById('angerPercentage');
+            const statusText = document.getElementById('consoleStatusText');
+            const led = document.getElementById('ledDot');
+            const glowText = document.getElementById('statusGlowText');
+            const sticker = document.getElementById('cuteSticker');
+            
+            if (bar) bar.style.width = angerLevel + '%';
+            if (percentLabel) percentLabel.innerText = `ANGER LEVEL: ${angerLevel}%`;
+
+            // Adjust statuses depending on anger
+            if (angerLevel === 0) {
+                // Neutralized
+                if (statusText) statusText.innerText = "Anger Neutralized! Peace restored.";
+                if (led) {
+                    led.classList.remove('bg-rose-500', 'bg-amber-500');
+                    led.classList.add('bg-emerald-500');
+                }
+                if (glowText) {
+                    glowText.innerText = "Peace Active";
+                    glowText.classList.remove('text-rose-400', 'text-amber-400');
+                    glowText.classList.add('text-emerald-400');
+                }
+                if (sticker) sticker.innerText = "🥰";
+                
+                triggerForgivenessStamp();
+            } else if (angerLevel <= 35) {
+                // Highly receptive
+                if (statusText) statusText.innerText = "Receptive state. Bribes fully operational.";
+                if (led) {
+                    led.classList.remove('bg-rose-500');
+                    led.classList.add('bg-amber-500');
+                }
+                if (glowText) {
+                    glowText.innerText = "Receptive Mode";
+                    glowText.classList.remove('text-rose-400');
+                    glowText.classList.add('text-amber-400');
+                }
+                if (sticker) sticker.innerText = "😋";
+            } else {
+                // High alert
+                if (statusText) statusText.innerText = `Warning: Anger level currently at ${angerLevel}%`;
+                if (sticker) sticker.innerText = "🥺";
+            }
+        }
+
+        function spawnFloatingEmojis(emoji, count = 12) {
+            const rain = document.getElementById('rainContainer');
+            if (!rain) return;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('floating-emoji');
+                particle.innerText = emoji;
+                
+                const startX = Math.random() * 80 + 10; // %
+                const startY = Math.random() * 40 + 50; // %
+                const rot = (Math.random() - 0.5) * 60; // deg
+                const shift = (Math.random() - 0.5) * 160; // px
+                
+                particle.style.left = startX + '%';
+                particle.style.top = startY + '%';
+                particle.style.fontSize = Math.random() * 20 + 20 + 'px';
+                particle.style.setProperty('--x-shift', shift + 'px');
+                particle.style.setProperty('--rot', rot + 'deg');
+                
+                rain.appendChild(particle);
+                setTimeout(() => particle.remove(), 4000);
+            }
+        }
+
+        // Action 1: Hug
+        function sendHugBribe() {
+            if (hugCompleted) return;
+            hugCompleted = true;
+            
+            const btn = document.getElementById('hugBribeBtn');
+            if (btn) {
+                btn.classList.add('opacity-50', 'pointer-events-none');
+                const label = btn.querySelector('h4');
+                if (label) label.innerText = "Hugs Sent! ❤️";
+            }
+            
+            spawnFloatingEmojis('🤗', 16);
+            spawnFloatingEmojis('❤️', 10);
+            updateProgress(30);
+        }
+
+        // Action 2: Food Bribe
+        function openFoodBribeModal() {
+            if (foodCompleted) return;
+            document.getElementById('foodModal').classList.remove('hidden');
+        }
+
+        function closeFoodBribeModal() {
+            document.getElementById('foodModal').classList.add('hidden');
+        }
+
+        function dispatchFoodBribe(type) {
+            closeFoodBribeModal();
+            foodCompleted = true;
+            
+            const btn = document.getElementById('foodBribeBtn');
+            if (btn) {
+                btn.classList.add('opacity-50', 'pointer-events-none');
+                const label = btn.querySelector('h4');
+                if (label) label.innerText = `Bribed with ${type}! 🍕`;
+            }
+            
+            // Extract emoji from label
+            const emoji = type.split(' ')[0];
+            spawnFloatingEmojis(emoji, 20);
+            updateProgress(35);
+        }
+
+        // Action 3: Treaty Sign
+        function openTreatyModal() {
+            if (treatyCompleted) return;
+            document.getElementById('treatyModal').classList.remove('hidden');
+        }
+
+        function closeTreatyModal() {
+            document.getElementById('treatyModal').classList.add('hidden');
+        }
+
+        function signTreaty() {
+            closeTreatyModal();
+            treatyCompleted = true;
+            
+            const btn = document.getElementById('treatyBribeBtn');
+            if (btn) {
+                btn.classList.add('opacity-50', 'pointer-events-none');
+                const label = btn.querySelector('h4');
+                if (label) label.innerText = "Treaty Signed! 📝";
+            }
+            
+            spawnFloatingEmojis('📜', 12);
+            spawnFloatingEmojis('✍️', 10);
+            updateProgress(35);
+        }
+
+        // --- FORGIVENESS OVERLAY STAMP ---
+        function triggerForgivenessStamp() {
+            const stamp = document.getElementById('forgivenStamp');
+            if (stamp) {
+                stamp.classList.remove('hidden');
+                
+                // Shake screen
+                const card = document.getElementById('consoleCard');
+                if (card) card.classList.add('animate-bounce');
+                
+                // After 2.2 seconds switch scene to success letter
+                setTimeout(() => {
+                    stamp.classList.add('hidden');
+                    if (card) card.classList.add('hidden');
+                    
+                    const success = document.getElementById('successCard');
+                    if (success) success.classList.remove('hidden');
+                    
+                    // Confetti explosion
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 }
+                    });
+                }, 2200);
+            }
+        }
+    </script>
+</body>
+
+</html>

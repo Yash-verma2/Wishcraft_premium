@@ -319,68 +319,30 @@
       }
     }
 
-    /* ── Sky Lanterns & Balloons Keyframes ── */
-    @keyframes floatUpLantern {
+    /* ── Sky Lanterns & Balloons Keyframes (Hardware Accelerated) ── */
+    @keyframes floatUpParent {
       0% {
         transform: translateY(0);
         opacity: 0;
       }
-
       10% {
-        opacity: 0.8;
+        opacity: 0.85;
       }
-
       90% {
-        opacity: 0.8;
+        opacity: 0.85;
       }
-
       100% {
         transform: translateY(-125vh);
         opacity: 0;
       }
     }
 
-    @keyframes swayLantern {
-
-      0%,
-      100% {
-        margin-left: 0;
+    @keyframes swayChild {
+      0%, 100% {
+        transform: translateX(0) rotate(0deg);
       }
-
       50% {
-        margin-left: 25px;
-      }
-    }
-
-    @keyframes floatUpB {
-      0% {
-        transform: translateY(0);
-        opacity: 0;
-      }
-
-      10% {
-        opacity: 1;
-      }
-
-      90% {
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(-125vh);
-        opacity: 0;
-      }
-    }
-
-    @keyframes swayB {
-
-      0%,
-      100% {
-        margin-left: 0;
-      }
-
-      50% {
-        margin-left: 35px;
+        transform: translateX(var(--sway-amount, 30px)) rotate(3.5deg);
       }
     }
 
@@ -478,7 +440,7 @@
       overflow: hidden;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
       /* Custom Magnetic Snap Spring curve */
-      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease-out, filter 1.2s ease-out;
+      transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.8s ease-out;
       will-change: transform, opacity;
       left: 50%;
       top: 50%;
@@ -565,7 +527,7 @@
 
   <!-- Audio Player (Moved to top for instant access) -->
   <div id="audio-container" class="hidden">
-    <audio id="bg-music" src="{{ music }}" loop></audio>
+    <audio id="bg-music" src="{{ music }}" loop autoplay></audio>
   </div>
 
   <!-- Premium Loading Preloader Overlay (Redesigned to dark luxury theme) -->
@@ -695,6 +657,8 @@
               preloader.classList.add('opacity-0');
               setTimeout(() => {
                 preloader.style.display = 'none';
+                // Auto-start music now that user has interacted with the page
+                startEarlyMusic();
                 if (typeof startCinematicIntro === 'function') {
                   startCinematicIntro();
                 }
@@ -826,7 +790,7 @@
     (function () {
       const name = JSON.parse(document.getElementById('name-data').textContent);
       const steps = [
-        { text: "", phase: "intro", hue: 280, duration: 4000 },
+        { text: "", phase: "intro", hue: 280, duration: 1800 },
         { text: "3", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffb3c6,#ff6b9d)", glow: "rgba(255,100,150,0.55)" },
         { text: "2", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffc3e0,#ff85c8)", glow: "rgba(255,100,200,0.55)" },
         { text: "1", phase: "spark", hue: 44, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffe066,#ffaa00)", glow: "rgba(255,180,0,0.65)" },
@@ -1255,11 +1219,7 @@
             const randRotateZ = (Math.random() - 0.5) * 60; // Random tilt in flight
             plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(600px) rotateZ(${randRotateZ}deg) scale(0.1)`;
             plate.style.opacity = '0';
-            if (!isMobile) {
-              plate.style.filter = 'brightness(3.5) contrast(1.5) drop-shadow(0 0 25px rgba(251, 191, 36, 0.9))';
-            } else {
-              plate.style.boxShadow = '0 0 20px rgba(251, 191, 36, 0.8)';
-            }
+            plate.style.boxShadow = '0 0 25px rgba(251, 191, 36, 0.85)';
 
             // Staggered assembly delay for the "Iron Man suit-up snapping" effect
             const snapDelay = idx * 65;
@@ -1271,11 +1231,7 @@
             setTimeout(() => {
               plate.style.transform = `rotateY(${coord.rotY}deg) rotateX(${coord.rotX}deg) translateZ(${radius}px) rotateZ(0deg) scale(1)`;
               plate.style.opacity = '1';
-              if (!isMobile) {
-                plate.style.filter = 'brightness(1) contrast(1) drop-shadow(0 4px 10px rgba(0,0,0,0.5))';
-              } else {
-                plate.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
-              }
+              plate.style.boxShadow = '0 4px 10px rgba(0,0,0,0.5)';
 
               // Trigger locking flash effect exactly when it lands
               setTimeout(() => {
@@ -1499,7 +1455,6 @@
             plate.style.transitionDelay = '0ms';
             plate.style.transform = `rotateY(${randRotY}deg) rotateX(${randRotX}deg) rotateZ(${randRotZ}deg) translateZ(2200px) scale(2.8)`;
             plate.style.opacity = '0';
-            plate.style.filter = 'brightness(3.5) contrast(1.5) blur(2px)';
           }
         });
 
@@ -1560,8 +1515,8 @@
       style="animation-delay: 1.5s;"></div>
   </div>
 
-  <!-- Star Dust & Flower Petals Overlay -->
-  <div id="gold-dust-container" class="fixed inset-0 overflow-hidden pointer-events-none -z-15"></div>
+  <!-- Star Dust & Flower Petals Overlay (Canvas Optimized) -->
+  <canvas id="ambient-canvas" class="fixed inset-0 w-full h-full pointer-events-none -z-15"></canvas>
   <!-- Sky Lantern and Balloon Containers -->
   <div id="sky-lantern-container" class="fixed inset-0 overflow-hidden pointer-events-none -z-10"></div>
   <div id="balloon-container" class="fixed inset-0 overflow-hidden pointer-events-none z-[80]"></div>
@@ -1821,7 +1776,7 @@
       <div class="text-center mt-2 space-y-1 px-4" style="position:relative;">
         <!-- HUD tag -->
         <div class="flex justify-center mb-2">
-          <span class="hud-tag">BIRTHDAY TRANSMISSION INCOMING</span>
+          <span class="hud-tag">✨ A MAGICAL CELEBRATION UNFOLDS ✨</span>
         </div>
         <h1
           style="font-family:'Cinzel','Playfair Display',Georgia,serif;font-size:clamp(1.6rem,6.5vw,2.5rem);font-weight:900;letter-spacing:0.08em;line-height:1.1;background:linear-gradient(to right,#BF953F 0%,#FCF6BA 35%,#B38728 65%,#AA771C 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 20px rgba(191,149,63,0.4));">
@@ -1910,6 +1865,7 @@
         const ctx = canvas.getContext('2d');
         const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         resize();
+        window.sparkResizeHandler = resize;
         window.addEventListener('resize', resize);
 
         const particleCount = window.innerWidth < 768 ? 22 : 55;
@@ -1940,7 +1896,7 @@
             ctx.fill();
             ctx.restore();
           });
-          requestAnimationFrame(animate);
+          window.sparkAnimationFrameId = requestAnimationFrame(animate);
         }
         animate();
       }
@@ -1951,7 +1907,7 @@
         if (!c) return;
         const shapes = ['\u2605', '\u2726', '\u2666', '\u25c6', '\u2022'];
         const cols = ['rgba(252,246,186,0.9)', 'rgba(191,149,63,0.85)', 'rgba(244,63,94,0.7)', 'rgba(253,164,186,0.8)', 'rgba(255,191,36,0.85)'];
-        setInterval(() => {
+        window.sparkFallInterval = setInterval(() => {
           const el = document.createElement('div');
           el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
           const dur = 6 + Math.random() * 6;
@@ -2017,7 +1973,7 @@
 
         <!-- HUD system tag -->
         <div class="relative z-10 flex justify-center">
-          <span class="hud-tag">PRIORITY TRANSMISSION — BIRTHDAY SIGNAL LOCKED</span>
+          <span class="hud-tag">❤️ PRIVATE TELEGRAM FROM THE UNIVERSE ❤️</span>
         </div>
 
         <!-- Name display -->
@@ -2109,7 +2065,7 @@
         <div
           class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent">
         </div>
-        <div class="relative z-10 flex justify-center"><span class="hud-tag">CELEBRATION SEQUENCE — INITIATE</span>
+        <div class="relative z-10 flex justify-center"><span class="hud-tag">🎂 THE ROYAL CAKE EXPLOSION PROTOCOL 🎂</span>
         </div>
         <h3 class="relative z-10 text-xl font-display font-bold tracking-wider"
           style="background: linear-gradient(to right, #FCF6BA, #BF953F); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
@@ -2271,7 +2227,7 @@
       <div class="flex justify-center pt-2 opacity-0 h-0 overflow-hidden" id="action-btn-container-2">
         <button onclick="revealScene(3)"
           class="gold-btn px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-2 animate-bounce">
-          Open the Music Box! 🎵 <i class="fas fa-arrow-down ml-1"></i>
+          Open the Flower Box! 💐✨ <i class="fas fa-arrow-down ml-1"></i>
         </button>
       </div>
     </div>
@@ -2283,110 +2239,281 @@
         <div
           class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
         </div>
-        <h3 class="text-2xl font-display font-black text-white tracking-widest gold-text">THE CELEBRATION STAGE 🌟</h3>
-        <p class="text-xs text-zinc-300">Complete the activities below to unlock the memory gallery.</p>
+        <h3 class="text-2xl font-display font-black text-white tracking-widest gold-text">🌸 THE ZONE OF LOVE & BLESSINGS 🌸</h3>
+        <p class="text-xs text-zinc-300">Unwrap the special Birthday Bouquet and spin the fate wheel to open the secret archives!</p>
         <div
           class="flex flex-wrap gap-4 justify-center items-center text-[9px] font-black uppercase tracking-widest mt-3">
           <span id="status-musicbox" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
-              class="far fa-circle text-xs"></i> Wind Music Box</span>
+              class="far fa-circle text-xs"></i> Floral Bouquet Gift</span>
           <span class="text-zinc-700">•</span>
           <span id="status-jar" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
-              class="far fa-circle text-xs"></i> Wish Jar</span>
+              class="far fa-circle text-xs"></i> Cosmic Wish Jar</span>
           <span class="text-zinc-700">•</span>
           <span id="status-spinner" class="text-zinc-500 flex items-center gap-1.5 transition-colors duration-500"><i
-              class="far fa-circle text-xs"></i> Destiny Spinner</span>
+              class="far fa-circle text-xs"></i> Fate Wheel</span>
         </div>
       </section>
 
-      <!-- INTERACTIVE VINTAGE MUSIC BOX -->
+      <!-- INTERACTIVE FLOWER BOUQUET SECTION (3D Parallax & Ultimate Level Beautiful) -->
       <section
         class="glass-premium rounded-[3rem] p-8 md:p-10 text-center space-y-6 relative overflow-hidden flex flex-col items-center">
         <div
           class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/35 to-transparent">
         </div>
-        <h3 class="text-xl font-display font-bold text-white tracking-wider">Symphony Music Box 🎵</h3>
-        <p id="music-box-instruction" class="text-xs text-zinc-400 uppercase tracking-widest animate-pulse">Rotate the
-          key to wind up and play the music box.</p>
+        <h3 class="text-xl font-display font-bold text-white tracking-wider">A Special Floral Blessing 💐✨</h3>
+        <p class="text-xs text-zinc-400 uppercase tracking-widest animate-pulse">
+          Move your mouse or tilt your screen to interact in 3D!
+        </p>
 
-        <div class="relative w-72 h-64 flex items-center justify-center select-none overflow-visible py-8">
+        <!-- The Flower Stage Panel -->
+        <div id="flower-panel" class="w-72 h-[360px] bg-zinc-950/40 border border-zinc-800/40 rounded-[2.5rem] p-6 relative overflow-hidden flex flex-col items-center justify-center shadow-inner select-none cursor-pointer" style="perspective: 1000px;">
+          
+          <!-- Radial Backdrop Glow -->
+          <div id="flower-glow" class="absolute w-48 h-48 rounded-full bg-amber-500/10 blur-3xl transition-all duration-1000 top-[20%] pointer-events-none"></div>
 
-          <!-- Outer Pulsing Visualizer Rings -->
-          <div
-            class="absolute w-56 h-56 rounded-full border-2 border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700"
-            id="visualizer-ring-1"></div>
-          <div
-            class="absolute w-64 h-64 rounded-full border border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700"
-            id="visualizer-ring-2" style="transition-delay: 150ms;"></div>
-
-          <!-- THE 3D MUSIC BOX -->
-          <div
-            class="relative w-44 h-28 bg-gradient-to-b from-[#180a24] to-[#0d0415] rounded-lg border-2 border-amber-500/40 shadow-2xl z-10 flex items-center justify-center overflow-visible"
-            id="music-box" style="perspective: 600px;">
-
-            <!-- Wood Panels / Gold Ornaments on Box corners -->
-            <div
-              class="absolute top-0 bottom-0 left-0 w-2.5 bg-gradient-to-r from-amber-600 to-amber-700 rounded-l border-r border-amber-500/20">
-            </div>
-            <div
-              class="absolute top-0 bottom-0 right-0 w-2.5 bg-gradient-to-l from-amber-600 to-amber-700 rounded-r border-l border-amber-500/20">
-            </div>
-
-            <!-- Lid (Top Cover) that opens up in 3D -->
-            <div
-              class="absolute -top-4 left-0 right-0 h-5 bg-gradient-to-b from-amber-600 via-[#BF953F] to-amber-700 rounded-t-lg border-2 border-zinc-950 z-25 origin-bottom transition-all duration-1000 shadow-md"
-              id="music-box-lid" style="transform: rotateX(0deg);">
-              <!-- Golden Lock Plate -->
-              <div
-                class="absolute bottom-[-2px] left-1/2 -translate-x-1/2 w-7 h-5 bg-gradient-to-br from-[#BF953F] to-[#AA771C] rounded border border-zinc-950 flex items-center justify-center">
-                <div class="w-1.5 h-1.5 bg-zinc-950 rounded-full"></div>
-              </div>
-            </div>
-
-            <!-- Velvet Inside Compartment (visible when lid opens) -->
-            <div
-              class="absolute inset-x-2 top-2 bottom-2 bg-gradient-to-b from-[#400d18] to-[#1a0208] rounded border border-rose-900/35 overflow-hidden z-15 flex flex-col items-center justify-center shadow-inner">
-              <!-- Spinning Gold Star Inside -->
-              <div
-                class="w-12 h-12 flex items-center justify-center origin-center opacity-0 scale-50 transition-all duration-700"
-                id="music-box-crown-container">
-                <svg viewBox="0 0 100 100" class="w-10 h-10 filter drop-shadow-[0_2px_5px_rgba(251,191,36,0.6)]">
-                  <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36"
-                    fill="url(#goldGradStarBox)" />
-                  <defs>
-                    <linearGradient id="goldGradStarBox" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stop-color="#FCF6BA" />
-                      <stop offset="50%" stop-color="#BF953F" />
-                      <stop offset="100%" stop-color="#AA771C" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-            </div>
-
-            <!-- Winding Key on the Side (Left side) -->
-            <div
-              class="absolute top-1/2 -translate-y-1/2 -left-8 w-8 h-10 origin-right cursor-pointer z-15 flex items-center justify-end"
-              id="music-box-key-wrapper" onclick="windMusicBox(event)">
-              <!-- The key handle -->
-              <svg viewBox="0 0 100 120"
-                class="w-7 h-8 text-amber-500 filter drop-shadow-md hover:scale-110 active:scale-95 transition-transform duration-200"
-                id="music-box-key" style="transform: rotate(0deg);">
-                <circle cx="50" cy="80" r="16" fill="url(#goldGradKey)" />
-                <circle cx="50" cy="40" r="24" fill="none" stroke="url(#goldGradKey)" stroke-width="12" />
-                <rect x="44" y="55" width="12" height="30" fill="url(#goldGradKey)" />
+          <!-- 3D Parallax Bouquet Container -->
+          <div id="parallax-bouquet-stage" class="w-56 h-[300px] relative transition-transform duration-300 ease-out" style="transform-style: preserve-3d; transform: rotateX(0deg) rotateY(0deg);">
+            
+            <!-- Layer 1: Backing Foliage & Wrap -->
+            <div class="absolute inset-0 pointer-events-none" style="transform: translateZ(-45px); transform-style: preserve-3d;">
+              <svg viewBox="0 0 160 220" class="w-full h-full overflow-visible">
                 <defs>
-                  <linearGradient id="goldGradKey" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#BF953F" />
-                    <stop offset="50%" stop-color="#FCF6BA" />
-                    <stop offset="100%" stop-color="#AA771C" />
+                  <linearGradient id="sleeve-back-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#18181b" />
+                    <stop offset="100%" stop-color="#09090b" />
+                  </linearGradient>
+                  <linearGradient id="eucalyptus-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#cbd5e1" />
+                    <stop offset="100%" stop-color="#475569" />
                   </linearGradient>
                 </defs>
+                <!-- BACK WRAPPING SLEEVE -->
+                <path d="M25,100 L135,100 L105,185 L55,185 Z" fill="url(#sleeve-back-grad)" stroke="#3f3f46" stroke-width="1.5" />
+                
+                <!-- BACK FOLIAGE / EUCALYPTUS LEAVES (Left & Right) -->
+                <!-- Left Eucalyptus -->
+                <g transform="translate(30, 80)">
+                  <circle cx="0" cy="0" r="10" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <circle cx="-6" cy="-8" r="9" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <circle cx="-12" cy="-18" r="7.5" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <line x1="0" y1="10" x2="-15" y2="-22" stroke="#475569" stroke-width="2" />
+                </g>
+                <!-- Right Eucalyptus -->
+                <g transform="translate(130, 80)">
+                  <circle cx="0" cy="0" r="10" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <circle cx="6" cy="-8" r="9" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <circle cx="12" cy="-18" r="7.5" fill="url(#eucalyptus-grad)" stroke="#334155" stroke-width="0.5" />
+                  <line x1="0" y1="10" x2="15" y2="-22" stroke="#475569" stroke-width="2" />
+                </g>
+                <!-- STEMS inside sleeve -->
+                <g opacity="0.6">
+                  <line x1="80" y1="90" x2="80" y2="180" stroke="#166534" stroke-width="3" />
+                  <line x1="60" y1="95" x2="75" y2="180" stroke="#166534" stroke-width="2.5" />
+                  <line x1="100" y1="95" x2="85" y2="180" stroke="#166534" stroke-width="2.5" />
+                </g>
+              </svg>
+            </div>
+
+            <!-- Layer 2: Mid-Back Accent Flowers & Baby's Breath -->
+            <div class="absolute inset-0 pointer-events-none" style="transform: translateZ(-20px); transform-style: preserve-3d;">
+              <svg viewBox="0 0 160 220" class="w-full h-full overflow-visible">
+                <defs>
+                  <linearGradient id="lily-pink-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fbcfe8" />
+                    <stop offset="100%" stop-color="#ec4899" />
+                  </linearGradient>
+                  <linearGradient id="tulip-purple-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#e9d5ff" />
+                    <stop offset="100%" stop-color="#7e22ce" />
+                  </linearGradient>
+                  <linearGradient id="tulip-orange-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fed7aa" />
+                    <stop offset="100%" stop-color="#ea580c" />
+                  </linearGradient>
+                </defs>
+                <!-- BABY'S BREATH -->
+                <g stroke="#ffffff" stroke-width="1">
+                  <circle cx="45" cy="85" r="2.5" fill="#ffffff" />
+                  <circle cx="38" cy="80" r="2" fill="#ffffff" opacity="0.9" />
+                  <circle cx="42" cy="74" r="1.5" fill="#ffffff" opacity="0.8" />
+                  <circle cx="115" cy="85" r="2.5" fill="#ffffff" />
+                  <circle cx="122" cy="80" r="2" fill="#ffffff" />
+                  <circle cx="110" cy="74" r="1.5" fill="#ffffff" />
+                </g>
+                <!-- Flower: Upper Left Pink Lily -->
+                <g transform="translate(56, 56)">
+                  <path d="M0,0 Q-15,-15 0,-28 Q15,-15 0,0 Z" fill="url(#lily-pink-grad)" />
+                  <path d="M0,0 Q-28,5 -28,-10 Q-15,-20 0,0 Z" fill="url(#lily-pink-grad)" />
+                  <path d="M0,0 Q28,5 28,-10 Q15,-20 0,0 Z" fill="url(#lily-pink-grad)" />
+                  <path d="M0,0 Q-15,22 0,26 Q15,22 0,0 Z" fill="url(#lily-pink-grad)" transform="rotate(40)" />
+                  <path d="M0,0 Q-15,22 0,26 Q15,22 0,0 Z" fill="url(#lily-pink-grad)" transform="rotate(-40)" />
+                  <line x1="0" y1="0" x2="-6" y2="-12" stroke="#be123c" stroke-width="1.2" />
+                  <line x1="0" y1="0" x2="6" y2="-12" stroke="#be123c" stroke-width="1.2" />
+                  <circle cx="-6" cy="-12" r="1.5" fill="#facc15" />
+                  <circle cx="6" cy="-12" r="1.5" fill="#facc15" />
+                </g>
+                <!-- Flower: Upper Right Lavender Lily -->
+                <g transform="translate(104, 56)">
+                  <path d="M0,0 Q-15,-15 0,-28 Q15,-15 0,0 Z" fill="url(#tulip-purple-grad)" />
+                  <path d="M0,0 Q-28,5 -28,-10 Q-15,-20 0,0 Z" fill="url(#tulip-purple-grad)" />
+                  <path d="M0,0 Q28,5 28,-10 Q15,-20 0,0 Z" fill="url(#tulip-purple-grad)" />
+                  <line x1="0" y1="0" x2="0" y2="-14" stroke="#4a044e" stroke-width="1.2" />
+                  <circle cx="0" cy="-14" r="1.5" fill="#fde047" />
+                </g>
+                <!-- Flower: Mid-Left Purple Tulip -->
+                <g transform="translate(42, 78)">
+                  <path d="M-10,-20 C-16,5 16,5 10,-20 C5,-10 -5,-10 -10,-20 Z" fill="url(#tulip-purple-grad)" stroke="#581c87" stroke-width="0.5" />
+                  <path d="M-5,-22 C-8,-5 8,-5 5,-22 Z" fill="#d8b4fe" opacity="0.9" />
+                </g>
+                <!-- Flower: Mid-Right Orange-Yellow Tulip -->
+                <g transform="translate(118, 78)">
+                  <path d="M-10,-20 C-16,5 16,5 10,-20 C5,-10 -5,-10 -10,-20 Z" fill="url(#tulip-orange-grad)" stroke="#b45309" stroke-width="0.5" />
+                  <path d="M-5,-22 C-8,-5 8,-5 5,-22 Z" fill="#ffedd5" opacity="0.9" />
+                </g>
+              </svg>
+            </div>
+
+            <!-- Layer 3: Mid-Front Main Focal Flowers -->
+            <div class="absolute inset-0 pointer-events-none" style="transform: translateZ(15px); transform-style: preserve-3d;">
+              <svg viewBox="0 0 160 220" class="w-full h-full overflow-visible">
+                <defs>
+                  <radialGradient id="rose-yellow-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#fef9c3" />
+                    <stop offset="50%" stop-color="#facc15" />
+                    <stop offset="100%" stop-color="#ca8a04" />
+                  </radialGradient>
+                  <radialGradient id="rose-peach-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#fff5f5" />
+                    <stop offset="50%" stop-color="#fecaca" />
+                    <stop offset="100%" stop-color="#f87171" />
+                  </radialGradient>
+                  <radialGradient id="rose-cream-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="60%" stop-color="#fef3c7" />
+                    <stop offset="100%" stop-color="#f59e0b" />
+                  </radialGradient>
+                  <linearGradient id="sun-petal-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#fef08a" />
+                    <stop offset="100%" stop-color="#f59e0b" />
+                  </linearGradient>
+                </defs>
+                <!-- Flower: Top Sunflower -->
+                <g transform="translate(80, 42)">
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(0)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(11.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(22.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(33.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(45)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(56.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(67.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(78.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(90)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(101.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(112.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(123.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(135)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(146.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(157.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(168.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(180)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(191.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(202.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(213.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(225)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(236.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(247.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(258.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(270)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(281.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(292.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(303.75)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(315)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(326.25)" opacity="0.9" />
+                  <path d="M0,0 Q-4,-18 0,-24 Q4,-18 0,0 Z" fill="url(#sun-petal-grad)" transform="rotate(337.5)" />
+                  <path d="M0,0 Q-3,-14 0,-19 Q3,-14 0,0 Z" fill="#fde047" transform="rotate(348.75)" opacity="0.9" />
+                  <circle cx="0" cy="0" r="9" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                  <circle cx="0" cy="0" r="6" fill="#1c1917" />
+                </g>
+                <!-- Flower: Center Detailed Golden Rose -->
+                <g transform="translate(80, 85)">
+                  <path d="M-18,-8 C-25,-22 -5,-26 0,-20 C5,-26 25,-22 18,-8 C26,5 12,24 0,18 C-12,24 -26,5 -18,-8 Z" fill="url(#rose-yellow-grad)" stroke="#d97706" stroke-width="0.5" />
+                  <path d="M-12,-5 C-18,-15 -3,-18 0,-14 C3,-18 18,-15 12,-5 C17,3 8,16 0,12 C-8,16 -17,3 -12,-5 Z" fill="url(#rose-cream-grad)" opacity="0.9" />
+                  <path d="M-6,-2 Q0,-9 5,-6 Q8,-2 4,4 Q0,7 -4,4 Q-7,0 -6,-2 Z" fill="#d97706" opacity="0.9" />
+                </g>
+                <!-- Flower: Bottom Left Peach Rose -->
+                <g transform="translate(54, 98)">
+                  <g transform="scale(0.85)">
+                    <path d="M-18,-8 C-25,-22 -5,-26 0,-20 C5,-26 25,-22 18,-8 C26,5 12,24 0,18 C-12,24 -26,5 -18,-8 Z" fill="url(#rose-peach-grad)" stroke="#e11d48" stroke-width="0.5" />
+                    <path d="M-12,-5 C-18,-15 -3,-18 0,-14 C3,-18 18,-15 12,-5 C17,3 8,16 0,12 C-8,16 -17,3 -12,-5 Z" fill="#ffe4e6" opacity="0.9" />
+                    <path d="M-6,-2 Q0,-9 5,-6 Q8,-2 4,4 C0,7 -4,4 -7,0 -6,-2 Z" fill="#be123c" opacity="0.95" />
+                  </g>
+                </g>
+                <!-- Flower: Bottom Right Pale Rose -->
+                <g transform="translate(106, 98)">
+                  <g transform="scale(0.85)">
+                    <path d="M-18,-8 C-25,-22 -5,-26 0,-20 C5,-26 25,-22 18,-8 C26,5 12,24 0,18 C-12,24 -26,5 -18,-8 Z" fill="url(#rose-cream-grad)" stroke="#d97706" stroke-width="0.5" />
+                    <path d="M-12,-5 C-18,-15 -3,-18 0,-14 C3,-18 18,-15 12,-5 C17,3 8,16 0,12 C-8,16 -17,3 -12,-5 Z" fill="#fffbeb" opacity="0.95" />
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- Layer 4: Foreground Wrap & Satin Gold Ribbon -->
+            <div class="absolute inset-0 pointer-events-none" style="transform: translateZ(45px); transform-style: preserve-3d;">
+              <svg viewBox="0 0 160 220" class="w-full h-full overflow-visible">
+                <defs>
+                  <linearGradient id="sleeve-front-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fbcfe8" stop-opacity="0.95" />
+                    <stop offset="50%" stop-color="#fdf2f8" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#fef9c3" stop-opacity="0.95" />
+                  </linearGradient>
+                  <linearGradient id="gold-satin" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fef08a" />
+                    <stop offset="35%" stop-color="#ca8a04" />
+                    <stop offset="70%" stop-color="#facc15" />
+                    <stop offset="100%" stop-color="#854d0e" />
+                  </linearGradient>
+                </defs>
+                <!-- FRONT WRAPPING SLEEVE (Translucent luxury paper) -->
+                <path d="M25,100 L135,100 L115,145 L45,145 Z" fill="url(#sleeve-front-grad)" stroke="#fb7185" stroke-width="1" />
+                <path d="M45,145 L115,145 L102,185 L58,185 Z" fill="url(#sleeve-front-grad)" stroke="#facc15" stroke-width="0.75" />
+                
+                <!-- GOLD SATIN BOW RIBBON WITH DANGLING CURLS AT (80, 145) -->
+                <!-- Behind Loops (depth folds) -->
+                <path d="M80,145 C64,138 68,154 80,145 C92,154 96,138 80,145 Z" fill="#ca8a04" opacity="0.8" />
+                <!-- Left Loop -->
+                <path d="M80,145 C50,125 40,152 80,145 Z" fill="url(#gold-satin)" stroke="#eab308" stroke-width="0.5" />
+                <!-- Right Loop -->
+                <path d="M80,145 C110,125 120,152 80,145 Z" fill="url(#gold-satin)" stroke="#eab308" stroke-width="0.5" />
+                <!-- Ribbon Center Knot -->
+                <rect x="74" y="140" width="12" height="10" rx="3" fill="url(#gold-satin)" stroke="#eab308" stroke-width="1" />
+                
+                <!-- Ribbon Tails (Curly long satin ribbon loops going down) -->
+                <!-- Left Tail -->
+                <path d="M76,148 Q58,172 70,192 Q78,206 66,215" fill="none" stroke="url(#gold-satin)" stroke-width="4" stroke-linecap="round" />
+                <path d="M76,148 Q58,172 70,192 Q78,206 66,215" fill="none" stroke="#fef08a" stroke-width="1" stroke-linecap="round" opacity="0.8" />
+                <!-- Right Tail -->
+                <path d="M84,148 Q102,172 90,192 Q82,206 94,215" fill="none" stroke="url(#gold-satin)" stroke-width="4" stroke-linecap="round" />
+                <path d="M84,148 Q102,172 90,192 Q82,206 94,215" fill="none" stroke="#fef08a" stroke-width="1" stroke-linecap="round" opacity="0.8" />
               </svg>
             </div>
 
           </div>
 
+          <!-- Hand-written Card (Small Toggleable Banner instead of blocking popup) -->
+          <div id="flower-card" class="absolute bottom-4 bg-amber-50/95 border border-amber-900/10 rounded-2xl px-4 py-2 text-[10px] font-sans text-amber-950/90 text-center leading-normal shadow-lg transition-all duration-1000 z-30 flex items-center justify-center gap-1.5 cursor-pointer hover:bg-amber-100" onclick="toggleFlowerCardDetail(event)">
+            <span class="text-amber-700">💌</span> <span class="font-serif italic font-bold">To the Birthday Queen</span> (Tap to read note)
+          </div>
+
         </div>
+
+        <!-- Outer Pulsing Visualizer Rings -->
+        <div
+          class="absolute w-56 h-56 rounded-full border border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700 top-[20%] left-[30%]"
+          id="visualizer-ring-1"></div>
+        <div
+          class="absolute w-64 h-64 rounded-full border border-amber-500/0 scale-75 opacity-0 z-0 transition-all duration-700 top-[15%] left-[25%]"
+          id="visualizer-ring-2" style="transition-delay: 150ms;"></div>
       </section>
 
       <!-- DESTINY BLESSING SPINNER -->
@@ -2740,6 +2867,24 @@
 
       if (e) e.stopPropagation();
 
+      // Stop the envelope background animations to save CPU
+      if (window.sparkAnimationFrameId) {
+        cancelAnimationFrame(window.sparkAnimationFrameId);
+        window.sparkAnimationFrameId = null;
+      }
+      if (window.sparkFallInterval) {
+        clearInterval(window.sparkFallInterval);
+        window.sparkFallInterval = null;
+      }
+      if (window.sparkResizeHandler) {
+        window.removeEventListener('resize', window.sparkResizeHandler);
+        window.sparkResizeHandler = null;
+      }
+      const sparkFallContainer = document.getElementById('spark-fall-container');
+      if (sparkFallContainer) {
+        sparkFallContainer.innerHTML = '';
+      }
+
       const wrapper = document.getElementById('envelope-wrapper');
       const balloonCluster = document.getElementById('balloon-cluster');
       const openBtn = document.getElementById('open-balloon-btn');
@@ -2794,8 +2939,7 @@
                 startSkyLanterns();
                 startBalloons();
                 launchInitialConfetti();
-                startFallingGoldDust();
-                startFallingRosePetals();
+                initAmbientCanvas();
 
                 // Automatically reveal progress button after 5 seconds to guide the user
                 setTimeout(revealScene1ActionButton, 5000);
@@ -2824,152 +2968,231 @@
     }
 
     function createLantern(container, xPos, startYPercentage) {
-      const lantern = document.createElement('div');
-      lantern.className = 'lantern';
-      lantern.style.willChange = 'transform, opacity';
+      const parent = document.createElement('div');
+      parent.className = 'absolute pointer-events-none';
+      parent.style.left = `${xPos}%`;
+      parent.style.willChange = 'transform';
+      
+      if (startYPercentage === 105) {
+        parent.style.bottom = `-50px`;
+      } else {
+        parent.style.top = `${startYPercentage}%`;
+      }
 
       const size = Math.random() * 16 + 14; // 14px to 30px
-      lantern.style.width = `${size}px`;
-      lantern.style.height = `${size * 1.35}px`;
-      lantern.style.left = `${xPos}%`;
-
-      // Set vertical position
-      if (startYPercentage === 105) {
-        lantern.style.bottom = `-50px`;
-      } else {
-        lantern.style.top = `${startYPercentage}%`;
-      }
-
       const duration = Math.random() * 12 + 18; // 18s to 30s
+      parent.style.animation = `floatUpParent ${duration}s linear forwards`;
+
+      const child = document.createElement('div');
+      child.className = 'lantern';
+      child.style.width = `${size}px`;
+      child.style.height = `${size * 1.35}px`;
+      child.style.willChange = 'transform';
+      
       const swayDuration = Math.random() * 4 + 4; // 4s to 8s
+      const swayAmount = Math.random() * 20 + 15; // 15px to 35px sway
+      child.style.setProperty('--sway-amount', `${swayAmount}px`);
+      child.style.animation = `swayChild ${swayDuration}s ease-in-out infinite`;
 
-      // Inline CSS variables to animate custom heights
-      lantern.style.animation = `floatUpLantern ${duration}s linear forwards, swayLantern ${swayDuration}s ease-in-out infinite`;
+      parent.appendChild(child);
+      container.appendChild(parent);
 
-      container.appendChild(lantern);
-      setTimeout(() => lantern.remove(), duration * 1000);
+      setTimeout(() => parent.remove(), duration * 1000);
     }
 
-    // Dynamic Falling Gold Dust / Snow particles
-    function startFallingGoldDust() {
-      const container = document.getElementById('gold-dust-container');
+    // High-performance HTML5 Canvas Ambient Particle System (Rose Petals + Gold Dust)
+    let ambientAnimationFrameId = null;
+    let ambientResizeHandler = null;
 
-      // Initial particles
-      const initialParticles = window.innerWidth < 768 ? 10 : 25;
-      for (let i = 0; i < initialParticles; i++) {
-        spawnGoldDustParticle(container, true);
+    function initAmbientCanvas() {
+      const canvas = document.getElementById('ambient-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const isMobile = window.innerWidth < 768;
+
+      const resize = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      };
+      resize();
+      ambientResizeHandler = resize;
+      window.addEventListener('resize', resize);
+
+      const particles = [];
+      const maxGoldDust = isMobile ? 30 : 65;
+      const maxPetals = isMobile ? 22 : 45;
+
+      // Colors for Gold Dust
+      const goldColors = [
+        'hsla(44, 95%, 65%, ',  // bright gold
+        'hsla(38, 90%, 55%, ',  // deep gold
+        'hsla(52, 95%, 75%, ',  // light gold
+        'hsla(48, 85%, 60%, '   // amber gold
+      ];
+
+      // Rose Petal class
+      class Petal {
+        constructor(isInitial = false) {
+          this.reset(isInitial);
+        }
+
+        reset(isInitial = false) {
+          this.x = Math.random() * canvas.width;
+          this.y = isInitial ? Math.random() * canvas.height : -20 - Math.random() * 20;
+          this.size = Math.random() * 10 + 8; // 8px to 18px
+          this.w = this.size;
+          this.h = this.size * 1.15;
+          this.vy = Math.random() * 1.2 + 0.9; // 0.9 to 2.1 speed
+          
+          // Sway parameters
+          this.swayAngle = Math.random() * Math.PI * 2;
+          this.swaySpeed = Math.random() * 0.02 + 0.015;
+          this.swayAmount = Math.random() * 35 + 25; // 25 to 60px sway width
+          
+          // 3D Rotation parameters
+          this.rotation = Math.random() * Math.PI * 2;
+          this.rotSpeed = (Math.random() - 0.5) * 0.03;
+          this.rotXAngle = Math.random() * Math.PI * 2;
+          this.rotXSpeed = Math.random() * 0.03 + 0.02;
+          
+          this.opacity = Math.random() * 0.5 + 0.45; // 0.45 to 0.95 opacity
+          
+          // Organic shape variance
+          this.shapeCurve = Math.random() * 0.25 + 0.4; // 0.4 to 0.65 curvature
+        }
+
+        update() {
+          this.y += this.vy;
+          this.swayAngle += this.swaySpeed;
+          this.rotXAngle += this.rotXSpeed;
+          this.rotation += this.rotSpeed;
+
+          // X position has base + sine sway + wind influence
+          const currentSway = Math.sin(this.swayAngle) * this.swayAmount;
+          this.currentX = this.x + currentSway;
+
+          // Reset if goes off screen
+          if (this.y > canvas.height + 30) {
+            this.reset(false);
+          }
+        }
+
+        draw() {
+          ctx.save();
+          // Translate to center of petal
+          ctx.translate(this.currentX, this.y);
+          ctx.rotate(this.rotation);
+          
+          // Simulate 3D tumbling by scaling X/Y based on cosine of rotXAngle
+          const scaleX = Math.sin(this.rotXAngle);
+          const scaleY = Math.cos(this.rotXAngle + 0.5);
+          ctx.scale(scaleX, scaleY);
+
+          // Draw the beautiful rose petal shape
+          ctx.beginPath();
+          ctx.moveTo(0, this.h / 2);
+          
+          // Bezier curves to create an organic, realistic leaf shape
+          // Left side
+          ctx.bezierCurveTo(-this.w * this.shapeCurve, this.h * 0.2, -this.w * this.shapeCurve, -this.h * 0.4, 0, -this.h / 2);
+          // Right side
+          ctx.bezierCurveTo(this.w * this.shapeCurve, -this.h * 0.4, this.w * this.shapeCurve, this.h * 0.2, 0, this.h / 2);
+
+          // Deep pink/rose linear gradient
+          const grad = ctx.createLinearGradient(-this.w/2, -this.h/2, this.w/2, this.h/2);
+          grad.addColorStop(0, `rgba(255, 51, 102, ${this.opacity})`);
+          grad.addColorStop(0.5, `rgba(255, 102, 136, ${this.opacity})`);
+          grad.addColorStop(1, `rgba(255, 153, 187, ${this.opacity})`);
+
+          ctx.fillStyle = grad;
+          ctx.fill();
+
+          // Subtle central leaf vein line for premium detail
+          ctx.strokeStyle = `rgba(255, 255, 255, ${this.opacity * 0.25})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, this.h / 2 - 2);
+          ctx.lineTo(0, -this.h / 2 + 2);
+          ctx.stroke();
+
+          ctx.restore();
+        }
       }
 
-      // Continuous spawning
-      const spawnInterval = window.innerWidth < 768 ? 1200 : 600;
-      setInterval(() => {
-        if (document.hidden) return;
-        spawnGoldDustParticle(container, false);
-      }, spawnInterval);
-    }
+      // Gold Dust class
+      class GoldDust {
+        constructor(isInitial = false) {
+          this.reset(isInitial);
+        }
 
-    function spawnGoldDustParticle(container, randomY = false) {
-      const particle = document.createElement('div');
-      particle.className = 'gold-dust';
-      particle.style.willChange = 'transform, opacity';
+        reset(isInitial = false) {
+          this.x = Math.random() * canvas.width;
+          this.y = isInitial ? Math.random() * canvas.height : -10;
+          this.r = Math.random() * 2.5 + 1; // 1px to 3.5px
+          this.vy = Math.random() * 0.7 + 0.5; // 0.5 to 1.2 speed
+          this.swayAngle = Math.random() * Math.PI * 2;
+          this.swaySpeed = Math.random() * 0.015 + 0.008;
+          this.swayAmount = Math.random() * 20 + 10;
+          this.opacity = Math.random() * 0.5 + 0.15;
+          this.colorPrefix = goldColors[Math.floor(Math.random() * goldColors.length)];
+        }
 
-      const size = Math.random() * 3 + 1; // 1px to 4px
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${Math.random() * 100}%`;
+        update() {
+          this.y += this.vy;
+          this.swayAngle += this.swaySpeed;
+          this.currentX = this.x + Math.sin(this.swayAngle) * this.swayAmount;
 
-      if (randomY) {
-        particle.style.top = `${Math.random() * 100}%`;
-      } else {
-        particle.style.top = `-10px`;
+          if (this.y > canvas.height + 10) {
+            this.reset(false);
+          }
+        }
+
+        draw() {
+          ctx.save();
+          // Draw outer glow aura (vector based, extremely fast)
+          ctx.beginPath();
+          ctx.arc(this.currentX, this.y, this.r * 2.2, 0, Math.PI * 2);
+          ctx.fillStyle = this.colorPrefix + (this.opacity * 0.18) + ')';
+          ctx.fill();
+
+          // Draw solid inner core
+          ctx.beginPath();
+          ctx.arc(this.currentX, this.y, this.r, 0, Math.PI * 2);
+          ctx.fillStyle = this.colorPrefix + this.opacity + ')';
+          ctx.fill();
+          ctx.restore();
+        }
       }
 
-      particle.style.opacity = Math.random() * 0.6 + 0.1;
-
-      container.appendChild(particle);
-
-      const duration = Math.random() * 10 + 8; // 8s to 18s
-      gsap.to(particle, {
-        y: window.innerHeight + 20,
-        x: (Math.random() - 0.5) * 80,
-        duration: duration,
-        ease: "none",
-        onComplete: () => particle.remove()
-      });
-    }
-
-    // Dynamic Falling Rose Petals (Flower Rain)
-    function startFallingRosePetals() {
-      const container = document.getElementById('gold-dust-container'); // Reuse container
-
-      // Spawn initial petals
-      const initialPetals = window.innerWidth < 768 ? 15 : 40;
-      for (let i = 0; i < initialPetals; i++) {
-        spawnRosePetal(container, true);
+      // Populate initial particles
+      for (let i = 0; i < maxGoldDust; i++) {
+        particles.push(new GoldDust(true));
+      }
+      for (let i = 0; i < maxPetals; i++) {
+        particles.push(new Petal(true));
       }
 
-      // Continuous spawning
-      const spawnInterval = window.innerWidth < 768 ? 450 : 220;
-      setInterval(() => {
-        if (document.hidden) return;
-        spawnRosePetal(container, false);
-      }, spawnInterval);
-    }
+      // Animation loop
+      function animate() {
+        if (document.hidden) {
+          ambientAnimationFrameId = requestAnimationFrame(animate);
+          return;
+        }
 
-    function spawnRosePetal(container, randomY = false) {
-      const petal = document.createElement('div');
-      petal.className = 'absolute pointer-events-none select-none';
-      petal.style.willChange = 'transform, opacity';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const size = Math.random() * 12 + 8; // 8px to 20px
-      petal.style.width = `${size}px`;
-      petal.style.height = `${size * 1.1}px`;
-      petal.style.left = `${Math.random() * 100}%`;
+        // Sort particles by type (draw gold dust first so petals appear on top)
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
 
-      if (randomY) {
-        petal.style.top = `${Math.random() * 100}%`;
-      } else {
-        petal.style.top = `-20px`;
+        ambientAnimationFrameId = requestAnimationFrame(animate);
       }
 
-      // Asymmetric organic curve for a realistic petal shape
-      petal.style.borderRadius = '60% 40% 70% 30% / 50% 50% 60% 40%';
-      // Organic deep-rose gradient with slight depth shadow
-      petal.style.background = 'linear-gradient(135deg, #ff3366 0%, #ff6688 60%, #ff99bb 100%)';
-      petal.style.boxShadow = '1px 1px 3px rgba(0,0,0,0.12)';
-      petal.style.opacity = Math.random() * 0.65 + 0.3;
-
-      container.appendChild(petal);
-
-      const duration = Math.random() * 8 + 10; // 10s to 18s (slightly faster for natural feel)
-
-      // 1. Natural linear fall on Y-axis
-      gsap.to(petal, {
-        y: window.innerHeight + 30,
-        duration: duration,
-        ease: "none",
-        onComplete: () => petal.remove()
-      });
-
-      // 2. Sinusoidal air drift on X-axis (repeating yoyo)
-      const swayAmount = Math.random() * 60 + 40; // 40px to 100px sway
-      gsap.to(petal, {
-        x: "+=" + (Math.random() > 0.5 ? swayAmount : -swayAmount),
-        duration: Math.random() * 2.5 + 2.5, // 2.5s to 5s sway cycle
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut"
-      });
-
-      // 3. 3D organic tumbling rotation
-      gsap.to(petal, {
-        rotation: (Math.random() > 0.5 ? 360 : -360) * (Math.random() * 1.5 + 1),
-        rotationY: (Math.random() > 0.5 ? 360 : -360) * (Math.random() * 1.5 + 1),
-        rotationX: (Math.random() > 0.5 ? 180 : -180),
-        duration: Math.random() * 4 + 4,
-        repeat: -1,
-        ease: "none"
-      });
+      animate();
     }
 
     // Floating Interactive Balloons
@@ -2993,35 +3216,39 @@
     ];
 
     function createBalloon(container) {
-      const bWrapper = document.createElement('div');
-      bWrapper.className = 'absolute cursor-pointer select-none pointer-events-auto';
-      bWrapper.style.pointerEvents = 'auto';
-      bWrapper.style.willChange = 'transform, opacity';
-
-      const bColor = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
-
-      bWrapper.innerHTML = `
-        <div class="relative flex flex-col items-center">
-          <div class="w-14 h-18 rounded-full shadow-[0_8px_16px_rgba(0,0,0,0.3)] transition-transform duration-300 hover:scale-105" style="background: ${bColor};"></div>
-          <div class="w-3 h-2 bg-amber-600/70 -mt-0.5 rounded-sm"></div>
-          <div class="w-0.5 h-16 bg-gradient-to-b from-slate-400/40 to-transparent"></div>
-        </div>
-      `;
-
-      bWrapper.style.left = `${Math.random() * 80 + 10}%`;
-      bWrapper.style.bottom = `-150px`;
+      const parent = document.createElement('div');
+      parent.className = 'absolute cursor-pointer select-none';
+      parent.style.left = `${Math.random() * 80 + 10}%`;
+      parent.style.bottom = `-150px`;
+      parent.style.willChange = 'transform';
 
       const duration = Math.random() * 6 + 11; // 11s to 17s
+      parent.style.animation = `floatUpParent ${duration}s linear forwards`;
+
+      const child = document.createElement('div');
+      child.className = 'relative flex flex-col items-center';
+      child.style.willChange = 'transform';
+      
+      const bColor = BALLOON_COLORS[Math.floor(Math.random() * BALLOON_COLORS.length)];
+      child.innerHTML = `
+        <div class="w-14 h-18 rounded-full shadow-[0_8px_16px_rgba(0,0,0,0.3)] transition-transform duration-300 hover:scale-105" style="background: ${bColor};"></div>
+        <div class="w-3 h-2 bg-amber-600/70 -mt-0.5 rounded-sm"></div>
+        <div class="w-0.5 h-16 bg-gradient-to-b from-slate-400/40 to-transparent"></div>
+      `;
+
       const swaySec = Math.random() * 3 + 3;
+      const swayAmount = Math.random() * 25 + 20; // 20px to 45px sway
+      child.style.setProperty('--sway-amount', `${swayAmount}px`);
+      child.style.animation = `swayChild ${swaySec}s ease-in-out infinite`;
 
-      bWrapper.style.animation = `floatUpB ${duration}s linear forwards, swayB ${swaySec}s ease-in-out infinite`;
+      parent.appendChild(child);
 
-      bWrapper.addEventListener('click', (e) => {
-        popBalloon(bWrapper, e.clientX, e.clientY);
+      parent.addEventListener('click', (e) => {
+        popBalloon(parent, e.clientX, e.clientY);
       });
 
-      container.appendChild(bWrapper);
-      setTimeout(() => bWrapper.remove(), duration * 1000);
+      container.appendChild(parent);
+      setTimeout(() => parent.remove(), duration * 1000);
     }
 
     function popBalloon(bWrapper, clientX, clientY) {
@@ -3147,31 +3374,117 @@
       }, timeDelay * 1000);
     }
 
-    function spawnMusicBoxFloaty() {
-      const box = document.getElementById('music-box');
-      if (!box) return;
-      const floaty = document.createElement('div');
-      floaty.className = 'absolute font-bold text-amber-300 text-lg pointer-events-none select-none z-30 filter drop-shadow-[0_0_8px_#f59e0b]';
-      floaty.innerText = ['🎵', '🎶', '✨', '♩', '♪'][Math.floor(Math.random() * 5)];
+    let bouquetUnwrapped = false;
 
-      // Spawn in center and float up
+    function init3DBouquet() {
+      if (bouquetUnwrapped) return;
+      bouquetUnwrapped = true;
+
+      initAudio();
+      
+      const panel = document.getElementById('flower-panel');
+      const stage = document.getElementById('parallax-bouquet-stage');
+      if (panel && stage) {
+        panel.addEventListener('mousemove', (e) => {
+          const rect = panel.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          const rotateX = -y / 10;
+          const rotateY = x / 10;
+          gsap.to(stage, {
+            rotationX: rotateX,
+            rotationY: rotateY,
+            duration: 0.5,
+            ease: "power2.out"
+          });
+        });
+        
+        panel.addEventListener('mouseleave', () => {
+          gsap.to(stage, {
+            rotationX: 0,
+            rotationY: 0,
+            duration: 0.8,
+            ease: "power2.out"
+          });
+        });
+      }
+
+      completeFlowerQuest();
+    }
+
+    function toggleFlowerCardDetail(e) {
+      if (e) e.stopPropagation();
+      initAudio();
+      playChimeSound();
+      showWheelResultOverlay(
+        "To the Birthday Queen 👑", 
+        "\"Wishing you a beautiful, happy, and blooming year ahead! Happy Birthday! 💐✨\""
+      );
+    }
+
+    function completeFlowerQuest() {
+      musicBoxPlaying = true;
+      
+      playChimeSound();
+      
+      confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 }
+      });
+
+      const r1 = document.getElementById('visualizer-ring-1');
+      const r2 = document.getElementById('visualizer-ring-2');
+      if (r1 && r2) {
+        r1.className = "absolute w-56 h-56 rounded-full border-2 border-rose-500/50 scale-75 opacity-100 z-0 top-[20%] left-[30%]";
+        r2.className = "absolute w-64 h-64 rounded-full border border-amber-500/40 scale-75 opacity-100 z-0 top-[15%] left-[25%]";
+        gsap.to(r1, { scale: 1.7, opacity: 0, duration: 2.2, repeat: -1, ease: "power1.out" });
+        gsap.to(r2, { scale: 2.0, opacity: 0, duration: 2.5, delay: 0.4, repeat: -1, ease: "power1.out" });
+      }
+
+      const flashTimeline = gsap.timeline({ repeat: -1 });
+      flashTimeline
+        .to('body', { backgroundColor: '#881337', duration: 0.5 }) 
+        .to('body', { backgroundColor: '#4c1d95', duration: 0.5 }) 
+        .to('body', { backgroundColor: '#022c22', duration: 0.5 }) 
+        .to('body', { backgroundColor: '#09090b', duration: 0.5 });
+      window.flowerFlashTimeline = flashTimeline;
+
+      const floatyInterval = setInterval(() => {
+        if (!bouquetUnwrapped) {
+          clearInterval(floatyInterval);
+          return;
+        }
+        spawnFlowerFloaty();
+      }, 280); 
+      window.flowerFloatyInterval = floatyInterval;
+
+      startMusicBoxMelody();
+    }
+
+    function spawnFlowerFloaty() {
+      const section = document.getElementById('flower-panel');
+      if (!section) return;
+      const floaty = document.createElement('div');
+      floaty.className = 'absolute font-black text-rose-400 text-lg pointer-events-none select-none z-30 filter drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]';
+      floaty.innerText = ['🌻', '🌸', '🌷', '🌹', '💛', '🍃', '✨', '💖', '🎁', '🎂'][Math.floor(Math.random() * 10)];
+
       floaty.style.left = `${Math.random() * 60 + 20}%`;
-      floaty.style.top = '20%';
-      box.appendChild(floaty);
+      floaty.style.bottom = `10px`;
+      section.appendChild(floaty);
 
       gsap.to(floaty, {
-        y: -100 - Math.random() * 80,
-        x: (Math.random() - 0.5) * 80,
+        y: -260,
+        x: (Math.random() - 0.5) * 120,
         opacity: 0,
-        scale: 1.5,
-        rotation: Math.random() * 180 - 90,
+        scale: 1.8,
+        rotation: Math.random() * 360 - 180,
         duration: 2.5,
         ease: "power1.out",
         onComplete: () => floaty.remove()
       });
     }
 
-    // Play winding sound (series of clicking sounds)
     function playWindingClicks() {
       initAudio();
       if (!audioCtx) return;
@@ -3190,65 +3503,6 @@
         osc.start(t);
         osc.stop(t + 0.06);
       }
-    }
-
-    function windMusicBox(e) {
-      if (musicBoxPlaying || musicBoxWound) return;
-      musicBoxWound = true;
-      if (e) e.stopPropagation();
-
-      const key = document.getElementById('music-box-key');
-      const lid = document.getElementById('music-box-lid');
-      const crown = document.getElementById('music-box-crown-container');
-      const inst = document.getElementById('music-box-instruction');
-
-      inst.innerText = "🔧 Winding the music box spring...";
-      playWindingClicks();
-
-      // Spin winding key
-      gsap.to(key, {
-        rotation: 1080,
-        duration: 2.2,
-        ease: "power2.inOut",
-        onComplete: () => {
-          // Open Lid in 3D
-          inst.innerText = "✨ Music Box opened! Playing Symphony Tune...";
-          playChimeSound(); // Opening fanfare chime
-
-          gsap.timeline()
-            .to(lid, {
-              rotateX: -105,
-              duration: 1.5,
-              ease: "back.out(1.5)"
-            })
-            .to(crown, {
-              opacity: 1,
-              scale: 1,
-              duration: 0.6,
-              ease: "power2.out"
-            }, "-=0.8")
-            .call(() => {
-              // Spin internal crown
-              gsap.to(crown, {
-                rotation: 360,
-                duration: 5,
-                repeat: -1,
-                ease: "none"
-              });
-
-              // Start visualizer rings pulsing
-              const r1 = document.getElementById('visualizer-ring-1');
-              const r2 = document.getElementById('visualizer-ring-2');
-              r1.className = "absolute w-56 h-56 rounded-full border-2 border-amber-500/25 scale-75 opacity-100 z-0";
-              r2.className = "absolute w-64 h-64 rounded-full border border-amber-500/20 scale-75 opacity-100 z-0";
-
-              gsap.to(r1, { scale: 1.15, opacity: 0, duration: 1.8, repeat: -1, ease: "power1.out" });
-              gsap.to(r2, { scale: 1.3, opacity: 0, duration: 2.0, delay: 0.4, repeat: -1, ease: "power1.out" });
-
-              startMusicBoxMelody();
-            });
-        }
-      });
     }
 
     function startMusicBoxMelody() {
@@ -3293,18 +3547,25 @@
       // Complete activity after song ends
       setTimeout(() => {
         musicBoxPlaying = false;
+        if (window.flowerFlashTimeline) {
+          window.flowerFlashTimeline.kill();
+          gsap.set('body', { clearProps: 'backgroundColor' });
+        }
+        if (window.flowerFloatyInterval) {
+          clearInterval(window.flowerFloatyInterval);
+        }
         if (!musicBoxDone) {
           musicBoxDone = true;
           const st = document.getElementById('status-musicbox');
           if (st) st.className = "text-amber-400 flex items-center gap-1.5 transition-colors duration-500";
-          if (st) st.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Wind Music Box';
+          if (st) st.innerHTML = '<i class="fas fa-check-circle text-xs"></i> Floral Bouquet Gift';
 
           confetti({
             particleCount: 40,
             spread: 60,
             origin: { y: 0.65 }
           });
-          showToast("🎵 Music Box quest completed! ⭐");
+          showToast("💐 Flower Bouquet unboxed successfully! ⭐");
           checkScene3Completion();
         }
       }, 15000);
@@ -3820,7 +4081,9 @@
           duration: 0.8,
           ease: "power2.out",
           onComplete: () => {
-            if (sceneNum === 4) {
+            if (sceneNum === 3) {
+              init3DBouquet();
+            } else if (sceneNum === 4) {
               initCarousel3D();
             }
           }

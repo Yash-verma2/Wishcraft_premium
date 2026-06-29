@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+    <title>{{ title }}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            50: '#fdf4ff',
+                            100: '#fae8ff',
+                            200: '#f5d0fe',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c084fc',
+                            950: '#2e1065',
+                        },
+                        neonGreen: '#39ff14',
+                        neonYellow: '#fe019a',
+                    },
+                    fontFamily: {
+                        'outfit': ['Outfit', 'sans-serif'],
+                        'impact': ['Impact', 'Haettenschweiler', 'Arial Narrow Bold', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-slow': 'pulse 3.5s infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'shake': 'shake 0.3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(3deg)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+                            '25%': { transform: 'translate(-2px, 3px) rotate(-1deg)' },
+                            '50%': { transform: 'translate(3px, -1px) rotate(1.5deg)' },
+                            '75%': { transform: 'translate(-3px, -2px) rotate(-0.5deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .meme-card {
+            background: linear-gradient(135deg, #2e1065 0%, #0f052d 100%);
+            border: 4px solid #fe019a;
+            box-shadow: 10px 10px 0px #39ff14;
+        }
+
+        .comic-border {
+            border: 3px solid #000;
+            box-shadow: 5px 5px 0px #000;
+        }
+
+        .floating-meme {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUpMeme 4s ease-out forwards;
+        }
+
+        @keyframes floatUpMeme {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.6);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg) scale(1.6);
+                opacity: 0;
+            }
+        }
+
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fe019a;
+            cursor: pointer;
+            border: 3px solid #000;
+            box-shadow: 2px 2px 0px #000;
+            transition: transform 0.1s ease;
+        }
+        
+        .custom-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+
+<body class="bg-purple-950 text-slate-100 min-h-screen relative flex flex-col items-center justify-center p-4">
+
+    <!-- Meme rain container -->
+    <div id="memeContainer" class="absolute inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- MUSIC LOGIC -->
+    {% if music %}
+    {% if 'spotify.com' in music %}
+    <div id="spotifyPlayer" class="fixed bottom-6 right-6 z-50 transition-transform transform translate-y-full opacity-0 duration-500">
+        <iframe src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+    </div>
+    <script>window.isSpotify = true;</script>
+    {% else %}
+    <audio id="bgMusic" loop>
+        <source src="{{ music }}" type="audio/mpeg">
+    </audio>
+    <script>window.isSpotify = false;</script>
+    {% endif %}
+    {% endif %}
+
+    <!-- MUSIC CONTROLLER FLOATER -->
+    {% if music %}
+    <button id="musicToggleBtn" onclick="toggleMusic()" class="fixed top-6 right-6 z-50 p-3 bg-white rounded-full shadow-lg border-2 border-black hover:scale-105 transition-all text-xl text-slate-900 comic-border">
+        🎵
+    </button>
+    {% endif %}
+
+    <!-- INTRO SCENE: Envelope wrapper -->
+    <div id="introScene" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-all duration-1000">
+        <div id="heartbeatText" class="text-center px-4 mb-10">
+            <div class="text-7xl animate-bounce-slow mb-6">🎂</div>
+            <h1 class="text-neonGreen font-impact text-4xl sm:text-6xl uppercase tracking-wider drop-shadow-lg leading-tight">
+                WARNING: {{ name }}'s Birthday Detected!
+            </h1>
+            <p class="text-purple-300 mt-3 text-sm sm:text-base font-bold uppercase tracking-wider">Unseal the meme packet to proceed</p>
+        </div>
+
+        <div id="envelopeWrapper" class="transform scale-95 transition-transform duration-500">
+            <div class="relative w-80 h-52 cursor-pointer group" onclick="startExperience()">
+                <div class="absolute inset-0 bg-purple-800 rounded-b-2xl shadow-[0_15px_35px_rgba(232,121,249,0.3)] border-4 border-black z-10"></div>
+                <div id="introFlap" class="absolute top-0 left-0 w-full h-full bg-purple-900 rounded-t-2xl origin-top transition-all duration-700 z-20 group-hover:brightness-110 border-4 border-black"
+                    style="clip-path: polygon(0 0, 50% 50%, 100% 0);"></div>
+                <div class="absolute inset-x-4 bottom-2 top-6 bg-yellow-300 rounded-xl shadow-inner transform translate-y-3 z-0 flex flex-col items-center justify-center p-4 text-black border-2 border-black">
+                    <span class="text-2xl font-impact uppercase tracking-wider">Meme Tribute</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-purple-950">Click to deploy</span>
+                </div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-full w-14 h-14 bg-pink-500 rounded-full border-4 border-black shadow-xl z-30 flex items-center justify-center animate-pulse-slow">
+                    <span class="text-white text-2xl">🔥</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONSOLE INTERFACE -->
+    <div id="mainScene" class="hidden w-full max-w-2xl z-10 animate-fade-in relative py-10">
+        
+        <!-- Retro Meme Card container -->
+        <div id="memeDashboard" class="meme-card rounded-[2.5rem] p-6 sm:p-10 text-center flex flex-col gap-8 relative overflow-hidden">
+            
+            <!-- OVERLOAD GLOW ELEMENT (Initially hidden) -->
+            <div id="overloadBanner" class="hidden bg-yellow-400 text-black py-2.5 font-impact uppercase text-base tracking-widest comic-border absolute inset-x-0 top-0 z-30 animate-pulse">
+                ⚡ Warning: Awesomeness Overload! 9999% ⚡
+            </div>
+
+            <!-- Funny Drake Meme Comparison Row -->
+            <div class="w-full flex flex-col sm:flex-row rounded-2xl overflow-hidden comic-border bg-white text-black text-left">
+                <!-- Drake Disgusted -->
+                <div class="flex-1 flex border-b sm:border-b-0 sm:border-r border-black">
+                    <div class="w-20 bg-rose-500 font-impact text-white flex items-center justify-center text-5xl p-2 select-none">
+                        🙅‍♂️
+                    </div>
+                    <div class="flex-1 p-4 flex items-center bg-rose-50">
+                        <p class="font-bold text-sm text-slate-800">Going to a boring regular party with a standard grocery store cake</p>
+                    </div>
+                </div>
+                <!-- Drake Approved -->
+                <div class="flex-1 flex">
+                    <div class="w-20 bg-emerald-500 font-impact text-white flex items-center justify-center text-5xl p-2 select-none">
+                        👉
+                    </div>
+                    <div class="flex-1 p-4 flex items-center bg-emerald-50">
+                        <p class="font-black text-sm text-emerald-950">Getting a legendary customized web world created specifically for {{ name }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Celebrant Image -->
+            <div class="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto mt-4 group">
+                <div class="absolute inset-0 bg-yellow-300 rounded-2xl comic-border z-0 transform rotate-[-4deg] group-hover:rotate-[4deg] transition-transform"></div>
+                <div class="absolute inset-0 bg-pink-500 rounded-2xl comic-border z-0 transform rotate-[4deg] group-hover:rotate-[-4deg] transition-transform"></div>
+                <div class="relative w-full h-full rounded-2xl overflow-hidden comic-border bg-slate-900 z-10 flex items-center justify-center">
+                    <img src="{{ main_image }}" class="w-full h-full object-cover" alt="Meme subject">
+                </div>
+            </div>
+
+            <!-- Wish Title -->
+            <div class="space-y-1">
+                <h1 class="font-impact text-4xl sm:text-5xl uppercase tracking-wider text-yellow-300 text-shadow-sm select-none">{{ title }}</h1>
+                <p class="text-sm font-black uppercase text-purple-300 tracking-widest mt-1">Celebrating the absolute legend: {{ name }}</p>
+            </div>
+
+            <!-- MEME SOUNDBOARD SECTION -->
+            <div class="w-full space-y-3 text-left">
+                <h3 class="text-xs font-black uppercase tracking-wider text-purple-300">🔥 Interactive Soundboard</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button onclick="playMemeSound('airhorn')" class="p-3 bg-slate-900 hover:bg-slate-800 border-2 border-black rounded-xl text-center active:translate-y-0.5 transition-all text-xs font-black uppercase tracking-wider text-yellow-300 comic-border">
+                        📢 Airhorn
+                    </button>
+                    <button onclick="playMemeSound('violin')" class="p-3 bg-slate-900 hover:bg-slate-800 border-2 border-black rounded-xl text-center active:translate-y-0.5 transition-all text-xs font-black uppercase tracking-wider text-pink-400 comic-border">
+                        🎻 Drama
+                    </button>
+                    <button onclick="playMemeSound('cheers')" class="p-3 bg-slate-900 hover:bg-slate-800 border-2 border-black rounded-xl text-center active:translate-y-0.5 transition-all text-xs font-black uppercase tracking-wider text-emerald-400 comic-border">
+                        🎉 Cheers
+                    </button>
+                    <button onclick="playMemeSound('wow')" class="p-3 bg-slate-900 hover:bg-slate-800 border-2 border-black rounded-xl text-center active:translate-y-0.5 transition-all text-xs font-black uppercase tracking-wider text-cyan-400 comic-border">
+                        ✨ Wow
+                    </button>
+                </div>
+            </div>
+
+            <!-- AWESOME SLIDER SECTION -->
+            <div class="w-full space-y-3 text-left bg-black/40 p-5 rounded-2xl border-2 border-slate-700">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-black uppercase text-purple-300 tracking-wider">Rate {{ name }}'s Awesomeness</label>
+                    <span id="sliderLabel" class="text-sm font-black text-neonGreen">50%</span>
+                </div>
+                <input type="range" min="0" max="100" value="50" id="awesomeSlider" oninput="handleSliderChange(this)" class="custom-slider w-full h-3 bg-slate-900 rounded-lg appearance-none cursor-pointer border-2 border-black">
+                <p class="text-[10px] text-slate-400 italic">💡 Drag to 100% at your own risk. Highly unstable physics.</p>
+            </div>
+
+            <!-- Virtual Gift wrapper -->
+            {% if gift_image %}
+            <div class="w-full p-4 bg-yellow-300 rounded-2xl comic-border text-black flex items-center gap-4 text-left relative z-10">
+                <div class="w-16 h-16 rounded-xl bg-white border-2 border-black shrink-0 overflow-hidden shadow-sm">
+                    <img src="{{ gift_image }}" class="w-full h-full object-cover" alt="Meme Gift">
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-purple-950">A Gift Box Appears</h4>
+                    <p class="text-xs text-slate-800 font-semibold leading-normal mt-0.5">Click the gift icon to unlock the special surprise selected by your friend.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Message Sliders -->
+            <div class="w-full space-y-4 text-left">
+                <h3 class="text-xs font-black uppercase tracking-wider text-purple-300">💬 Custom Messages</h3>
+                <div class="flex flex-col gap-3 max-h-[200px] overflow-y-auto pr-1">
+                    {% for msg in messages %}
+                    <div class="p-4 rounded-xl bg-purple-900/40 border-2 border-slate-700 text-left relative overflow-hidden hover:border-pink-500 transition-colors">
+                        <p class="text-sm font-semibold text-purple-100 leading-relaxed font-outfit">{{ msg }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Comic Gallery grid with funny meme subtitles -->
+            {% if gallery_images %}
+            <div class="w-full space-y-4 text-left mt-4">
+                <h3 class="text-xs font-black uppercase tracking-wider text-purple-300">📸 The Comic Strip (Rare Captures)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for img in gallery_images %}
+                    <div class="bg-white p-3 rounded-xl comic-border text-black flex flex-col gap-3 group overflow-hidden">
+                        <div class="w-full aspect-[4/3] rounded-lg overflow-hidden border-2 border-black bg-slate-900">
+                            <img src="{{ img }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Gallery photo">
+                        </div>
+                        <p class="text-center font-impact uppercase tracking-wide text-xs text-purple-900 select-none" id="caption-{{ loop.index0 }}"></p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-2">
+                100% Certified Meme Protocol 🚀
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        // Start experience: open envelope, show console, play music
+        function startExperience() {
+            const flap = document.getElementById('introFlap');
+            if (flap) {
+                flap.style.transform = 'rotateX(180deg)';
+                flap.style.zIndex = '0';
+            }
+            
+            setTimeout(() => {
+                const intro = document.getElementById('introScene');
+                if (intro) {
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.classList.add('hidden');
+                        
+                        // Show Main Scene
+                        const main = document.getElementById('mainScene');
+                        if (main) main.classList.remove('hidden');
+                        
+                        playMusicAuto();
+                        showSpotify();
+                        generateRandomCaptures();
+                    }, 1000);
+                }
+            }, 600);
+        }
+
+        // Music toggling
+        let isPlaying = false;
+        function playMusicAuto() {
+            const m = document.getElementById('bgMusic');
+            if (m) {
+                m.play().then(() => {
+                    isPlaying = true;
+                    document.getElementById('musicToggleBtn').innerText = "🎵";
+                }).catch(() => {
+                    isPlaying = false;
+                    document.getElementById('musicToggleBtn').innerText = "🔇";
+                });
+            }
+        }
+
+        function toggleMusic() {
+            if (window.isSpotify) {
+                const p = document.getElementById('spotifyPlayer');
+                if (p) {
+                    if (p.classList.contains('translate-y-full')) {
+                        p.classList.remove('translate-y-full', 'opacity-0');
+                    } else {
+                        p.classList.add('translate-y-full', 'opacity-0');
+                    }
+                }
+            } else {
+                const m = document.getElementById('bgMusic');
+                const btn = document.getElementById('musicToggleBtn');
+                if (m) {
+                    if (m.paused) {
+                        m.play();
+                        isPlaying = true;
+                        if (btn) btn.innerText = "🎵";
+                    } else {
+                        m.pause();
+                        isPlaying = false;
+                        if (btn) btn.innerText = "🔇";
+                    }
+                }
+            }
+        }
+
+        function showSpotify() {
+            if (window.isSpotify) {
+                setTimeout(() => {
+                    const p = document.getElementById('spotifyPlayer');
+                    if (p) p.classList.remove('translate-y-full', 'opacity-0');
+                }, 1000);
+            }
+        }
+
+        // --- WEB AUDIO API MEME SYNTH SOUNDS ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playMemeSound(type) {
+            // Resume context if suspended (browser security)
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'airhorn') {
+                // Synthesize aggressive square beep clusters
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(392, now); // G4
+                gain.gain.setValueAtTime(0.15, now);
+                
+                // rapid pulse-width-like volume steps
+                for (let i = 0; i < 6; i++) {
+                    const step = now + (i * 0.12);
+                    gain.gain.setValueAtTime(0.15, step);
+                    gain.gain.setValueAtTime(0.01, step + 0.06);
+                }
+                osc.start(now);
+                osc.stop(now + 0.7);
+            } else if (type === 'violin') {
+                // Sliding frequency down slowly
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(880, now);
+                osc.frequency.exponentialRampToValueAtTime(110, now + 1.5);
+                
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 1.5);
+                
+                osc.start(now);
+                osc.stop(now + 1.5);
+            } else if (type === 'cheers') {
+                // Synthesize cheers/applause with a noise sweep
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.linearRampToValueAtTime(880, now + 0.8);
+                
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
+                
+                osc.start(now);
+                osc.stop(now + 1.0);
+            } else if (type === 'wow') {
+                // Sine wave sliding up sharply
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.4);
+                
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+        }
+
+        // --- SLIDER INTERACTION ENGINE ---
+        let overloadActive = false;
+
+        function handleSliderChange(slider) {
+            const val = parseInt(slider.value);
+            const label = document.getElementById('sliderLabel');
+            const dashboard = document.getElementById('memeDashboard');
+            const banner = document.getElementById('overloadBanner');
+            
+            if (label) label.innerText = val + '%';
+
+            if (val >= 80 && val < 100) {
+                // Light shake
+                dashboard.classList.add('animate-shake');
+                dashboard.classList.remove('animate-pulse');
+                if (label) label.style.color = '#fe019a';
+            } else if (val === 100) {
+                // Heavy shake + Overload Mode
+                if (label) {
+                    label.innerText = '9999% 🔥';
+                    label.style.color = '#39ff14';
+                }
+                dashboard.classList.add('animate-shake');
+                if (banner) banner.classList.remove('hidden');
+                
+                if (!overloadActive) {
+                    overloadActive = true;
+                    // Trigger massive meme float rains
+                    triggerMemeRain();
+                    
+                    // Confetti explosion
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+            } else {
+                // Normal
+                dashboard.classList.remove('animate-shake');
+                if (banner) banner.classList.add('hidden');
+                if (label) {
+                    label.style.color = '#39ff14';
+                }
+                overloadActive = false;
+            }
+        }
+
+        // --- FLOATING MEMES ENGINE ---
+        function triggerMemeRain() {
+            const container = document.getElementById('memeContainer');
+            if (!container) return;
+
+            const memeEmojis = ['🐶', '🐈', '🚀', '🔥', '👑', '🎂', '🥳', '😎', '⭐', '🌈'];
+            
+            // Spawn 30 memes sequentially
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.classList.add('floating-meme');
+                    particle.innerText = memeEmojis[Math.floor(Math.random() * memeEmojis.length)];
+                    
+                    const startX = Math.random() * 95; // %
+                    const size = Math.random() * 30 + 20; // px
+                    const duration = Math.random() * 3 + 2; // seconds
+                    
+                    particle.style.left = startX + 'vw';
+                    particle.style.fontSize = size + 'px';
+                    particle.style.animationDuration = duration + 's';
+                    
+                    container.appendChild(particle);
+                    setTimeout(() => particle.remove(), duration * 1000);
+                }, i * 150);
+            }
+        }
+
+        // --- GALLERY DYNAMIC CAPTIONS ---
+        const captions = [
+            "Caught in 4K looking majestic AF 📸",
+            "Legend says they are still this cool ⭐",
+            "Rare photo of {{ name }} acting normal 🤫",
+            "100% Photogenic (No filter, trust me) 🔥",
+            "Act natural, the camera is looking! 😂",
+            "The face of pure brilliance 🧠"
+        ];
+
+        function generateRandomCaptures() {
+            const elements = document.querySelectorAll('[id^="caption-"]');
+            elements.forEach((el, index) => {
+                // Select caption by index modulo to ensure variety
+                const cap = captions[index % captions.length];
+                el.innerText = cap;
+            });
+        }
+    </script>
+</body>
+
+</html>
