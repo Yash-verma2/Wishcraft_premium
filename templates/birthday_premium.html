@@ -527,7 +527,7 @@
 
   <!-- Audio Player (Moved to top for instant access) -->
   <div id="audio-container" class="hidden">
-    <audio id="bg-music" src="{{ music }}" loop autoplay></audio>
+    <audio id="bg-music" src="{{ music }}" loop></audio>
   </div>
 
   <!-- Premium Loading Preloader Overlay (Redesigned to dark luxury theme) -->
@@ -657,8 +657,6 @@
               preloader.classList.add('opacity-0');
               setTimeout(() => {
                 preloader.style.display = 'none';
-                // Auto-start music now that user has interacted with the page
-                startEarlyMusic();
                 if (typeof startCinematicIntro === 'function') {
                   startCinematicIntro();
                 }
@@ -790,7 +788,7 @@
     (function () {
       const name = JSON.parse(document.getElementById('name-data').textContent);
       const steps = [
-        { text: "", phase: "intro", hue: 280, duration: 1800 },
+        { text: "", phase: "intro", hue: 280, duration: 4000 },
         { text: "3", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffb3c6,#ff6b9d)", glow: "rgba(255,100,150,0.55)" },
         { text: "2", phase: "spark", hue: 340, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffc3e0,#ff85c8)", glow: "rgba(255,100,200,0.55)" },
         { text: "1", phase: "spark", hue: 44, duration: 900, size: "clamp(9rem, 44vw, 22rem)", gradient: "linear-gradient(135deg,#ffe066,#ffaa00)", glow: "rgba(255,180,0,0.65)" },

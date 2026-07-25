@@ -413,6 +413,8 @@ def generate():
                 'birthday_v2.html': "✨ Happy Birthday",
                 'birthday_emotional.html': "✨ Happy Birthday",
                 'birthday_premium.html': "✨ Grand Premium Celebration",
+                'birthday_diary.html': "💖 LDR Anniversary Keepsake Diary",
+                'birthday_movie.html': "🎬 THE MOVIE — A Cinematic Celebration",
                 'sorry_emotional.html': "✨ From the Heart",
                 'valentine.html': "💖 Happy Valentine's Day"
             }
@@ -510,7 +512,15 @@ def generate():
                 "gift_image": gift_url,
                 "music": music_url,
                 "gallery_link": url_for("gallery_page", uid=uid, _external=True),
-                "gallery_images": gallery_urls
+                "gallery_images": gallery_urls,
+                "movie_title": request.form.get("movie_title", "").strip(),
+                "movie_subtitle": request.form.get("movie_subtitle", "").strip(),
+                "movie_genre": request.form.get("movie_genre", "Friendship").strip(),
+                "story_how_met": request.form.get("story_how_met", "").strip(),
+                "story_funny_memories": request.form.get("story_funny_memories", "").strip(),
+                "story_important_moments": request.form.get("story_important_moments", "").strip(),
+                "story_personal_message": request.form.get("story_personal_message", "").strip(),
+                "story_future_wishes": request.form.get("story_future_wishes", "").strip()
             }
         }
 
@@ -607,7 +617,8 @@ def preview_template(template_name):
     allowed_templates = {
         'birthday.html', 'birthday2.html', 'birthday3.html',
         'birthday_emotional.html', 'birthday_premium.html',
-        'birthday_v2.html', 'sorry_emotional.html', 'valentine.html', 'anniversary.html'
+        'birthday_v2.html', 'birthday_diary.html', 'sorry_emotional.html',
+        'valentine.html', 'anniversary.html', 'birthday_movie.html'
     }
     if template_name not in allowed_templates:
         abort(404)
@@ -676,6 +687,21 @@ def preview_template(template_name):
         mock_context["main_image"] = "/static/previews/anime/birthday_v2_preview.png"
     elif template_name == 'birthday_emotional.html':
         mock_context["main_image"] = "/static/previews/anime/emotional_preview.png"
+    elif template_name == 'birthday_diary.html':
+        mock_context["main_image"] = "/static/previews/diary_preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift1.png"
+    elif template_name == 'birthday_movie.html':
+        mock_context["main_image"] = "/static/previews/anime/premium_cake_preview.png"
+        mock_context["gift_image"] = "/static/previews/hbd-gift1.png"
+        mock_context["music"] = "/static/music/hb1.mp3"
+        mock_context["movie_title"] = "The Story of Jane"
+        mock_context["movie_subtitle"] = "A story worth remembering"
+        mock_context["movie_genre"] = "Friendship"
+        mock_context["story_how_met"] = "We met back in high school math class, bonding over how much we both hated calculus."
+        mock_context["story_funny_memories"] = "That one time we tried to bake a cake, completely forgot the baking powder, and ended up with a sweet brick."
+        mock_context["story_important_moments"] = "Traveling together across the country, laughing at silly road signs, and talking until sunrise."
+        mock_context["story_personal_message"] = "You have been my rock, my partner in crime, and the absolute best person I know."
+        mock_context["story_future_wishes"] = "May this next chapter bring you endless laughter, success, and all the happiness in the world."
 
     return render_template(template_name, **mock_context)
 

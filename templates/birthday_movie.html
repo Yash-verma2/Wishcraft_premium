@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} 🎬</title>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- CSS & JS Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            cinema: ['Cinzel', 'serif'],
+          },
+          colors: {
+            cinemaGold: '#dfb76c',
+            cinemaBlack: '#09090b',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #09090b;
+      color: #fafafa;
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Film grain noise overlay */
+    .film-grain {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.065'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    /* Sliding cinematic letterbox bars */
+    .letterbox-top {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 8vh;
+      background: #000000;
+      border-bottom: 1.5px solid rgba(223, 183, 108, 0.15);
+      z-index: 90;
+      transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .letterbox-bottom {
+      position: fixed;
+      bottom: 0; left: 0; width: 100%; height: 8vh;
+      background: #000000;
+      border-top: 1.5px solid rgba(223, 183, 108, 0.15);
+      z-index: 90;
+      transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Slow cinematic zoom-in effect */
+    .ken-burns {
+      animation: kenburns 15s ease-out forwards;
+    }
+    @keyframes kenburns {
+      0% { transform: scale(1.03) translate(0, 0); }
+      100% { transform: scale(1.1) translate(0, -1%); }
+    }
+
+    /* Rolling credits panel container */
+    .credits-scroll {
+      animation: creditsRoll 25s linear forwards;
+    }
+    @keyframes creditsRoll {
+      0% { transform: translateY(85vh); }
+      100% { transform: translateY(-110%); }
+    }
+
+    /* Webkit scrollbars hidden for full-screen immersive effect */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Candle style */
+    .candle {
+      background: linear-gradient(to right, #dfb76c, #fef08a, #dfb76c);
+      border: 2px solid #1e1b4b;
+      border-radius: 3px;
+    }
+
+    .flame {
+      background: radial-gradient(circle, #f97316 20%, #dfb76c 65%, transparent 85%);
+      animation: flicker 0.1s infinite alternate;
+    }
+
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-3deg); }
+      100% { transform: scale(1.15) rotate(3deg); }
+    }
+
+    /* Pulse play button */
+    .play-btn-glow {
+      box-shadow: 0 0 0 0 rgba(223, 183, 108, 0.6);
+      animation: pulsePlay 2s infinite;
+    }
+    @keyframes pulsePlay {
+      70% { box-shadow: 0 0 0 20px rgba(223, 183, 108, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(223, 183, 108, 0); }
+    }
+  </style>
+</head>
+<body class="relative flex flex-col justify-between select-none">
+
+  <!-- Cinematic Film Grain Noise Overlay -->
+  <div class="film-grain"></div>
+
+  <!-- Letterbox Bars -->
+  <div id="letter-top" class="letterbox-top -translate-y-full"></div>
+  <div id="letter-bottom" class="letterbox-bottom translate-y-full"></div>
+
+  <!-- Soundtrack Widget Floater -->
+  <div id="soundtrack-badge" class="fixed top-12 right-6 z-50 opacity-0 transition-opacity duration-1000 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-cinemaGold/30 text-xs font-semibold text-cinemaGold select-none">
+    <span class="animate-pulse">🎵</span> Soundtrack Playing
+  </div>
+
+  <!-- 🎬 SCREEN 0: THE INTRO SEQUENCE 🎬 -->
+  <div id="intro-screen" class="absolute inset-0 z-40 bg-zinc-950 flex flex-col items-center justify-center p-4 text-center">
+    
+    <!-- Intro Card 1 (WishCraft Original) -->
+    <div id="intro-card-1" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950 z-30 transition-opacity duration-1000">
+      <span class="font-cinema text-xs sm:text-sm tracking-[0.4em] uppercase text-zinc-400">A WISHCRAFT ORIGINAL</span>
+    </div>
+
+    <!-- Intro Card 2 (Unforgettable story) -->
+    <div id="intro-card-2" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950 z-20 opacity-0 transition-opacity duration-1000">
+      <span class="font-serif text-lg sm:text-xl italic tracking-wide text-zinc-300">A story about someone unforgettable.</span>
+    </div>
+
+    <!-- Intro Card 3 (Main title reveal & Play button) -->
+    <div id="intro-card-3" class="absolute inset-0 flex flex-col items-center justify-center bg-zinc-950 z-10 opacity-0 transition-opacity duration-1000 space-y-8 max-w-lg mx-auto">
+      <div class="space-y-2">
+        <span class="font-cinema text-xs tracking-[0.3em] uppercase text-cinemaGold font-bold">STARRING: YOU</span>
+        <h1 class="font-cinema text-4xl sm:text-5xl font-black text-white leading-tight uppercase tracking-wide">
+          {{ name }}
+        </h1>
+      </div>
+      
+      <button onclick="startMovie()" class="play-btn-glow w-20 h-20 bg-cinemaGold text-zinc-950 rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-300 shadow-xl focus:outline-none">
+        <i class="fas fa-play text-2xl ml-1"></i>
+      </button>
+      
+      <p class="font-serif text-[11px] uppercase tracking-[0.25em] text-zinc-400">TAP TO PRESS PLAY</p>
+    </div>
+  </div>
+
+  <!-- 🎞️ SCREEN 1: CHAPTERS & MOVIE PLAYER 🎞️ -->
+  <div id="movie-player" class="absolute inset-0 z-30 bg-zinc-950 hidden opacity-0 transition-opacity duration-1000 flex flex-col items-center justify-center overflow-hidden">
+    
+    <!-- Ken Burns Image Canvas Background -->
+    <div class="absolute inset-0 -z-10">
+      <div class="absolute inset-0 bg-black/75 z-10"></div>
+      <img id="chapter-bg-image" src="" alt="Background" class="w-full h-full object-cover ken-burns">
+    </div>
+
+    <!-- Interactive slide container -->
+    <div id="slide-wrapper" class="w-full max-w-xl mx-auto px-6 text-center space-y-6 flex flex-col items-center relative z-20">
+      <!-- Chapter Metadata -->
+      <div class="space-y-1.5">
+        <span id="chapter-number" class="font-cinema text-xs sm:text-sm tracking-[0.35em] text-cinemaGold font-black uppercase">
+          <!-- Injected -->
+        </span>
+        <h2 id="chapter-title" class="font-serif text-3xl sm:text-4xl font-extrabold text-white">
+          <!-- Injected -->
+        </h2>
+      </div>
+
+      <!-- Chapter Narrative -->
+      <div class="min-h-[140px] max-w-md flex items-center justify-center">
+        <p id="chapter-text" class="font-serif text-base sm:text-lg text-zinc-300 leading-relaxed italic">
+          <!-- Injected -->
+        </p>
+      </div>
+
+      <!-- Interactive controller indicators -->
+      <div class="flex items-center justify-center gap-8 pt-4">
+        <button id="prev-btn" onclick="prevSlide()" class="w-10 h-10 rounded-full border border-zinc-700 hover:border-cinemaGold text-zinc-400 hover:text-cinemaGold flex items-center justify-center transition-colors disabled:opacity-30 disabled:pointer-events-none">
+          <i class="fas fa-chevron-left text-xs"></i>
+        </button>
+        
+        <span id="chapter-pager" class="font-cinema text-xs tracking-widest text-zinc-400 font-bold">
+          <!-- Injected -->
+        </span>
+
+        <button id="next-btn" onclick="nextSlide()" class="w-10 h-10 rounded-full border border-zinc-700 hover:border-cinemaGold text-zinc-400 hover:text-cinemaGold flex items-center justify-center transition-colors">
+          <i class="fas fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏆 SCREEN 2: ROLLING MOVIE CREDITS 🏆 -->
+  <div id="credits-screen" class="absolute inset-0 z-20 bg-black hidden opacity-0 transition-opacity duration-1000 flex flex-col items-center overflow-hidden py-12 px-4 select-none">
+    <div id="credits-roller" class="w-full max-w-md mx-auto text-center space-y-16 flex flex-col items-center">
+      
+      <div class="space-y-2">
+        <span class="font-cinema text-xs tracking-[0.4em] text-zinc-400 uppercase">THE END OF</span>
+        <h3 class="font-cinema text-3xl font-black text-cinemaGold uppercase tracking-wider">{{ movie_title or 'A Story Worth Remembering' }}</h3>
+      </div>
+
+      <!-- Production Crew List -->
+      <div class="space-y-10 w-full font-cinema text-sm uppercase tracking-widest">
+        <div class="space-y-1">
+          <p class="text-[9px] text-zinc-500 font-bold">Starring</p>
+          <p class="text-white text-base font-black">{{ name }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-[9px] text-zinc-500 font-bold">Producer</p>
+          <p class="text-white font-bold">{{ creator_name or 'WishCraft Director' }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-[9px] text-zinc-500 font-bold">Director</p>
+          <p class="text-white font-bold">{{ creator_name or 'WishCraft Director' }}</p>
+        </div>
+
+        <div class="space-y-1">
+          <p class="text-[9px] text-zinc-500 font-bold">Director of Photography</p>
+          <p class="text-white font-bold">Our Gallery Memories</p>
+        </div>
+
+        {% if music %}
+        <div class="space-y-1">
+          <p class="text-[9px] text-zinc-500 font-bold">Original Soundtrack</p>
+          <p class="text-white font-bold text-xs">Selected Audio Mix</p>
+        </div>
+        {% endif %}
+
+        {% if story_future_wishes %}
+        <div class="space-y-2 border-t border-zinc-800/80 pt-6">
+          <p class="text-[9px] text-zinc-500 font-bold">Wishes from Director</p>
+          <p class="text-cinemaGold font-serif text-sm italic normal-case tracking-normal px-4 leading-relaxed">
+            "{{ story_future_wishes }}"
+          </p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="pt-8">
+        <span class="font-cinema text-[10px] tracking-[0.5em] text-zinc-600">WISHCRAFT PICTURES © 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🎂 SCREEN 3: POST-CREDITS BIRTHDAY CAKE 🎂 -->
+  <div id="post-credits-screen" class="absolute inset-0 z-10 bg-zinc-950 hidden opacity-0 transition-opacity duration-1000 flex flex-col items-center justify-center p-6 text-center select-none">
+    
+    <div class="space-y-8 flex flex-col items-center max-w-sm">
+      <div class="space-y-2">
+        <span class="font-cinema text-xs tracking-[0.3em] text-cinemaGold font-black uppercase">Post-Credits Scene</span>
+        <h3 class="font-serif text-2xl font-black text-white">Make A Final Wish! 🎂</h3>
+        <p class="text-xs text-zinc-400 font-semibold">Tap the cake candle flames to blow them out!</p>
+      </div>
+
+      <!-- Interactive 3D Cake -->
+      <div class="w-full max-w-[240px] h-44 relative flex flex-col items-center justify-end mt-4">
+        <!-- Interactive Candles -->
+        <div class="flex justify-center gap-6 relative z-10 w-full mb-[-4px]">
+          <!-- Candle 1 -->
+          <div id="candle-1" class="cursor-pointer flex flex-col items-center relative" onclick="blowMovieCandle(1)">
+            <div id="flame-1" class="w-3 h-4.5 rounded-full bg-orange-400 absolute -top-4.5 left-1/2 -translate-x-1/2 flame"></div>
+            <div class="w-1.5 h-8 candle"></div>
+          </div>
+          <!-- Candle 2 -->
+          <div id="candle-2" class="cursor-pointer flex flex-col items-center relative" onclick="blowMovieCandle(2)">
+            <div id="flame-2" class="w-3 h-4.5 rounded-full bg-orange-400 absolute -top-4.5 left-1/2 -translate-x-1/2 flame"></div>
+            <div class="w-1.5 h-8 candle"></div>
+          </div>
+        </div>
+
+        <!-- Cake Top layer -->
+        <div class="w-[155px] h-8 bg-zinc-800 border-3 border-cinemaGold rounded-t-lg relative flex flex-col justify-between">
+          <div class="flex justify-between w-full h-2.5">
+            <div class="w-3.5 h-3 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-3 h-3.5 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-3.5 h-2.5 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-3 h-3 bg-cinemaGold rounded-b-full"></div>
+          </div>
+        </div>
+
+        <!-- Cake Bottom layer -->
+        <div class="w-[195px] h-12 bg-zinc-900 border-3 border-cinemaGold rounded-t flex flex-col justify-between">
+          <div class="flex justify-between w-full h-3">
+            <div class="w-4 h-3 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-3.5 h-4 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-4 h-3.5 bg-cinemaGold rounded-b-full"></div>
+            <div class="w-3 h-3 bg-cinemaGold rounded-b-full"></div>
+          </div>
+        </div>
+
+        <!-- Base Stand Plate -->
+        <div class="w-[235px] h-3 bg-black border-3 border-cinemaGold rounded-full"></div>
+      </div>
+
+      <div id="final-wish-status" class="text-[10px] font-black uppercase text-amber-500 tracking-widest animate-pulse">
+        <i class="fas fa-hand-pointer mr-1"></i> Click the flames!
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio elements -->
+  <div id="audio-container" class="hidden">
+    {% if music and 'spotify.com' in music %}
+    <div id="spotify-player-wrapper" class="fixed bottom-6 right-6 z-[200] transition-transform duration-500 translate-y-40">
+      <iframe id="spotify-iframe" src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class="rounded-2xl shadow-2xl border border-slate-300"></iframe>
+      <button onclick="toggleSpotifyWidget()" class="absolute -top-3 -right-3 bg-zinc-800 text-white rounded-full w-8 h-8 flex items-center justify-center border-2 border-cinemaGold hover:bg-yellow-400 transition-colors">
+        <i class="fas fa-minus text-xs"></i>
+      </button>
+    </div>
+    {% else %}
+    <audio id="bg-music" src="{{ music }}" loop></audio>
+    {% endif %}
+  </div>
+
+  <script>
+    // Chapter / slides definitions
+    const creatorName = "{{ creator_name or 'WishCraft Director' }}";
+    const mainImage = "{{ main_image }}";
+    const galleryJSON = `{{ gallery_images|tojson }}`;
+    let galleryImages = [];
+    try {
+      if (galleryJSON) {
+        galleryImages = JSON.parse(galleryJSON);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+
+    // Genre-specific titles
+    const genre = "{{ movie_genre or 'Friendship' }}";
+    
+    // Chapter lists setup
+    const chapters = [];
+
+    // Met chapter
+    const storyHowMet = `{{ story_how_met }}`;
+    if (storyHowMet && storyHowMet.trim() !== '') {
+      chapters.push({
+        num: "CHAPTER 01",
+        title: genre === 'Romance' ? "THE COINCIDENCE" : "THE BEGINNING",
+        text: storyHowMet,
+        image: galleryImages[0] || mainImage
+      });
+    }
+
+    // Comedy chapter
+    const storyFunny = `{{ story_funny_memories }}`;
+    if (storyFunny && storyFunny.trim() !== '') {
+      chapters.push({
+        num: `CHAPTER 0${chapters.length + 1}`,
+        title: "THE COMEDY REEL",
+        text: storyFunny,
+        image: galleryImages[1] || galleryImages[0] || mainImage
+      });
+    }
+
+    // Milestones chapter
+    const storyMilestones = `{{ story_important_moments }}`;
+    if (storyMilestones && storyMilestones.trim() !== '') {
+      chapters.push({
+        num: `CHAPTER 0${chapters.length + 1}`,
+        title: genre === 'Adventure' ? "THE EXPLORATION" : "THE MILESTONES",
+        text: storyMilestones,
+        image: galleryImages[2] || galleryImages[1] || mainImage
+      });
+    }
+
+    // Personal message chapter
+    const storyPersonal = `{{ story_personal_message }}`;
+    if (storyPersonal && storyPersonal.trim() !== '') {
+      chapters.push({
+        num: `CHAPTER 0${chapters.length + 1}`,
+        title: "FROM THE DIRECTOR",
+        text: storyPersonal,
+        image: galleryImages[3] || galleryImages[0] || mainImage
+      });
+    }
+
+    // Fallback if no narrative is provided
+    if (chapters.length === 0) {
+      chapters.push({
+        num: "CHAPTER 01",
+        title: "THE ANTHOLOGY",
+        text: "Every picture has a story, and yours is one written in laughter, memories, and beautiful moments.",
+        image: mainImage
+      });
+    }
+
+    let currentSlideIndex = 0;
+    let isPlaying = false;
+    let isSpotify = false;
+    let candlesLit = [true, true];
+
+    const spotifyWrapper = document.getElementById('spotify-player-wrapper');
+    if (spotifyWrapper) {
+      isSpotify = true;
+    }
+    const bgMusic = document.getElementById('bg-music');
+
+    // Web Audio Synthesizer
+    function synthCinemaSound(freq1, freq2, type, duration) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + duration);
+        
+        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log("Audio synthesis blocked or unsupported.");
+      }
+    }
+
+    // 🎬 Intro Sequence Animations 🎬
+    window.addEventListener('DOMContentLoaded', () => {
+      // Step 1: Fade-in WishCraft Original
+      setTimeout(() => {
+        gsap.to('#intro-card-1', {
+          opacity: 0,
+          duration: 1.2,
+          onComplete: () => {
+            document.getElementById('intro-card-1').classList.add('hidden');
+            // Step 2: Show Story tagline
+            gsap.fromTo('#intro-card-2', { opacity: 0 }, {
+              opacity: 1,
+              duration: 1.2,
+              onComplete: () => {
+                setTimeout(() => {
+                  gsap.to('#intro-card-2', {
+                    opacity: 0,
+                    duration: 1.2,
+                    onComplete: () => {
+                      document.getElementById('intro-card-2').classList.add('hidden');
+                      // Step 3: Reveal Title and play button
+                      gsap.fromTo('#intro-card-3', { opacity: 0, scale: 0.96 }, {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1.4,
+                        ease: 'power3.out'
+                      });
+                    }
+                  });
+                }, 1500);
+              }
+            });
+          }
+        });
+      }, 1800);
+    });
+
+    // Start movie triggers letterboxes and fades to chapters
+    function startMovie() {
+      // Play project wind-up sound
+      synthCinemaSound(120, 260, 'sawtooth', 0.25);
+
+      // Play music track
+      startMusicTrack();
+
+      // Animate Letterboxes sliding in
+      const topBar = document.getElementById('letter-top');
+      const bottomBar = document.getElementById('letter-bottom');
+      topBar.classList.remove('-translate-y-full');
+      bottomBar.classList.remove('translate-y-full');
+
+      // Fade out Intro Screen
+      gsap.to('#intro-screen', {
+        opacity: 0,
+        scale: 1.05,
+        duration: 1.2,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          document.getElementById('intro-screen').classList.add('hidden');
+          const player = document.getElementById('movie-player');
+          player.classList.remove('hidden');
+          gsap.fromTo(player, { opacity: 0 }, {
+            opacity: 1,
+            duration: 1.2,
+            onComplete: () => {
+              renderSlide();
+            }
+          });
+        }
+      });
+    }
+
+    // Soundtrack track triggers
+    function startMusicTrack() {
+      if (isSpotify) {
+        if (spotifyWrapper) {
+          spotifyWrapper.classList.remove('translate-y-40');
+        }
+        document.getElementById('soundtrack-badge').classList.remove('opacity-0');
+      } else if (bgMusic) {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+          document.getElementById('soundtrack-badge').classList.remove('opacity-0');
+        }).catch(err => {
+          console.log("Music blocked: Wait for play click.", err);
+        });
+      }
+    }
+
+    function toggleSpotifyWidget() {
+      if (spotifyWrapper) {
+        spotifyWrapper.classList.toggle('translate-y-40');
+      }
+    }
+
+    // Chapters rendering engine
+    function renderSlide() {
+      const slide = chapters[currentSlideIndex];
+      
+      const numEl = document.getElementById('chapter-number');
+      const titleEl = document.getElementById('chapter-title');
+      const textEl = document.getElementById('chapter-text');
+      const bgImg = document.getElementById('chapter-bg-image');
+      const pager = document.getElementById('chapter-pager');
+
+      // Set disabled states
+      document.getElementById('prev-btn').disabled = currentSlideIndex === 0;
+
+      // Update background and trigger Ken Burns scaling
+      bgImg.classList.remove('ken-burns');
+      // trigger reflow
+      bgImg.offsetWidth;
+      bgImg.src = slide.image;
+      bgImg.classList.add('ken-burns');
+
+      // Set text
+      numEl.innerText = slide.num;
+      titleEl.innerText = slide.title;
+      textEl.innerText = slide.text;
+      
+      // Update pager info
+      pager.innerText = `${currentSlideIndex + 1} / ${chapters.length}`;
+
+      // Animate text elements slow cinematic fade-in
+      gsap.fromTo('#slide-wrapper', { opacity: 0, y: 15 }, {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        ease: 'power2.out'
+      });
+    }
+
+    // Navigation slides controls
+    function nextSlide() {
+      synthCinemaSound(240, 200, 'sine', 0.12);
+
+      if (currentSlideIndex < chapters.length - 1) {
+        currentSlideIndex++;
+        // Fade transition slide
+        gsap.to('#slide-wrapper', {
+          opacity: 0,
+          duration: 0.4,
+          onComplete: () => {
+            renderSlide();
+          }
+        });
+      } else {
+        // Go to Credits Screen
+        fadeToCredits();
+      }
+    }
+
+    function prevSlide() {
+      synthCinemaSound(200, 240, 'sine', 0.12);
+
+      if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        gsap.to('#slide-wrapper', {
+          opacity: 0,
+          duration: 0.4,
+          onComplete: () => {
+            renderSlide();
+          }
+        });
+      }
+    }
+
+    // Transition to Rolling Credits Screen
+    function fadeToCredits() {
+      // Slide letterboxes out
+      document.getElementById('letter-top').classList.add('-translate-y-full');
+      document.getElementById('letter-bottom').classList.add('translate-y-full');
+
+      gsap.to('#movie-player', {
+        opacity: 0,
+        duration: 1.2,
+        onComplete: () => {
+          document.getElementById('movie-player').classList.add('hidden');
+          const screen = document.getElementById('credits-screen');
+          screen.classList.remove('hidden');
+          
+          gsap.fromTo(screen, { opacity: 0 }, {
+            opacity: 1,
+            duration: 1.5,
+            onComplete: () => {
+              startCreditsRolling();
+            }
+          });
+        }
+      });
+    }
+
+    function startCreditsRolling() {
+      const roller = document.getElementById('credits-roller');
+      roller.classList.add('credits-scroll');
+
+      // Detect end of rolling animation
+      roller.addEventListener('animationend', () => {
+        setTimeout(fadeToPostCredits, 1500);
+      });
+    }
+
+    // Transition to post credits scene (candle cake)
+    function fadeToPostCredits() {
+      gsap.to('#credits-screen', {
+        opacity: 0,
+        duration: 1.5,
+        onComplete: () => {
+          document.getElementById('credits-screen').classList.add('hidden');
+          const finalScreen = document.getElementById('post-credits-screen');
+          finalScreen.classList.remove('hidden');
+          
+          gsap.fromTo(finalScreen, { opacity: 0 }, {
+            opacity: 1,
+            duration: 1.5
+          });
+        }
+      });
+    }
+
+    // Candle blow-out logic
+    function blowMovieCandle(num) {
+      if (!candlesLit[num - 1]) return;
+      candlesLit[num - 1] = false;
+
+      // Sound feedback
+      synthCinemaSound(600, 150, 'triangle', 0.15);
+
+      // Hide flame
+      document.getElementById(`flame-${num}`).classList.add('hidden');
+
+      if (!candlesLit[0] && !candlesLit[1]) {
+        const wishStatus = document.getElementById('final-wish-status');
+        wishStatus.innerHTML = '<i class="fas fa-star text-yellow-500 animate-spin-slow"></i> Happy Birthday! Make a Wish!';
+        wishStatus.classList.remove('text-slate-400');
+        wishStatus.classList.add('text-cinemaGold');
+
+        // Confetti explosion blast
+        const duration = 3 * 1000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ['#dfb76c', '#ffffff', '#fcd34d']
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ['#dfb76c', '#ffffff', '#fcd34d']
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        }());
+      }
+    }
+  </script>
+</body>
+</html>

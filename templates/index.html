@@ -1448,6 +1448,221 @@
         </div>
 
         <!-- ══════════════════════════════════════ -->
+        <!-- CARD 7b — Virtual Scrapbook / Diary    -->
+        <!-- ══════════════════════════════════════ -->
+        <div
+          class="template-card group relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] cursor-pointer shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-200/60 bg-white flex flex-col"
+          onclick="selectTemplateAndScroll(this)" data-value="birthday_diary.html" data-category="birthday premium"
+          data-price="99" data-is-premium="true">
+
+          <!-- Selected Checkmark Badge -->
+          <div
+            class="selected-badge absolute right-3 top-3 sm:right-4 sm:top-4 z-30 bg-rose-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full uppercase tracking-wider shadow-lg shadow-rose-500/20 border border-rose-400/20 items-center gap-1 hidden">
+            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" />
+            </svg>
+            Active
+          </div>
+
+          <!-- Image Container -->
+          <div class="relative overflow-hidden shrink-0 bg-slate-100 w-full aspect-[3/4] sm:aspect-[4/3]">
+            <img src="/static/previews/diary_preview.png"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Aesthetic LDR Anniversary Diary">
+            <div
+              class="absolute left-2 top-2 sm:left-4 sm:top-4 rounded-full bg-white/90 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-rose-600 border border-rose-100 shadow-sm z-10">
+              💝 LDR Anniversary Diary</div>
+
+            <!-- Mobile Overlay -->
+            <div
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-900/70 to-transparent pt-12 pb-2.5 px-2.5 flex flex-col gap-1.5 justify-end sm:hidden z-20">
+              <div class="flex items-end justify-between gap-1 leading-none">
+                <h3 class="text-xs font-black text-white truncate max-w-[70%] font-heading">LDR Anniversary Diary</h3>
+                <div class="text-right shrink-0 flex flex-col justify-end">
+                  <span class="text-[8px] text-slate-400 line-through font-normal">₹499</span>
+                  <span class="text-[10px] text-rose-400 font-black">₹99</span>
+                </div>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-white bg-white/10 hover:bg-white/20 active:bg-white/30 border border-white/20 rounded-lg backdrop-blur-sm transition-all flex items-center justify-center gap-1 focus:outline-none">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Preview
+              </button>
+            </div>
+
+            <!-- Desktop Hover Overlay -->
+            <div
+              class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20 hidden sm:flex">
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="px-5 py-2.5 bg-white text-slate-900 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-500 hover:text-white transition-all shadow-md transform translate-y-2 group-hover:translate-y-0 duration-300 flex items-center gap-2 focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Live Preview
+              </button>
+              <button type="button" onclick="selectTemplateAndScroll(this)"
+                class="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-orange-500 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brand-500/20 transition-all shadow-md transform translate-y-2 group-hover:translate-y-0 duration-300 flex items-center gap-1.5 focus:outline-none delay-75">
+                ⚡ Customize
+              </button>
+            </div>
+          </div>
+
+          <!-- Desktop-Only Card Body -->
+          <div class="hidden sm:flex flex-1 flex-col p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <span
+                  class="inline-flex max-w-full items-center rounded-full border border-[#fecdd3] bg-rose-50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#e11d48]">birthday_diary.html</span>
+                <h3 class="mt-2 text-lg font-extrabold leading-tight text-slate-800 font-heading truncate">LDR Anniversary Diary
+                </h3>
+              </div>
+              <div
+                class="shrink-0 rounded-xl border border-slate-100 bg-slate-50/80 px-2.5 py-1 text-right font-black text-slate-800 shadow-sm flex flex-col justify-center">
+                <span class="text-[10px] text-slate-400 line-through font-normal leading-tight">₹499</span>
+                <span class="text-xs text-brand-500 leading-tight">₹99</span>
+              </div>
+            </div>
+            <p class="mt-3 text-xs leading-relaxed text-slate-500 font-medium line-clamp-3">
+              An aesthetic Canva-style LDR Anniversary Keepsake journal. Features a passcode keypad lock (1234), spinning tape cassette player, Museum of Us memory timeline, Digital Best Partner Award Certificate, Open When letters, canvas scratch-off promise vouchers, and blowable cake candles.
+            </p>
+            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <div
+                class="flex flex-wrap gap-1 text-[9px] text-slate-400 font-bold uppercase tracking-wider min-w-0 flex-1">
+                <span>🔑 passcode lock</span>
+                <span>•</span>
+                <span>📟 cassette tape</span>
+                <span>•</span>
+                <span>🎫 scratch card</span>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600 bg-slate-50 hover:bg-rose-50 hover:text-rose-500 border border-slate-200 hover:border-rose-200 rounded-xl transition-all focus:outline-none">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Preview
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════ -->
+        <!-- CARD 7c — THE MOVIE                    -->
+        <!-- ══════════════════════════════════════ -->
+        <div
+          class="template-card group relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] cursor-pointer shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-200/60 bg-white flex flex-col"
+          onclick="selectTemplateAndScroll(this)" data-value="birthday_movie.html" data-category="birthday premium"
+          data-price="99" data-is-premium="true">
+
+          <!-- Selected Checkmark Badge -->
+          <div
+            class="selected-badge absolute right-3 top-3 sm:right-4 sm:top-4 z-30 bg-rose-500 text-white text-[9px] sm:text-[10px] font-black px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full uppercase tracking-wider shadow-lg shadow-rose-500/20 border border-rose-400/20 items-center gap-1 hidden">
+            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3.5" d="M5 13l4 4L19 7" />
+            </svg>
+            Active
+          </div>
+
+          <!-- Image Container -->
+          <div class="relative overflow-hidden shrink-0 bg-slate-100 w-full aspect-[3/4] sm:aspect-[4/3]">
+            <img src="/static/previews/movie_preview.png"
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="The Movie">
+            <div
+              class="absolute left-2 top-2 sm:left-4 sm:top-4 rounded-full bg-white/90 backdrop-blur-md px-2 sm:px-3 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-rose-600 border border-rose-100 shadow-sm z-10">
+              🎬 Flagship Cinematic</div>
+
+            <!-- Mobile Overlay -->
+            <div
+              class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950 via-slate-900/70 to-transparent pt-12 pb-2.5 px-2.5 flex flex-col gap-1.5 justify-end sm:hidden z-20">
+              <div class="flex items-end justify-between gap-1 leading-none">
+                <h3 class="text-xs font-black text-white truncate max-w-[70%] font-heading">🎬 THE MOVIE</h3>
+                <div class="text-right shrink-0 flex flex-col justify-end">
+                  <span class="text-[8px] text-slate-400 line-through font-normal">₹499</span>
+                  <span class="text-[10px] text-rose-400 font-black">₹99</span>
+                </div>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="w-full py-1.5 text-[9px] font-black uppercase tracking-widest text-white bg-white/10 hover:bg-white/20 active:bg-white/30 border border-white/20 rounded-lg backdrop-blur-sm transition-all flex items-center justify-center gap-1 focus:outline-none">
+                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Preview
+              </button>
+            </div>
+
+            <!-- Desktop Hover Overlay -->
+            <div
+              class="absolute inset-0 bg-slate-900/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-3 z-20 hidden sm:flex">
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="px-5 py-2.5 bg-white text-slate-900 text-xs font-black uppercase tracking-widest rounded-xl hover:bg-brand-500 hover:text-white transition-all shadow-md transform translate-y-2 group-hover:translate-y-0 duration-300 flex items-center gap-2 focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Live Preview
+              </button>
+              <button type="button" onclick="selectTemplateAndScroll(this)"
+                class="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-orange-500 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:shadow-lg hover:shadow-brand-500/20 transition-all shadow-md transform translate-y-2 group-hover:translate-y-0 duration-300 flex items-center gap-1.5 focus:outline-none delay-75">
+                ⚡ Customize
+              </button>
+            </div>
+          </div>
+
+          <!-- Desktop-Only Card Body -->
+          <div class="hidden sm:flex flex-1 flex-col p-6">
+            <div class="flex items-center justify-between gap-3">
+              <div class="min-w-0 flex-1">
+                <span
+                  class="inline-flex max-w-full items-center rounded-full border border-[#fecdd3] bg-rose-50 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-[#e11d48]">birthday_movie.html</span>
+                <h3 class="mt-2 text-lg font-extrabold leading-tight text-slate-800 font-heading truncate">THE MOVIE</h3>
+              </div>
+              <div
+                class="shrink-0 rounded-xl border border-slate-100 bg-slate-50/80 px-2.5 py-1 text-right font-black text-slate-800 shadow-sm flex flex-col justify-center">
+                <span class="text-[10px] text-slate-400 line-through font-normal leading-tight">₹499</span>
+                <span class="text-xs text-brand-500 leading-tight">₹99</span>
+              </div>
+            </div>
+            <p class="mt-3 text-xs leading-relaxed text-slate-500 font-medium line-clamp-3">
+              Your memories. Their story. One unforgettable movie. Features opening titles, interactive chapter scenes, custom story slides, credit rolls, and post-credit cake blowouts.
+            </p>
+            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <div
+                class="flex flex-wrap gap-1 text-[9px] text-slate-400 font-bold uppercase tracking-wider min-w-0 flex-1">
+                <span>🎬 cinematic slides</span>
+                <span>•</span>
+                <span>🎞️ custom stories</span>
+                <span>•</span>
+                <span>🏆 credit roll</span>
+              </div>
+              <button type="button" onclick="event.stopPropagation(); openLivePreviewFromCard(this)"
+                class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600 bg-slate-50 hover:bg-rose-50 hover:text-rose-500 border border-slate-200 hover:border-rose-200 rounded-xl transition-all focus:outline-none">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Preview
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════════════════════════════ -->
         <!-- CARD 8 — Apology                       -->
         <!-- ══════════════════════════════════════ -->
         <div
@@ -1809,6 +2024,77 @@
               </div>
               <p class="text-[10px] text-slate-400 font-semibold italic ml-1">💡 Pro-tip: Each line appears as a
                 separate slide animation</p>
+            </div>
+
+            <!-- Movie-Specific Customization Fields -->
+            <div id="movie_fields_container" class="hidden overflow-hidden space-y-6 pt-6 border-t border-slate-200/60">
+              <div class="p-5 rounded-2xl bg-brand-500/5 border border-brand-500/10 space-y-5">
+                <div class="flex items-center gap-2 border-b border-brand-500/10 pb-3">
+                  <span class="text-xl">🎬</span>
+                  <h3 class="text-xs font-black text-slate-800 font-heading uppercase tracking-wider">Cinematic Movie Director Options</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Movie Title</label>
+                    <input type="text" name="movie_title" placeholder="e.g. The Story of Sarah" class="premium-input">
+                  </div>
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Movie Subtitle</label>
+                    <input type="text" name="movie_subtitle" placeholder="e.g. A story written in memories" class="premium-input">
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Select Movie Genre</label>
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    <button type="button" onclick="selectMovieGenre(this, 'Romance')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none">
+                      ❤️ Romance
+                    </button>
+                    <button type="button" onclick="selectMovieGenre(this, 'Comedy')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none">
+                      😂 Comedy
+                    </button>
+                    <button type="button" onclick="selectMovieGenre(this, 'Emotional')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none">
+                      🥹 Emotional
+                    </button>
+                    <button type="button" onclick="selectMovieGenre(this, 'Friendship')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none active-genre ring-2 ring-brand-500">
+                      🏆 Friendship
+                    </button>
+                    <button type="button" onclick="selectMovieGenre(this, 'Adventure')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none">
+                      🎬 Adventure
+                    </button>
+                    <button type="button" onclick="selectMovieGenre(this, 'Main Character')" class="genre-chip px-3 py-2 bg-white border border-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wide rounded-xl flex items-center justify-center gap-1.5 hover:bg-slate-50 transition-all select-none">
+                      👑 Main
+                    </button>
+                  </div>
+                  <input type="hidden" name="movie_genre" id="selected_movie_genre" value="Friendship">
+                </div>
+
+                <div class="space-y-4 pt-3 border-t border-slate-200/40">
+                  <h4 class="text-xs font-black text-slate-700 uppercase tracking-widest font-heading">Script & Chapters</h4>
+                  
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Chapter 1: How We Met</label>
+                    <textarea name="story_how_met" rows="2" placeholder="Tell us how you first met..." class="premium-input resize-none"></textarea>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Chapter 2: Funny Memories</label>
+                    <textarea name="story_funny_memories" rows="2" placeholder="Share a hilarious moment or inside joke..." class="premium-input resize-none"></textarea>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Chapter 3: Key Milestones</label>
+                    <textarea name="story_important_moments" rows="2" placeholder="Important moments you spent together..." class="premium-input resize-none"></textarea>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Chapter 4: Message from Director</label>
+                    <textarea name="story_personal_message" rows="2" placeholder="Your deep personal message to the celebrant..." class="premium-input resize-none"></textarea>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Chapter 5: Closing Credit Roll</label>
+                    <textarea name="story_future_wishes" rows="2" placeholder="Wishes for their future..." class="premium-input resize-none"></textarea>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2844,7 +3130,25 @@
       if (selectedNameEl) selectedNameEl.innerText = displayName;
       if (selectedDescEl) selectedDescEl.innerText = description;
 
+      // Toggle Movie Specific Inputs
+      const movieFields = document.getElementById('movie_fields_container');
+      if (movieFields) {
+        if (value === 'birthday_movie.html') {
+          movieFields.classList.remove('hidden');
+        } else {
+          movieFields.classList.add('hidden');
+        }
+      }
+
       updateSubmitButton();
+    }
+
+    function selectMovieGenre(btn, genre) {
+      document.querySelectorAll('.genre-chip').forEach(el => {
+        el.classList.remove('active-genre', 'ring-2', 'ring-brand-500');
+      });
+      btn.classList.add('active-genre', 'ring-2', 'ring-brand-500');
+      document.getElementById('selected_movie_genre').value = genre;
     }
 
     function selectTemplateAndScroll(btn) {

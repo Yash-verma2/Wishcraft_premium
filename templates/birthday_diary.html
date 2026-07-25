@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} 📔🎂</title>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" href="/static/icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- CSS & JS Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+            hand: ['Pacifico', 'cursive'],
+          },
+          colors: {
+            diaryWood: '#272522',
+            ldrRose: {
+              50: '#fff5f5',
+              100: '#ffe3e3',
+              200: '#ffc9c9',
+              300: '#ffa8a8',
+              400: '#ff8787',
+              500: '#ff6b6b',
+            },
+            ldrBeige: '#faf6eb',
+            ldrBorder: '#4a3f35',
+          },
+          animation: {
+            'sway': 'sway 4s ease-in-out infinite',
+            'float': 'float 5s ease-in-out infinite',
+            'shake': 'shake 0.4s ease-in-out',
+            'spin-slow': 'spin 20s linear infinite',
+          },
+          keyframes: {
+            sway: {
+              '0%, 100%': { transform: 'rotate(-2deg)' },
+              '50%': { transform: 'rotate(2deg)' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-6px)' }
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-4px)' },
+              '40%, 80%': { transform: 'translateX(4px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #1a1816;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: #4a3f35;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* 3D Book Layout */
+    .book-viewport {
+      perspective: 1600px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book {
+      position: relative;
+      width: 350px;
+      height: 490px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    /* Single page sheet */
+    .book-page {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      transform-origin: left center;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 10;
+    }
+
+    /* Front and Back of each flipping sheet */
+    .page-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      backface-visibility: hidden;
+      background: #faf6eb;
+      border: 3.5px solid #4a3f35;
+      box-shadow: inset 3px 0 24px rgba(74, 63, 53, 0.08);
+      border-radius: 6px 16px 16px 6px;
+      padding: 20px 20px 20px 32px; /* Extra left padding for margin rules & holes */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    /* Lined Notebook Paper background */
+    .notebook-paper {
+      background: #faf6eb;
+      background-image: linear-gradient(rgba(74, 63, 53, 0.1) 1.5px, transparent 1.5px);
+      background-size: 100% 24px;
+      line-height: 24px;
+    }
+
+    /* Vertical red notebook margin rule */
+    .notebook-margin-line {
+      position: absolute;
+      left: 28px;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background-color: rgba(220, 38, 38, 0.25);
+    }
+
+    /* Page-edge punch holes */
+    .page-hole {
+      position: absolute;
+      left: 10px;
+      width: 8px;
+      height: 8px;
+      background: #1a1816;
+      border: 1px solid rgba(74, 63, 53, 0.3);
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .page-back {
+      transform: rotateY(180deg);
+      border-radius: 16px 6px 6px 16px;
+      box-shadow: inset -3px 0 24px rgba(74, 63, 53, 0.08);
+      padding: 20px 32px 20px 20px; /* Swap padding for back face */
+    }
+    .page-back .notebook-margin-line {
+      left: auto;
+      right: 28px;
+    }
+    .page-back .page-hole {
+      left: auto;
+      right: 10px;
+    }
+
+    /* Flipped state (turned left Y) */
+    .book-page.flipped {
+      transform: rotateY(-180deg);
+    }
+
+    /* Washi tape */
+    .washi-tape {
+      background: rgba(255, 182, 193, 0.4);
+      border-left: 1.5px dashed rgba(74, 63, 53, 0.2);
+      border-right: 1.5px dashed rgba(74, 63, 53, 0.2);
+      transform: rotate(-1.5deg);
+    }
+
+    /* Polaroid frame */
+    .polaroid-frame {
+      background: #ffffff;
+      padding: 8px 8px 20px 8px;
+      border: 2px solid #4a3f35;
+      box-shadow: 3px 3px 0px #4a3f35;
+      border-radius: 2px;
+      transform: rotate(-1deg);
+    }
+
+    /* Keypad round button */
+    .keypad-btn {
+      background: #ffffff;
+      border: 2.5px solid #4a3f35;
+      box-shadow: 2px 2px 0px #4a3f35;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-weight: 800;
+      font-size: 16px;
+      transition: all 0.1s ease;
+      color: #4a3f35;
+    }
+    .keypad-btn:active {
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0px #4a3f35;
+    }
+
+    /* Journal button styling */
+    .journal-btn {
+      background: #ffffff;
+      border: 2px solid #4a3f35;
+      box-shadow: 2px 2px 0px #4a3f35;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.15s ease;
+      color: #4a3f35;
+    }
+    .journal-btn:hover {
+      background: #fff5f5;
+      transform: translate(-0.5px, -0.5px);
+      box-shadow: 2.5px 2.5px 0px #4a3f35;
+    }
+    .journal-btn:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0px 0px 0px #4a3f35;
+    }
+
+    /* Elegant Real Certificate Border & Layout */
+    .award-certificate-container {
+      background: #fffdf5;
+      border: 5px double #d97706; /* double golden rule */
+      box-shadow: 0px 4px 12px rgba(74, 63, 53, 0.1);
+      padding: 12px 10px;
+      font-family: 'Playfair Display', serif;
+      position: relative;
+    }
+
+    /* Canvas Overlay */
+    #scratch-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      border-radius: 8px;
+      z-index: 10;
+    }
+
+    /* Center spiral binder ring loops */
+    .spiral-binder {
+      position: absolute;
+      left: -14px;
+      width: 28px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      padding: 20px 0;
+      z-index: 95;
+      pointer-events: none;
+    }
+    .spiral-ring {
+      width: 24px;
+      height: 12px;
+      background: linear-gradient(to bottom, #d1d5db, #9ca3af, #d1d5db);
+      border: 1.5px solid #4a3f35;
+      border-radius: 6px;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+    }
+
+    /* Squishy cat */
+    .cat-avatar {
+      transition: transform 0.1s ease;
+    }
+    .cat-avatar:active {
+      transform: scaleX(1.3) scaleY(0.65) translateY(12px);
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-between p-4 selection:bg-rose-100 selection:text-rose-900 select-none">
+
+  <!-- Background decorative stamps -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 opacity-30">
+    <div class="absolute top-[8%] left-[6%] animate-float text-rose-300/40">
+      <i class="fas fa-heart text-5xl"></i>
+    </div>
+    <div class="absolute bottom-[10%] right-[10%] animate-float text-rose-300/40">
+      <i class="fas fa-star text-4xl"></i>
+    </div>
+  </div>
+
+  <!-- 🔐 PASSCODE LOCK SCREEN 🔐 -->
+  <div id="passcode-screen" class="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-[#1e1c1a] p-4 transition-all duration-1000">
+    <div id="lockbox-container" class="journal-box bg-[#faf6eb] p-6 max-w-xs w-full text-center space-y-5 border-3 border-[#4a3f35] rounded-2xl shadow-[6px_6px_0px_#4a3f35]">
+      
+      <div class="flex flex-col items-center gap-1.5">
+        <div class="w-14 h-14 bg-rose-50 border-3 border-[#4a3f35] rounded-full flex items-center justify-center relative shadow-sm">
+          <span class="text-2xl">🔑</span>
+        </div>
+        <h2 class="text-base font-bold tracking-tight text-[#4a3f35] mt-1 font-serif">Keepsake Diary Locked 🤍</h2>
+        <p class="text-[10px] text-slate-500 font-semibold">Enter passcode to open the 3D journal</p>
+      </div>
+
+      <!-- dots -->
+      <div class="flex justify-center gap-3 py-1">
+        <div class="pass-dot w-4 h-4 rounded-full border-2.5 border-[#4a3f35] bg-slate-100"></div>
+        <div class="pass-dot w-4 h-4 rounded-full border-2.5 border-[#4a3f35] bg-slate-100"></div>
+        <div class="pass-dot w-4 h-4 rounded-full border-2.5 border-[#4a3f35] bg-slate-100"></div>
+        <div class="pass-dot w-4 h-4 rounded-full border-2.5 border-[#4a3f35] bg-slate-100"></div>
+      </div>
+
+      <div id="passcode-hint-text" class="text-[10px] font-black text-rose-500 animate-pulse">
+        Hint: Passcode is 1234!
+      </div>
+
+      <!-- keypad -->
+      <div class="grid grid-cols-3 gap-2.5 justify-items-center max-w-[180px] mx-auto pt-1">
+        <button onclick="pressKey(1)" class="keypad-btn">1</button>
+        <button onclick="pressKey(2)" class="keypad-btn">2</button>
+        <button onclick="pressKey(3)" class="keypad-btn">3</button>
+        <button onclick="pressKey(4)" class="keypad-btn">4</button>
+        <button onclick="pressKey(5)" class="keypad-btn">5</button>
+        <button onclick="pressKey(6)" class="keypad-btn">6</button>
+        <button onclick="pressKey(7)" class="keypad-btn">7</button>
+        <button onclick="pressKey(8)" class="keypad-btn">8</button>
+        <button onclick="pressKey(9)" class="keypad-btn">9</button>
+        <button onclick="pressKey('C')" class="keypad-btn bg-rose-50 text-red-500">C</button>
+        <button onclick="pressKey(0)" class="keypad-btn">0</button>
+        <button onclick="pressKey('⌫')" class="keypad-btn bg-slate-50 text-slate-600"><i class="fas fa-backspace text-xs"></i></button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 📔 3D BOOK PORT 📔 -->
+  <div id="book-viewport-container" class="hidden opacity-0 book-viewport w-full max-w-xl mx-auto flex flex-col items-center justify-center gap-4 transition-all duration-1000">
+    
+    <!-- 3D Book Container -->
+    <div class="book relative">
+      
+      <!-- Spiral binder rings decoration (looks like realistic spiral binder notebook) -->
+      <div class="spiral-binder">
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+        <div class="spiral-ring"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 1: FRONT COVER (Single Sheet)             -->
+      <!-- ============================================== -->
+      <div id="p1" class="book-page" style="z-index: 90;">
+        <div class="page-face page-front bg-rose-50 flex flex-col items-center justify-between border-rose-300">
+          <!-- Page Binder Holes -->
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="washi-tape px-4 py-1 text-[8px] font-black uppercase tracking-widest text-[#4a3f35] shadow-sm mt-4">
+            🎂 birthday special log
+          </div>
+          
+          <div class="text-center space-y-3">
+            <span class="text-5xl animate-float">📔</span>
+            <h1 class="text-3xl font-serif font-black text-rose-950 leading-tight leading-none tracking-wide">
+              The Birthday<br>
+              <span class="text-rose-500 font-hand text-4xl">Keepsake Book! 🤍</span>
+            </h1>
+            <p class="text-[9px] uppercase tracking-widest text-slate-500 font-extrabold">made especially for {{ name }}</p>
+          </div>
+
+          <div class="w-full px-4 mb-6">
+            <button onclick="flipPage(1)" class="w-full journal-btn py-3 text-xs flex items-center justify-center gap-2">
+              Open Keepsake <i class="fas fa-book-open"></i>
+            </button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 2: MESSAGE FROM THE HEART                 -->
+      <!-- ============================================== -->
+      <div id="p2" class="book-page" style="z-index: 80;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between" style="padding-top: 12px; padding-bottom: 12px;">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 h-6">
+            <h3 class="text-xs font-hand text-rose-500 select-none">Dear {{ name }},</h3>
+          </div>
+
+          <!-- Typewriter message sitting EXACTLY on the background notebook lines! -->
+          <div class="flex-1 w-full" style="height: 384px; max-height: 384px; overflow: hidden; padding-top: 3px;">
+            <p id="typed-text" class="text-[12px] font-bold text-slate-700 italic font-serif leading-[24px] pl-4 whitespace-pre-wrap"></p>
+          </div>
+
+          <div class="flex justify-between gap-3 w-full pl-4 z-10 h-8 items-center">
+            <button onclick="prevPage(2)" class="journal-btn px-3 py-1.5"><i class="fas fa-arrow-left"></i> Cover</button>
+            <button onclick="flipPage(2)" class="journal-btn px-3 py-1.5">Meme Box <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 3: SQUISHY CAT MEME GENERATOR             -->
+      <!-- ============================================== -->
+      <div id="p3" class="book-page" style="z-index: 70;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-0.5">
+            <h3 class="text-base font-serif font-black text-slate-800 leading-none">🐱 Cute Meme Squeezer</h3>
+            <p class="text-[9px] text-slate-500 font-semibold leading-none">Click the cute cat to squish out a birthday meme!</p>
+          </div>
+
+          <!-- Squishy Interactive Cat -->
+          <div class="w-full flex justify-center mt-3 pl-4 relative">
+            <div id="cat-toy" onclick="squeezeCat()" class="cat-avatar cursor-pointer w-24 h-24 bg-rose-200 border-3 border-[#4a3f35] rounded-full shadow-[3px_3px_0px_#4a3f35] flex items-center justify-center relative select-none">
+              <!-- cute face -->
+              <div class="absolute top-5 left-6 w-1.5 h-1.5 bg-[#4a3f35] rounded-full"></div>
+              <div class="absolute top-5 right-6 w-1.5 h-1.5 bg-[#4a3f35] rounded-full"></div>
+              <div class="absolute top-6 left-1/2 -translate-x-1/2 text-[10px]">🐱</div>
+              <div class="absolute top-2 left-3 w-4 h-4 bg-rose-300 border-2 border-[#4a3f35] rounded-t-xl rotate-[-30deg]"></div>
+              <div class="absolute top-2 right-3 w-4 h-4 bg-rose-300 border-2 border-[#4a3f35] rounded-t-xl rotate-[30deg]"></div>
+              <span class="absolute bottom-2 text-[9px] uppercase font-black text-rose-500 tracking-wider">TAP!</span>
+            </div>
+          </div>
+
+          <!-- Polaroid frame showing random cat birthday meme (using direct Giphy short addresses) -->
+          <div class="polaroid-frame w-40 relative bg-white mt-2 select-none shadow-md ml-4">
+            <div class="relative w-full h-[110px] bg-slate-50 overflow-hidden border border-[#4a3f35]/20 rounded-sm">
+              <img id="meme-image" src="https://i.giphy.com/31q3NWi1ODlu.gif" class="w-full h-full object-cover">
+            </div>
+            <p class="font-hand text-[9px] text-rose-500 pt-1 leading-none text-center">Birthday Mood 🎈</p>
+          </div>
+
+          <div class="flex justify-between gap-3 mb-2 pl-4 z-10 w-full">
+            <button onclick="prevPage(3)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Letter</button>
+            <button onclick="flipPage(3)" class="journal-btn px-4 py-2">Album Stack <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 4: PHOTO ALBUM STACK                      -->
+      <!-- ============================================== -->
+      <div id="p4" class="book-page" style="z-index: 60;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-0.5">
+            <h3 class="text-base font-serif font-black text-slate-800 leading-none">Our Album Stack</h3>
+            <p class="text-[9px] text-slate-500 font-semibold leading-none">Tap a photo to slide to the next memory!</p>
+          </div>
+
+          <!-- Polaroid Pile Stack -->
+          <div class="relative w-48 h-56 mt-2 flex items-center justify-center pl-4">
+            <div id="polaroid-stack-container" class="relative w-full h-full">
+              <!-- Dynamically populated via JS -->
+            </div>
+          </div>
+
+          <div class="flex justify-between gap-3 w-full mb-2 pl-4 z-10">
+            <button onclick="prevPage(4)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Memes</button>
+            <button onclick="flipPage(4)" class="journal-btn px-4 py-2">Grid Album <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 5: DUAL PHOTO COLLAGE GRID                -->
+      <!-- ============================================== -->
+      <div id="p5" class="book-page" style="z-index: 55;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-0.5">
+            <h3 class="text-base font-serif font-black text-slate-800 leading-none">Memory Grid</h3>
+            <p class="text-[9px] text-slate-500 font-semibold leading-none">Our favorite snapshots together</p>
+          </div>
+
+          <!-- Grid layout -->
+          <div id="polaroid-grid-container" class="w-full grid grid-cols-2 gap-2 mt-4 flex-1 justify-center items-center pl-6 pr-2">
+            <!-- Dynamically populated via JS -->
+          </div>
+
+          <div class="flex justify-between gap-3 w-full mb-2 pl-4 z-10">
+            <button onclick="prevPage(5)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Pile</button>
+            <button onclick="flipPage(5)" class="journal-btn px-4 py-2">Award <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 6: REAL CERTIFICATE OF EXCELLENCE         -->
+      <!-- ============================================== -->
+      <div id="p6" class="book-page" style="z-index: 50;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-1">
+            <h3 class="text-xs font-serif font-black uppercase tracking-widest text-slate-500 leading-none">Official Award</h3>
+          </div>
+
+          <!-- Ornate Best Friend Certificate Document -->
+          <div class="award-certificate-container w-full max-w-[270px] text-center space-y-2.5 mt-3 flex-1 flex flex-col justify-between ml-4">
+            
+            <div class="space-y-0.5">
+              <span class="text-[7px] uppercase tracking-widest text-[#d97706] font-extrabold">Department of Awesome Friendships</span>
+              <h3 class="text-[11px] font-black text-slate-800 uppercase tracking-wide leading-none border-b border-[#d97706]/40 pb-1">Certificate of Excellence</h3>
+            </div>
+
+            <div class="space-y-1">
+              <p class="text-[8px] text-slate-500 italic leading-none">This document officially certifies that</p>
+              <h4 class="font-hand text-lg text-rose-500 font-semibold leading-tight my-0.5">{{ name }}</h4>
+              <p class="text-[8.5px] text-slate-700 leading-normal px-2">
+                has successfully fulfilled all requirements of being the most outstanding, loyal, and incredible best friend in the universe.
+              </p>
+            </div>
+
+            <!-- Ribbons and Seal SVG -->
+            <div class="flex items-center justify-between px-3 mt-1.5 border-t border-[#d97706]/20 pt-1.5">
+              <!-- signature left -->
+              <div class="text-left">
+                <div class="font-hand text-[9px] text-[#4a3f35] leading-none mb-0.5 select-none">{{ creator_name or 'Bestie' }}</div>
+                <div class="w-16 border-t border-slate-400 mt-0.5"></div>
+                <div class="text-[5.5px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">Authorized Signature</div>
+              </div>
+
+              <!-- golden foil seal svg in bottom right -->
+              <div class="relative w-10 h-10 select-none">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                  <path d="M35 55 L25 88 L48 78 L35 55 Z" fill="#dc2626"/>
+                  <path d="M65 55 L75 88 L52 78 L65 55 Z" fill="#b91c1c"/>
+                  <circle cx="50" cy="50" r="28" fill="url(#goldGrad)" stroke="#4a3f35" stroke-width="2"/>
+                  <polygon points="50,33 54,44 65,46 56,54 58,66 50,60 42,66 44,54 35,46 46,44" fill="#ffffff"/>
+                  <defs>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#fbbf24" />
+                      <stop offset="50%" stop-color="#f59e0b" />
+                      <stop offset="100%" stop-color="#d97706" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="flex justify-between gap-3 w-full mb-2 pl-4 z-10">
+            <button onclick="prevPage(6)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Grid</button>
+            <button onclick="flipPage(6)" class="journal-btn px-4 py-2">Voucher <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 7: THE SECRET PROMISE SCRATCH CARD        -->
+      <!-- ============================================== -->
+      <div id="p7" class="book-page" style="z-index: 40;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-0.5">
+            <h3 class="text-base font-serif font-black text-slate-800 leading-none">Birthday Treat Voucher</h3>
+            <p class="text-[9px] text-slate-500 font-semibold">Scratch the ticket to claim my promise!</p>
+          </div>
+
+          <!-- Scratch Card box container -->
+          <div class="relative w-52 h-32 border-2.5 border-[#4a3f35] rounded-xl shadow-[3px_3px_0px_#4a3f35] bg-rose-50 overflow-hidden flex items-center justify-center p-3 mt-4 ml-4">
+            <!-- Under text -->
+            <div class="text-center space-y-1 z-0 select-none">
+              <span class="text-[9px] font-black uppercase text-rose-400 leading-none">Claimed! 🎟️</span>
+              <h4 class="text-[10px] font-bold text-slate-800 font-serif leading-tight">"I promise to give you 100 giant hugs & a special Birthday Treat the day we meet!"</h4>
+              <p class="text-[7px] uppercase tracking-wider font-extrabold text-slate-400">Code: HBD-TREAT-100</p>
+            </div>
+            <!-- Canvas -->
+            <canvas id="scratch-canvas" width="208" height="128"></canvas>
+          </div>
+
+          <div class="w-full space-y-3 mb-2 pl-4 z-10">
+            <div id="scratch-status" class="text-[9px] font-black uppercase text-rose-500 animate-pulse">
+              <i class="fas fa-hand-pointer mr-1"></i> Swipe to Scratch!
+            </div>
+            <div class="flex justify-between gap-3">
+              <button onclick="prevPage(7)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Award</button>
+              <button onclick="flipPage(7)" class="journal-btn px-4 py-2">Envelopes <i class="fas fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 8: ENVELOPES (OPEN WHEN)                  -->
+      <!-- ============================================== -->
+      <div id="p8" class="book-page" style="z-index: 30;">
+        <div class="page-face page-front notebook-paper flex flex-col justify-between items-center text-center">
+          <!-- Margin line & Binder Holes -->
+          <div class="notebook-margin-line"></div>
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="pl-4 space-y-0.5">
+            <h3 class="text-base font-serif font-black text-slate-800">"Open When" Notes</h3>
+            <p class="text-[9px] text-slate-500 font-semibold leading-none">A few letters for special moments</p>
+          </div>
+
+          <!-- Envelopes grid -->
+          <div class="w-full flex flex-col gap-2.5 mt-4 flex-1 justify-center max-w-[220px] ml-4">
+            <button onclick="openLetterModal('miss')" class="journal-btn py-2.5 bg-rose-50 text-[10px] flex items-center justify-center gap-2 font-bold shadow-sm">
+              <i class="fas fa-envelope text-rose-400"></i> When You Miss Me
+            </button>
+            <button onclick="openLetterModal('smile')" class="journal-btn py-2.5 bg-yellow-50 text-[10px] flex items-center justify-center gap-2 font-bold shadow-sm">
+              <i class="fas fa-face-smile text-yellow-400"></i> Need a Smile
+            </button>
+            <button onclick="openLetterModal('meet')" class="journal-btn py-2.5 bg-indigo-50 text-[10px] flex items-center justify-center gap-2 font-bold shadow-sm">
+              <i class="fas fa-plane text-indigo-400"></i> When We Meet Next
+            </button>
+          </div>
+
+          <div class="flex justify-between gap-3 w-full mb-2 pl-4 z-10">
+            <button onclick="prevPage(8)" class="journal-btn px-4 py-2"><i class="fas fa-arrow-left"></i> Voucher</button>
+            <button onclick="flipPage(8)" class="journal-btn px-4 py-2">Closing <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PAGE 9: BACK COVER SIGNATURES                  -->
+      <!-- ============================================== -->
+      <div id="p9" class="book-page" style="z-index: 20;">
+        <div class="page-face page-front bg-rose-50 flex flex-col items-center justify-between border-rose-300">
+          <!-- Page Binder Holes -->
+          <div class="page-hole" style="top: 35px;"></div>
+          <div class="page-hole" style="top: 95px;"></div>
+          <div class="page-hole" style="top: 155px;"></div>
+          <div class="page-hole" style="top: 215px;"></div>
+          <div class="page-hole" style="top: 275px;"></div>
+          <div class="page-hole" style="top: 335px;"></div>
+          <div class="page-hole" style="top: 395px;"></div>
+          <div class="page-hole" style="top: 455px;"></div>
+
+          <div class="mt-12 text-center space-y-4">
+            <span class="text-4xl animate-float">🎈</span>
+            <h2 class="text-2xl font-serif font-black text-rose-950 leading-none">Happy Birthday!</h2>
+            <p class="text-xs font-semibold text-slate-500 italic max-w-[240px] leading-relaxed">
+              May this next chapter of your life be filled with laughter, adventures, and endless joy.
+            </p>
+          </div>
+
+          <div class="w-full space-y-5 px-2 mb-8">
+            <div class="text-center font-hand text-lg text-rose-500">
+              Forever Yours, <br>
+              <span class="text-slate-800 text-sm font-semibold select-none font-sans uppercase tracking-widest">{{ creator_name or 'Bestie' }} 🤍</span>
+            </div>
+            <button onclick="prevPage(9)" class="w-full journal-btn py-2.5 flex items-center justify-center gap-2">
+              <i class="fas fa-arrow-left"></i> Prev Page
+            </button>
+          </div>
+        </div>
+        <div class="page-face page-back"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- 🎁 CUTE DIALOG MODALS 🎁 -->
+  <div id="cute-modal-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] hidden items-center justify-center p-4 transition-all duration-300">
+    <div class="journal-box bg-[#faf6eb] max-w-xs w-full p-5 text-center space-y-5 transform scale-90 opacity-0 transition-all duration-300 flex flex-col items-center border-3 border-[#4a3f35] rounded-2xl shadow-[4px_4px_0px_#4a3f35]">
+      
+      <div id="modal-icon-wrapper" class="w-14 h-14 rounded-full flex items-center justify-center text-2xl border-3 border-[#4a3f35] bg-rose-50 text-rose-500 shadow-sm">
+        <!-- Injected via JS -->
+      </div>
+      
+      <div class="space-y-1.5">
+        <h4 id="modal-title" class="text-base font-serif font-black text-[#4a3f35]">
+          <!-- Injected via JS -->
+        </h4>
+        <p id="modal-body" class="text-xs font-semibold text-slate-600 leading-relaxed font-serif">
+          <!-- Injected via JS -->
+        </p>
+      </div>
+      
+      <button onclick="closeCuteModal()" class="w-full py-2 rounded-full border-3 border-[#4a3f35] bg-[#4a3f35] hover:bg-[#3d332a] text-white font-extrabold text-[10px] uppercase tracking-wider transition-all">
+        Close Note 💌
+      </button>
+    </div>
+  </div>
+
+  <!-- Audio Player Elements -->
+  <div id="audio-container" class="hidden">
+    {% if music and 'spotify.com' in music %}
+    <div id="spotify-player-wrapper" class="fixed bottom-6 right-6 z-[200] transition-transform duration-500 translate-y-40">
+      <iframe id="spotify-iframe" src="{{ music }}" width="300" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media" class="rounded-2xl shadow-2xl border border-slate-300"></iframe>
+      <button onclick="toggleSpotifyWidget()" class="absolute -top-3 -right-3 bg-zinc-800 text-white rounded-full w-8 h-8 flex items-center justify-center border-2 border-[#4a3f35] hover:bg-yellow-400 transition-colors">
+        <i class="fas fa-minus text-xs"></i>
+      </button>
+    </div>
+    {% else %}
+    <audio id="bg-music" src="{{ music }}" loop></audio>
+    {% endif %}
+  </div>
+
+  <script>
+    let correctCode = "1234";
+    let enteredCode = "";
+    let isPlaying = false;
+    let isSpotify = false;
+    let scratchVoucherClaimed = false;
+
+    // Spotify configuration
+    const spotifyWrapper = document.getElementById('spotify-player-wrapper');
+    if (spotifyWrapper) {
+      isSpotify = true;
+    }
+
+    // Audio nodes
+    const bgMusic = document.getElementById('bg-music');
+    const mainImage = "{{ main_image }}";
+
+    // Parse messages
+    const rawMessages = `{{ messages|tojson }}`;
+    let messageList = ["Wishing you an incredible birthday! 🐾"];
+    try {
+      if (rawMessages) {
+        messageList = JSON.parse(rawMessages);
+      }
+    } catch(e) {
+      console.error(e);
+    }
+
+    // Parse gallery images
+    const galleryJSON = `{{ gallery_images|tojson }}`;
+    let galleryImages = [];
+    try {
+      if (galleryJSON) {
+        galleryImages = JSON.parse(galleryJSON);
+      }
+    } catch(e) {
+      console.error(e);
+    }
+
+    // List of cute birthday cat gifs using GIPHY short direct addresses that bypass referrer blocking
+    const catMemes = [
+      "https://i.giphy.com/31q3NWi1ODlu.gif",
+      "https://i.giphy.com/mlvseq9yvZhba.gif",
+      "https://i.giphy.com/C9x8gX02SnMIo.gif",
+      "https://i.giphy.com/12PA1eI8FBqEUM.gif",
+      "https://i.giphy.com/L13yI63s9nwmk.gif"
+    ];
+    let currentMemeIdx = 0;
+
+    // Web Audio Synthesizer for beeps/flips
+    function synthSound(freq1, freq2, type, duration, volume = 0.25) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq1, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(freq2, audioCtx.currentTime + duration);
+        
+        gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.log("Audio block.");
+      }
+    }
+
+    // Paper Page Rustle/Flip noise sweep generator via Web Audio API
+    function playPageRustleSound() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = audioCtx.sampleRate * 0.18; // 180ms sweep
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        
+        // Populate with white noise
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        // Bandpass filter to shape noise like paper rustle
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1500, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(2800, audioCtx.currentTime + 0.12);
+
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+
+        noise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        noise.start();
+      } catch (e) {
+        console.log("Page rustle block.");
+      }
+    }
+
+    // Keypad Logic
+    function pressKey(key) {
+      const hint = document.getElementById('passcode-hint-text');
+      
+      if (key === 'C') {
+        enteredCode = "";
+        updateDots();
+      } else if (key === '⌫') {
+        enteredCode = enteredCode.slice(0, -1);
+        updateDots();
+      } else {
+        if (enteredCode.length < 4) {
+          enteredCode += key.toString();
+          updateDots();
+          
+          if (enteredCode.length === 4) {
+            // Verify passcode
+            if (enteredCode === correctCode) {
+              synthSound(150, 450, 'sine', 0.25, 0.4);
+              unlockDiary();
+            } else {
+              // Wrong code shake animation
+              const lockbox = document.getElementById('lockbox-container');
+              lockbox.classList.add('animate-shake');
+              hint.innerText = "Wrong passcode! Try 1234! 🐶";
+              
+              setTimeout(() => {
+                lockbox.classList.remove('animate-shake');
+                enteredCode = "";
+                updateDots();
+              }, 450);
+            }
+          }
+        }
+      }
+    }
+
+    function updateDots() {
+      const dots = document.querySelectorAll('.pass-dot');
+      dots.forEach((dot, index) => {
+        if (index < enteredCode.length) {
+          dot.classList.remove('bg-slate-100');
+          dot.classList.add('bg-rose-300');
+        } else {
+          dot.classList.remove('bg-rose-300');
+          dot.classList.add('bg-slate-100');
+        }
+      });
+    }
+
+    // Unlock Sequence
+    function unlockDiary() {
+      confetti({
+        particleCount: 100,
+        spread: 80,
+        origin: { y: 0.6 },
+        colors: ['#ffe3e3', '#ffa8a8', '#ff6b6b']
+      });
+
+      // Animate lock screen out
+      gsap.to('#passcode-screen', {
+        opacity: 0,
+        scale: 0.95,
+        duration: 0.8,
+        ease: 'power3.inOut',
+        onComplete: () => {
+          document.getElementById('passcode-screen').classList.add('hidden');
+          const bookPort = document.getElementById('book-viewport-container');
+          bookPort.classList.remove('hidden');
+          gsap.to(bookPort, {
+            opacity: 1,
+            duration: 0.8,
+            onComplete: () => {
+              setupPolaroidStack();
+              setupPolaroidGrid();
+              initScratchCard();
+            }
+          });
+        }
+      });
+
+      // Start music automatically on open
+      setTimeout(() => {
+        startMusicTrack();
+      }, 400);
+    }
+
+    function startMusicTrack() {
+      if (isSpotify) {
+        if (spotifyWrapper) {
+          spotifyWrapper.classList.remove('translate-y-40');
+        }
+      } else if (bgMusic) {
+        bgMusic.play().then(() => {
+          isPlaying = true;
+        }).catch(err => {
+          console.log("Autoplay block: waiting for user event.", err);
+        });
+      }
+    }
+
+    // 📖 3D Page Flipping Core Engine 📖
+    function flipPage(pageNum) {
+      playPageRustleSound();
+
+      const page = document.getElementById(`p${pageNum}`);
+      if (page) {
+        page.classList.add('flipped');
+        
+        // If flipping to page 2 (message), start typewriter typing
+        if (pageNum === 1) {
+          setTimeout(startTypingMessage, 500);
+        }
+      }
+    }
+
+    function prevPage(pageNum) {
+      playPageRustleSound();
+
+      const page = document.getElementById(`p${pageNum - 1}`);
+      if (page) {
+        page.classList.remove('flipped');
+      }
+    }
+
+    let typewriterStarted = false;
+    function startTypingMessage() {
+      if (typewriterStarted) return;
+      typewriterStarted = true;
+      
+      new Typed('#typed-text', {
+        strings: messageList,
+        typeSpeed: 55,
+        backSpeed: 25,
+        backDelay: 3500,
+        loop: true,
+        showCursor: true,
+        cursorChar: ' 🤍',
+      });
+    }
+
+    // Modal popup system
+    const modalOverlay = document.getElementById('cute-modal-overlay');
+    const modalWrapper = modalOverlay.querySelector('.journal-box');
+
+    function showCuteModal(iconHTML, titleText, bodyText) {
+      document.getElementById('modal-icon-wrapper').innerHTML = iconHTML;
+      document.getElementById('modal-title').innerText = titleText;
+      document.getElementById('modal-body').innerText = bodyText;
+
+      modalOverlay.classList.remove('hidden');
+      modalOverlay.classList.add('flex');
+      
+      setTimeout(() => {
+        modalWrapper.classList.remove('scale-90', 'opacity-0');
+        modalWrapper.classList.add('scale-100', 'opacity-100');
+      }, 50);
+    }
+
+    function closeCuteModal() {
+      modalWrapper.classList.remove('scale-100', 'opacity-100');
+      modalWrapper.classList.add('scale-90', 'opacity-0');
+      
+      setTimeout(() => {
+        modalOverlay.classList.remove('flex');
+        modalOverlay.classList.add('hidden');
+      }, 250);
+    }
+
+    // Open When letter actions
+    function openLetterModal(type) {
+      synthSound(400, 480, 'sine', 0.1);
+
+      if (type === 'miss') {
+        showCuteModal(
+          '<span class="text-2xl">💌</span>',
+          'Open When You Miss Me... 🐾',
+          'Whenever you feel the distance, remember that our memories, calls, and chats are always right here. I am just a text away!'
+        );
+      } else if (type === 'smile') {
+        showCuteModal(
+          '<span class="text-2xl">😊</span>',
+          'Need a Quick Smile? 🌟',
+          'Think of our funniest inside jokes or that time we couldn\'t stop laughing. Keep smiling, you brighten up my whole day!'
+        );
+      } else if (type === 'meet') {
+        showCuteModal(
+          '<span class="text-2xl">✈️</span>',
+          'When We Meet Next... 🗺',
+          'A massive warm hug, infinite hours of talking, and a huge meal. Let\'s make a detailed plan next time we call!'
+        );
+      }
+    }
+
+    // Squishy Cat Meme Actions
+    function squeezeCat() {
+      // Play balloon squeak tones
+      synthSound(650, 800, 'sine', 0.08, 0.3);
+      setTimeout(() => {
+        synthSound(800, 650, 'sine', 0.08, 0.3);
+      }, 80);
+
+      // Squish scale animation
+      const cat = document.getElementById('cat-toy');
+      gsap.fromTo(cat, { scaleX: 1, scaleY: 1 }, {
+        scaleX: 1.35,
+        scaleY: 0.6,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: 'power1.inOut'
+      });
+
+      // Change Meme Image
+      currentMemeIdx = (currentMemeIdx + 1) % catMemes.length;
+      document.getElementById('meme-image').src = catMemes[currentMemeIdx];
+
+      // Shoot little love hearts from the cat
+      confetti({
+        particleCount: 8,
+        angle: 90,
+        spread: 35,
+        origin: { y: 0.55 },
+        colors: ['#ffa8a8', '#ff6b6b']
+      });
+    }
+
+    // Polaroid Stack builder
+    let polaroids = [];
+    function setupPolaroidStack() {
+      const container = document.getElementById('polaroid-stack-container');
+      if (!container) return;
+
+      let sources = [...galleryImages];
+      if (sources.length === 0) {
+        sources.push(mainImage);
+      }
+      while (sources.length < 3) {
+        sources.push(mainImage);
+      }
+
+      container.innerHTML = '';
+      polaroids = [];
+
+      sources.forEach((src, idx) => {
+        const card = document.createElement('div');
+        card.className = 'polaroid-frame absolute w-40 h-48 bg-white cursor-pointer select-none transition-shadow duration-300 hover:shadow-lg';
+        
+        const angle = (Math.random() * 8) - 4;
+        const dx = (Math.random() * 6) - 3;
+        const dy = (Math.random() * 6) - 3;
+
+        card.style.transform = `rotate(${angle}deg) translate(${dx}px, ${dy}px)`;
+        card.style.zIndex = sources.length - idx;
+        
+        card.innerHTML = `
+          <div class="relative w-full h-[120px] bg-slate-50 overflow-hidden border border-[#4a3f35]/20 rounded-sm">
+            <img src="${src}" class="w-full h-full object-cover pointer-events-none">
+          </div>
+          <p class="font-hand text-[11px] text-rose-500 text-center pt-2.5 leading-none">Memory #${idx + 1} 🤍</p>
+        `;
+
+        card.onclick = (e) => {
+          e.stopPropagation();
+          rotateStackCard(card);
+        };
+
+        container.appendChild(card);
+        polaroids.push({
+          element: card,
+          angle: angle,
+          dx: dx,
+          dy: dy
+        });
+      });
+    }
+
+    let stackAnimating = false;
+    function rotateStackCard(card) {
+      if (stackAnimating) return;
+      stackAnimating = true;
+
+      synthSound(400, 250, 'triangle', 0.1, 0.15);
+
+      gsap.to(card, {
+        x: 180,
+        rotation: 15,
+        duration: 0.4,
+        ease: 'power2.out',
+        onComplete: () => {
+          const container = document.getElementById('polaroid-stack-container');
+          const children = Array.from(container.children);
+          
+          let maxZ = 1;
+          children.forEach(el => {
+            let z = parseInt(el.style.zIndex) || 0;
+            if (z > maxZ) maxZ = z;
+          });
+
+          children.forEach(el => {
+            if (el !== card) {
+              let z = parseInt(el.style.zIndex) || 0;
+              el.style.zIndex = z + 1;
+            } else {
+              el.style.zIndex = 1;
+            }
+          });
+
+          gsap.to(card, {
+            x: 0,
+            rotation: (Math.random() * 8) - 4,
+            duration: 0.4,
+            ease: 'power2.inOut',
+            onComplete: () => {
+              stackAnimating = false;
+            }
+          });
+        }
+      });
+    }
+
+    // Polaroid Grid builder
+    function setupPolaroidGrid() {
+      const container = document.getElementById('polaroid-grid-container');
+      if (!container) return;
+
+      let sources = [];
+      if (galleryImages.length >= 2) {
+        sources = [galleryImages[0], galleryImages[1]];
+      } else {
+        sources = [mainImage, mainImage];
+      }
+
+      container.innerHTML = '';
+      sources.forEach((src, idx) => {
+        const frame = document.createElement('div');
+        frame.className = 'polaroid-frame bg-white p-2 border-2 border-[#4a3f35] rounded-sm transform shadow-sm hover:shadow-md transition-shadow';
+        
+        const rot = idx === 0 ? '-2' : '2';
+        frame.style.transform = `rotate(${rot}deg)`;
+
+        frame.innerHTML = `
+          <div class="relative w-full aspect-square bg-slate-50 overflow-hidden border border-[#4a3f35]/20 rounded-sm">
+            <img src="${src}" class="w-full h-full object-cover">
+          </div>
+          <p class="font-hand text-[9px] text-rose-500 pt-1 text-center leading-none">Photo #${idx + 1} 🤍</p>
+        `;
+        container.appendChild(frame);
+      });
+    }
+
+    // Canvas Scratch Card Engine
+    function initScratchCard() {
+      const canvas = document.getElementById('scratch-canvas');
+      const ctx = canvas.getContext('2d');
+      let isDrawing = false;
+
+      ctx.fillStyle = '#b0bec5';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#78909c';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🎁 SCRATCH TO DISCOVER!', canvas.width / 2, canvas.height / 2 + 3);
+
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', scratch);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseleave', stopDrawing);
+
+      canvas.addEventListener('touchstart', (e) => {
+        isDrawing = true;
+        scratch(e.touches[0]);
+      }, { passive: true });
+      canvas.addEventListener('touchmove', (e) => {
+        if (isDrawing) {
+          scratch(e.touches[0]);
+        }
+      }, { passive: true });
+      canvas.addEventListener('touchend', stopDrawing);
+
+      function startDrawing(e) {
+        isDrawing = true;
+        scratch(e);
+      }
+
+      function stopDrawing() {
+        isDrawing = false;
+        checkScratchPercentage();
+      }
+
+      function scratch(e) {
+        if (!isDrawing) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+        const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
+
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function checkScratchPercentage() {
+        if (scratchVoucherClaimed) return;
+
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imgData.data;
+        let cleared = 0;
+
+        for (let i = 3; i < pixels.length; i += 4) {
+          if (pixels[i] === 0) {
+            cleared++;
+          }
+        }
+
+        const percentage = cleared / (pixels.length / 4);
+        if (percentage >= 0.55) {
+          scratchVoucherClaimed = true;
+          gsap.to(canvas, {
+            opacity: 0,
+            duration: 0.6,
+            onComplete: () => {
+              canvas.remove();
+              triggerVoucherClaimed();
+            }
+          });
+        }
+      }
+    }
+
+    function triggerVoucherClaimed() {
+      confetti({
+        particleCount: 40,
+        spread: 55,
+        origin: { y: 0.8 }
+      });
+
+      const statusText = document.getElementById('scratch-status');
+      statusText.innerHTML = '<i class="fas fa-check-circle text-emerald-500 mr-1 animate-bounce"></i> Voucher Unlocked! 🎟️';
+      statusText.classList.remove('text-rose-500');
+      statusText.classList.add('text-emerald-500');
+
+      showCuteModal(
+        '<span class="text-2xl">🎫</span>',
+        'Promise Unlocked! 🤍',
+        'Excellent! Send a screenshot of this code (HBD-TREAT-100) to claim: "100 giant hugs & a special Birthday Treat the day we meet!"'
+      );
+    }
+  </script>
+</body>
+</html>
